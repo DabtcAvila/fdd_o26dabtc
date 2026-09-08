@@ -96,7 +96,9 @@ Consequences worth internalizing:
 
 ## CI
 
-`.github/workflows/pages.yml` runs `pytest tools/` as job `checks`, then calls the reusable workflow, which validates, builds, inspects, and deploys. `needs: checks` is what makes the tests a real gate — without it both jobs race and the site publishes even when the suite fails.
+`.github/workflows/pages.yml` runs `pytest tools/` as job `checks`, then calls the reusable workflow, which validates, builds, inspects, and deploys. `needs: checks` is what makes the tests a real gate — without it both jobs race and the site publishes even when the suite fails. The `course-pages` job is skipped for pull requests from forks: a student PR carries a read-only token, so the deploy would always fail and paint their check red.
+
+`.github/workflows/entregas.yml` is the student-submission gate, and `.github/scripts/revisa_entrega.py` holds its logic. Four blocking rules: every touched file lives under `estudiantes/<PR author's login>/`, that folder name matches the login exactly (case included), no garbage was **added** (deletions are ignored on purpose — removing a stray `.DS_Store` is the right move), and the PR does not come from the author's `main`. Accounts listed in the workflow's `MANTENEDORES` env var are exempt. `tools/test_revisa_entrega.py` guards all four in both directions; the content that promises these checks is `course/7_git_y_github/2_github/4_el_flujo_del_curso.md`, so the two move together.
 
 Deployment requires the repository to stay **public**: GitHub Pages is not available for private repos on this organization's plan.
 

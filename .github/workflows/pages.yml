@@ -29,7 +29,11 @@ jobs:
   # `needs: checks` es lo que convierte las pruebas en una compuerta real. Sin
   # esa línea ambos trabajos corren en paralelo y el sitio se publica aunque la
   # suite falle.
+  # Un pull request de estudiante viene de un fork y trae un token de solo
+  # lectura: intentar publicar desde ahi fallaria siempre y les pintaria de rojo
+  # un check que no es suyo. La revision de su entrega la hace entregas.yml.
   course-pages:
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
     needs: checks
     uses: raya-lucaria/raya-lucaria.github.io/.github/workflows/reusable-course-pages.yml@9f17ce94a3ab540f866caa141f7cf94033911f3d
     with:

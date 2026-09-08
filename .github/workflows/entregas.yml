@@ -1,0 +1,32 @@
+name: Revisión de entrega
+
+# Revisa los pull requests de estudiantes: que toquen sólo su propia carpeta,
+# que esa carpeta se llame exactamente como su login, que no traigan basura y
+# que no vengan de main. Corre con `pull_request`, que para un fork da un token
+# de sólo lectura y sin secretos: este trabajo no necesita más.
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+concurrency:
+  group: entrega-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  revision:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Revisar la entrega
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ github.event.pull_request.number }}
+          AUTOR: ${{ github.event.pull_request.user.login }}
+          RAMA: ${{ github.event.pull_request.head.ref }}
+          MANTENEDORES: uumami
+        run: python3 .github/scripts/revisa_entrega.py
