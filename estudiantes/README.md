@@ -25,5 +25,5 @@ https://github.com/settings/profile
 5. Un pull request rechazado se corrige con `push` a la misma branch. No abras
    otro.
 
-Una revisión automática comprueba las cinco cosas en cada pull request. El
-flujo completo está en https://rayalucaria.org/fdd_o26/git-y-github/github/el-ritual/
+Una revisión automática comprueba las cuatro primeras en cada pull request, y
+dice qué archivo falló y qué hacer. El flujo completo está en https://rayalucaria.org/fdd_o26/git-y-github/github/el-ritual/

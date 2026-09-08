@@ -15,7 +15,53 @@ prerequisites: [el-ritual-del-curso]
 
 Aquí sólo están los comandos que esta unidad enseñó. Si un comando no aparece, es a propósito: no lo necesitas todavía.
 
-La única parte que sí se memoriza son los tres bloques de [[el-ritual-del-curso|El ritual]].
+La única parte que sí se memoriza son los cuatro bloques de [[el-ritual-del-curso|El ritual]], y están completos aquí abajo.
+
+## El flujo, completo
+
+Lo único de esta página que se memoriza. Los cuatro bloques están en [[el-ritual-del-curso|El ritual]].
+
+```bash
+# ══ PASO 0 · UNA VEZ EN EL SEMESTRE ══════════════════════════════════
+#    ¿ya lo hice?  git remote -v | grep -q upstream && echo SALTA
+#    Primero el fork, en el navegador: github.com/raya-lucaria/fdd_o26
+U=$(gh api user --jq .login) && echo "$U"    # tu login EXACTO, no lo teclees
+git remote rename origin upstream            # el del curso: de aquí BAJAS
+git remote add origin git@github.com:$U/fdd_o26.git   # el tuyo: aquí SUBES
+git remote -v                                # comprueba: 4 líneas, 2 nombres
+
+# ══ CADA VEZ QUE ENTREGAS ════════════════════════════════════════════
+cd ~/fdd/fdd_o26                             # siempre desde la raíz
+echo "$U"                                    # si está vacía, redefínela
+
+# A · PONTE AL DÍA ───────────────────────────────────────────────────
+git switch main                              # párate en main
+git fetch upstream                           # baja del curso, sin tocar tus archivos
+git merge upstream/main                      # mételo. Aquí SÍ cambian
+git push origin main                         # deja tu fork igual que el curso
+
+# B · ABRE TU ESPACIO ────────────────────────────────────────────────
+git switch -c tarea-NN-nombre                # branch nueva, desde el main al día
+mkdir -p estudiantes/$U/NN_nombre            # tu mitad del espejo
+cp -r codigo/NN_nombre/. estudiantes/$U/NN_nombre/   # el "/." copia el CONTENIDO
+#   ... trabajas SÓLO dentro de estudiantes/$U/ ...
+
+# C · ENTREGA ────────────────────────────────────────────────────────
+git status                                   # ¿qué cambió? míralo de verdad
+git add estudiantes/$U/NN_nombre             # por ruta. NUNCA "git add ."
+git status                                   # ¿qué se guarda? eso y nada más
+git commit -m "unidad NN: entrega"
+git push -u origin tarea-NN-nombre           # sube LA BRANCH a tu fork
+#   → navegador: Compare & pull request
+#     base: raya-lucaria/fdd_o26 : main   ←   compare: tu-login : tarea-NN-nombre
+
+# D · CIERRA · cuando ya te lo mergearon ─────────────────────────────
+git switch main
+git fetch upstream && git merge upstream/main
+git push origin main
+git branch -d tarea-NN-nombre                # se niega si no está mergeada: te protege
+git branch                                   # sólo main. Listo para la próxima
+```
 
 ## Orientarte
 
@@ -23,12 +69,12 @@ La única parte que sí se memoriza son los tres bloques de [[el-ritual-del-curs
 
 | Quiero | Comando | Dónde |
 |---|---|---|
-| Saber qué cambió y en qué zona está | `git status` | [[tu-primer-repositorio|Página 4]] |
-| Ver la historia | `git log --oneline` | [[tu-primer-repositorio|Página 4]] |
-| Ver lo que edité y no he apartado | `git diff` | [[tu-primer-repositorio|Página 4]] |
-| Ver lo que sí va a entrar al commit | `git diff --staged` | [[tu-primer-repositorio|Página 4]] |
-| Saber en qué branch estoy | `git branch` | [[branches-y-merge|Página 8]] |
-| Saber a qué repositorios hablo | `git remote -v` | [[git-no-es-github|Página 9]] |
+| Saber qué cambió y en qué zona está | `git status` | [[tu-primer-repositorio|Git · 2]] |
+| Ver la historia | `git log --oneline` | [[tu-primer-repositorio|Git · 2]] |
+| Ver lo que edité y no he apartado | `git diff` | [[tu-primer-repositorio|Git · 2]] |
+| Ver lo que sí va a entrar al commit | `git diff --staged` | [[tu-primer-repositorio|Git · 2]] |
+| Saber en qué branch estoy | `git branch` | [[branches-y-merge|Git · 6]] |
+| Saber a qué repositorios hablo | `git remote -v` | [[el-fork|GitHub · 2]] |
 
 :::
 
@@ -38,9 +84,9 @@ La única parte que sí se memoriza son los tres bloques de [[el-ritual-del-curs
 
 | Quiero | Comando | Dónde |
 |---|---|---|
-| Empezar un repositorio | `git init` | [[tu-primer-repositorio|Página 4]] |
-| Apartar un archivo para el próximo commit | `git add <ruta>` | [[tu-primer-repositorio|Página 4]] |
-| Guardar lo apartado | `git commit -m "mensaje"` | [[tu-primer-repositorio|Página 4]] |
+| Empezar un repositorio | `git init` | [[tu-primer-repositorio|Git · 2]] |
+| Apartar un archivo para el próximo commit | `git add <ruta>` | [[tu-primer-repositorio|Git · 2]] |
+| Guardar lo apartado | `git commit -m "mensaje"` | [[tu-primer-repositorio|Git · 2]] |
 
 :::
 
@@ -52,14 +98,14 @@ Nunca `git add .`. La regla es agregar una ruta que puedas nombrar y que acabes 
 
 | El cambio está en | Quiero | Comando | Dónde |
 |---|---|---|---|
-| Working directory | Descartar la edición | `git restore <archivo>` | [[deshacer-en-git|Página 7]] |
-| Staging area | Sacarlo sin perderlo | `git restore --staged <archivo>` | [[deshacer-en-git|Página 7]] |
-| Último commit | Deshacerlo, conservar el trabajo | `git reset --soft HEAD~1` | [[deshacer-en-git|Página 7]] |
-| Último commit | Deshacerlo y tirar el trabajo | `git reset --hard HEAD~1` | [[deshacer-en-git|Página 7]] |
-| Estorba, lo quiero después | Apartarlo | `git stash` | [[deshacer-en-git|Página 7]] |
-| Está en el stash | Traerlo de vuelta | `git stash pop` | [[deshacer-en-git|Página 7]] |
-| Ya lo compartí | Deshacerlo sin reescribir | `git revert <hash>` | [[git-no-es-github|Página 9]] |
-| Creí haberlo perdido | Buscarlo | `git reflog` | [[deshacer-en-git|Página 7]] |
+| Working directory | Descartar la edición | `git restore <archivo>` | [[deshacer-en-git|Git · 5]] |
+| Staging area | Sacarlo sin perderlo | `git restore --staged <archivo>` | [[deshacer-en-git|Git · 5]] |
+| Último commit | Deshacerlo, conservar el trabajo | `git reset --soft HEAD~1` | [[deshacer-en-git|Git · 5]] |
+| Último commit | Deshacerlo y tirar el trabajo | `git reset --hard HEAD~1` | [[deshacer-en-git|Git · 5]] |
+| Estorba, lo quiero después | Apartarlo | `git stash` | [[deshacer-en-git|Git · 5]] |
+| Está en el stash | Traerlo de vuelta | `git stash pop` | [[deshacer-en-git|Git · 5]] |
+| Ya lo compartí | Deshacerlo sin reescribir | `git revert <hash>` | [[el-fork|GitHub · 2]] |
+| Creí haberlo perdido | Buscarlo | `git reflog` | [[deshacer-en-git|Git · 5]] |
 
 :::
 
@@ -71,11 +117,16 @@ Nunca `git add .`. La regla es agregar una ruta que puedas nombrar y que acabes 
 
 | Quiero | Comando | Dónde |
 |---|---|---|
-| Crear una branch y saltar a ella | `git switch -c <nombre>` | [[branches-y-merge|Página 8]] |
-| Saltar a una que ya existe | `git switch <nombre>` | [[branches-y-merge|Página 8]] |
-| Traer otra branch a la mía | `git merge <nombre>` | [[branches-y-merge|Página 8]] |
-| Salir de un merge que se complicó | `git merge --abort` | [[branches-y-merge|Página 8]] |
-| Borrar una branch ya mergeada | `git branch -d <nombre>` | [[branches-y-merge|Página 8]] |
+| Crear una branch y saltar a ella | `git switch -c <nombre>` | [[branches-y-merge|Git · 6]] |
+| Saltar a una que ya existe | `git switch <nombre>` | [[branches-y-merge|Git · 6]] |
+| Traer otra branch a la mía | `git merge <nombre>` | [[branches-y-merge|Git · 6]] |
+| Salir de un merge que se complicó | `git merge --abort` | [[branches-y-merge|Git · 6]] |
+| Borrar una branch ya mergeada | `git branch -d <nombre>` | [[branches-y-merge|Git · 6]] |
+| Borrarla aunque no esté mergeada | `git branch -D <nombre>` | [[branches-en-serio|GitHub · 3]] |
+| Saber en qué branch estoy, sólo el nombre | `git branch --show-current` | [[branches-en-serio|GitHub · 3]] |
+| Saber si mi branch nació atrasada | `git log --oneline <branch>..main` | [[branches-en-serio|GitHub · 3]] |
+| Rescatar una branch atrasada | `git merge main` | [[branches-en-serio|GitHub · 3]] |
+| Borrar la branch también del fork | `git push origin --delete <nombre>` | [[el-ritual-del-curso|GitHub · 5]] |
 
 :::
 
@@ -87,12 +138,12 @@ Para resolver un conflicto: edita el archivo hasta que no queden marcadores, `gi
 
 | Quiero | Comando | Dónde |
 |---|---|---|
-| Saber mi login exacto | `gh api user --jq .login` | [[git-no-es-github|Página 9]] |
-| Bajar lo nuevo del curso | `git fetch upstream` | [[git-no-es-github|Página 9]] |
-| Juntarlo con mi rama | `git merge upstream/main` | [[git-no-es-github|Página 9]] |
-| Subir a mi fork | `git push origin main` | [[git-no-es-github|Página 9]] |
-| Subir una branch por primera vez | `git push -u origin <nombre>` | [[el-ritual-del-curso|Página 12]] |
-| Bajar y juntar de un jalón | `git pull` | [[dos-personas-un-archivo|Página 10]] |
+| Saber mi login exacto | `gh api user --jq .login` | [[el-fork|GitHub · 2]] |
+| Bajar lo nuevo del curso | `git fetch upstream` | [[el-fork|GitHub · 2]] |
+| Juntarlo con mi rama | `git merge upstream/main` | [[el-fork|GitHub · 2]] |
+| Subir a mi fork | `git push origin main` | [[el-fork|GitHub · 2]] |
+| Subir una branch por primera vez | `git push -u origin <nombre>` | [[el-ritual-del-curso|GitHub · 5]] |
+| Bajar y juntar de un jalón | `git pull` | [[el-fork|GitHub · 2]] |
 
 :::
 
@@ -102,9 +153,9 @@ Para resolver un conflicto: edita el archivo hasta que no queden marcadores, `gi
 
 | Quiero | Comando | Dónde |
 |---|---|---|
-| Saber por qué un archivo no aparece | `git check-ignore -v <archivo>` | [[lo-que-no-se-sube|Página 6]] |
-| Dejar de rastrear algo, sin borrarlo | `git rm --cached <archivo>` | [[lo-que-no-se-sube|Página 6]] |
-| Que una carpeta vacía exista | `touch <carpeta>/.gitkeep` | [[que-guarda-un-commit|Página 5]] |
+| Saber por qué un archivo no aparece | `git check-ignore -v <archivo>` | [[lo-que-no-se-sube|Git · 4]] |
+| Dejar de rastrear algo, sin borrarlo | `git rm --cached <archivo>` | [[lo-que-no-se-sube|Git · 4]] |
+| Que una carpeta vacía exista | `touch <carpeta>/.gitkeep` | [[que-guarda-un-commit|Git · 3]] |
 
 :::
 
@@ -120,7 +171,7 @@ Patrones útiles de `.gitignore`: `.DS_Store`, `__pycache__/`, `*.pyc`, `.env`, 
 | `! [rejected] main -> main (fetch first)` | Tu copia está atrasada | `git pull`, resolver si hace falta, y `git push` |
 | `! [rejected] ... (non-fast-forward)` | Lo mismo, después de un fetch | Igual que el anterior. Nunca `--force` |
 | `Permission denied` o `403` al hacer push | Tu `origin` apunta al repositorio del curso | `git remote -v`, y arregla los remotes |
-| `Permission denied (publickey)` | GitHub no reconoce tu llave | [[cuenta-y-llave|Página 1]] |
+| `Permission denied (publickey)` | GitHub no reconoce tu llave | [[cuenta-y-llave|Apéndice]] |
 | `CONFLICT (content): Merge conflict in ...` | Dos versiones de la misma línea | Edita, `git add`, `git commit`. O `git merge --abort` |
 | `Your local changes would be overwritten` | Quieres cambiar de branch con trabajo sin guardar | `git commit` o `git stash` |
 | `fatal: ambiguous argument 'HEAD~1'` | Estás en el primer commit, no hay padre | Nada que deshacer |
@@ -134,5 +185,7 @@ Patrones útiles de `.gitignore`: `.DS_Store`, `__pycache__/`, `*.pyc`, `.env`, 
 2. Nunca `git add .`.
 3. Sólo escribes dentro de `estudiantes/tu-login/`.
 4. Tu carpeta es un espejo de `codigo/`: misma ruta, mismo nombre.
-5. Una branch por tarea. Nunca entregues desde `main`.
+5. Una branch por tarea, nacida de un `main` recién actualizado. Nunca entregues desde `main`.
 6. Un pull request rechazado se corrige con `push` a la misma branch, no abriendo otro.
+7. Después del merge, cierra: vuelve a `main`, sincroniza y borra la branch.
+8. Todo se entrega por GitHub. No hay Canvas.

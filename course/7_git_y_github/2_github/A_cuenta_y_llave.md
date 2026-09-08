@@ -1,7 +1,7 @@
 ---
 id: cuenta-y-llave
 title: "Cuenta y llave"
-nav_title: "Cuenta y llave"
+nav_title: "Apéndice: cuenta y llave"
 summary: "Crea tu cuenta de GitHub, genera un par de llaves SSH y déjalo configurado para que no vuelva a pedirte nada."
 status: ready
 estimated_time: 25m
@@ -11,7 +11,7 @@ prerequisites: [seccion-github]
 
 # Cuenta y llave
 
-**GitHub · página 1 de 6** · 25 min
+**GitHub · apéndice** · 25 min · *trabajo previo a clase*
 
 Meta: que `ssh -T` te salude por tu nombre de usuario.
 
