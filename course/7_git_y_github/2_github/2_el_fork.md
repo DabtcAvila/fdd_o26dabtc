@@ -20,35 +20,8 @@ Meta: tu máquina hablando con dos repositorios, y saber cuál es cuál sin pens
 - Un **fork** es una copia del repositorio del curso **en tu cuenta de GitHub**, donde sí puedes escribir.
 - Al clonar quedaste apuntando al del curso, donde **no** puedes. Se arregla hoy.
 - Terminas con dos apodos: **`upstream` para bajar**, **`origin` para subir**.
+- Son **dos pasos**: el fork en el navegador, y el resto en la terminal.
 - Esto es **una vez en el semestre**. Después nunca más.
-
-## Toda la página, en un bloque
-
-```bash
-# 0. El fork se hace en el navegador (paso 1, abajo).
-#    Sin él, nada de esto funciona.
-
-cd ~/fdd/fdd_o26
-
-# tu login EXACTO. No lo teclees
-U=$(gh api user --jq .login) && echo "$U"
-
-git remote -v                     # ahora: 2 líneas del curso
-git remote rename origin upstream # el del curso: aquí BAJAS
-
-# y origin pasa a ser TU fork: aquí SUBES
-git remote add origin git@github.com:$U/fdd_o26.git
-
-git remote -v                     # ahora: 4 líneas, 2 nombres
-
-git switch main                   # párate en main
-git fetch upstream                # baja. NO toca tus archivos
-git merge upstream/main           # mételo. AQUÍ sí cambian
-git push origin main              # tu fork, al día
-
-# tu carpeta: el único lugar donde puedes escribir
-mkdir -p estudiantes/$U && touch estudiantes/$U/.gitkeep
-```
 
 > [!NOTE]
 > **¿Ya lo hiciste en otra sesión?** Este comando te deja saltar la página:
@@ -57,22 +30,12 @@ mkdir -p estudiantes/$U && touch estudiantes/$U/.gitkeep
 >   && echo "LISTO" || echo "FALTA"
 > ```
 
-::: figure {#git-tres-repos title="Tres repositorios, y sólo en dos puedes escribir"}
-![Tres repositorios y las flechas entre ellos: arriba a la izquierda el del curso llamado upstream que sólo se lee, arriba a la derecha tu fork llamado origin donde sí escribes, y abajo tu copia en el disco. Una flecha baja lo nuevo con git fetch, otra sube tu trabajo con git push, y una punteada representa el pull request](../_assets/git-tres-repos.svg)
-:::
+## Paso 1 · El fork, en el navegador
 
-## Por qué existe el fork
-
-Somos treinta personas y un repositorio. Si todos pudiéramos escribir en `raya-lucaria/fdd_o26`, cualquiera rompería la clase sin querer.
-
-La solución no es repartir permisos: es que **nadie escriba ahí**. Cada quien trabaja en su copia y *propone* sus cambios. El fork es la copia; el pull request es la propuesta.
+**Empieza por aquí.** Nada de lo demás funciona sin esto, y no hay comando de Git que lo haga: el fork no es de Git, es de GitHub.
 
 > [!IMPORTANT]
 > El fork ocurre **en los servidores de GitHub**, no en tu computadora. Presionar el botón no cambia ni un archivo de tu disco. Son dos cosas separadas, y confundirlas es la causa del error del ejercicio del final de esta página.
-
-## Paso 1: haz tu fork
-
-Esto es navegador. **No hay comando de Git que lo haga**, porque el fork no es de Git: es de GitHub.
 
 **Haz:** entra a `https://github.com/raya-lucaria/fdd_o26`.
 
@@ -133,6 +96,44 @@ gh repo view $U/fdd_o26 --json parent \
 
 > [!NOTE]
 > **¿Ya lo habías forkeado antes?** Pasa cada semestre: alguien lo forkeó por curiosidad en agosto, o repite la materia. No lo forkees otra vez —GitHub no te deja tener dos con el mismo nombre—, actualízalo. En tu fork, GitHub te muestra `This branch is 47 commits behind raya-lucaria:main` y junto un botón **Sync fork → Update branch**. Presiónalo antes de seguir. El bloque A del ritual hace exactamente eso mismo, pero desde la terminal.
+
+## Paso 2 · El resto, en un bloque
+
+Con el fork ya hecho, lo demás es terminal. Todo lo que falta de esta página cabe aquí, y abajo se explica comando por comando.
+
+```bash
+# El fork del paso 1 tiene que estar hecho ANTES de esto.
+cd ~/fdd/fdd_o26
+
+# tu login EXACTO. No lo teclees
+U=$(gh api user --jq .login) && echo "$U"
+
+git remote -v                     # ahora: 2 líneas del curso
+git remote rename origin upstream # el del curso: aquí BAJAS
+
+# y origin pasa a ser TU fork: aquí SUBES
+git remote add origin git@github.com:$U/fdd_o26.git
+
+git remote -v                     # ahora: 4 líneas, 2 nombres
+
+git switch main                   # párate en main
+git fetch upstream                # baja. NO toca tus archivos
+git merge upstream/main           # mételo. AQUÍ sí cambian
+git push origin main              # tu fork, al día
+
+# tu carpeta: el único lugar donde puedes escribir
+mkdir -p estudiantes/$U && touch estudiantes/$U/.gitkeep
+```
+
+::: figure {#git-tres-repos title="Tres repositorios, y sólo en dos puedes escribir"}
+![Tres repositorios y las flechas entre ellos: arriba a la izquierda el del curso llamado upstream que sólo se lee, arriba a la derecha tu fork llamado origin donde sí escribes, y abajo tu copia en el disco. Una flecha baja lo nuevo con git fetch, otra sube tu trabajo con git push, y una punteada representa el pull request](../_assets/git-tres-repos.svg)
+:::
+
+## Por qué existe el fork
+
+Somos treinta personas y un repositorio. Si todos pudiéramos escribir en `raya-lucaria/fdd_o26`, cualquiera rompería la clase sin querer.
+
+La solución no es repartir permisos: es que **nadie escriba ahí**. Cada quien trabaja en su copia y *propone* sus cambios. El fork es la copia; el pull request es la propuesta.
 
 ## Los comandos, uno por uno
 
@@ -197,7 +198,7 @@ upstream  git@github.com:raya-lucaria/fdd_o26.git (push)
 > gh repo fork --remote
 > ```
 >
-> Hace las tres cosas de golpe: crea el fork en tu cuenta, renombra el `origin` que había a `upstream`, y agrega tu fork como `origin`. Exactamente el paso 1 y el paso 3 juntos.
+> Hace las tres cosas de golpe: crea el fork en tu cuenta, renombra el `origin` que había a `upstream`, y agrega tu fork como `origin`. Exactamente el paso 1 y el arreglo de remotes, juntos.
 >
 > Se enseña **después** y no antes a propósito: el día que algo falle vas a tener que leer `git remote -v` y entender qué ves. Un comando que hace tres cosas por ti no te enseña eso. Úsalo de la segunda vez en adelante.
 
