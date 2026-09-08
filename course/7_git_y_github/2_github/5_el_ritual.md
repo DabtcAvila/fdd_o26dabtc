@@ -27,44 +27,54 @@ Meta: que esto salga sin pensar, siempre en el mismo orden.
 Si no vas a leer nada más, lee esto.
 
 ```bash
-# ══ PASO 0 · UNA VEZ EN EL SEMESTRE ══════════════════════════════════
-#    ¿ya lo hice?  git remote -v | grep -q upstream && echo SALTA
-#    Primero el fork, en el navegador: github.com/raya-lucaria/fdd_o26
-U=$(gh api user --jq .login) && echo "$U"    # tu login EXACTO, no lo teclees
-git remote rename origin upstream            # el del curso: de aquí BAJAS
-git remote add origin git@github.com:$U/fdd_o26.git   # el tuyo: aquí SUBES
-git remote -v                                # comprueba: 4 líneas, 2 nombres
+# ═══ PASO 0 · UNA VEZ EN EL SEMESTRE ══════════════════
+# ¿ya lo hice?
+#   git remote -v | grep -q upstream && echo SALTA
+# Primero el fork, en el navegador:
+#   github.com/raya-lucaria/fdd_o26
 
-# ══ CADA VEZ QUE ENTREGAS ════════════════════════════════════════════
-cd ~/fdd/fdd_o26                             # siempre desde la raíz
-echo "$U"                                    # si está vacía, redefínela
+U=$(gh api user --jq .login)     # tu login EXACTO
+echo "$U"                        # NO lo teclees a mano
+git remote rename origin upstream   # el curso: aquí BAJAS
+git remote add origin git@github.com:$U/fdd_o26.git
+git remote -v                    # 4 líneas, 2 nombres
 
-# A · PONTE AL DÍA ───────────────────────────────────────────────────
-git switch main                              # párate en main
-git fetch upstream                           # baja del curso, sin tocar tus archivos
-git merge upstream/main                      # mételo. Aquí SÍ cambian
-git push origin main                         # deja tu fork igual que el curso
 
-# B · ABRE TU ESPACIO ────────────────────────────────────────────────
-git switch -c tarea-07-git                   # branch nueva, desde el main al día
-mkdir -p estudiantes/$U/07_git               # tu mitad del espejo
-cp -r codigo/07_git/. estudiantes/$U/07_git/ # el "/." copia el CONTENIDO
+# ═══ CADA VEZ QUE ENTREGAS ════════════════════════════
+cd ~/fdd/fdd_o26                 # siempre desde la raíz
+echo "$U"                        # si está vacía, redefínela
+
+
+# ─── A · PONTE AL DÍA ──────────────────────────────────
+git switch main                  # párate en main
+git fetch upstream               # baja. NO toca tus archivos
+git merge upstream/main          # mételo. Aquí SÍ cambian
+git push origin main             # tu fork, al día
+
+
+# ─── B · ABRE TU ESPACIO ───────────────────────────────
+git switch -c tarea-07-git       # nace del main al día
+mkdir -p estudiantes/$U/07_git   # tu mitad del espejo
+cp -r codigo/07_git/. estudiantes/$U/07_git/
 #   ... trabajas SÓLO dentro de estudiantes/$U/ ...
 
-# C · ENTREGA ────────────────────────────────────────────────────────
-git status                                   # ¿qué cambió? míralo de verdad
-git add estudiantes/$U/07_git                # por ruta. NUNCA "git add ."
-git status                                   # ¿qué se guarda? eso y nada más
-git commit -m "unidad 07: mi copia de trabajo"
-git push -u origin tarea-07-git              # sube LA BRANCH a tu fork
-#   → navegador: Compare & pull request. Revisa las 4 casillas
 
-# D · CIERRA · cuando ya te lo mergearon ─────────────────────────────
+# ─── C · ENTREGA ───────────────────────────────────────
+git status                       # ¿qué cambió? míralo
+git add estudiantes/$U/07_git    # por ruta, nunca "."
+git status                       # eso, y nada más
+git commit -m "unidad 07: mi copia de trabajo"
+git push -u origin tarea-07-git  # sube LA BRANCH al fork
+#   → navegador: Compare & pull request
+#     revisa las 4 casillas de arriba
+
+
+# ─── D · CIERRA · ya te lo mergearon ───────────────────
 git switch main
 git fetch upstream && git merge upstream/main
 git push origin main
-git branch -d tarea-07-git                   # se niega si no está mergeada: te protege
-git branch                                   # sólo main. Listo para la próxima
+git branch -d tarea-07-git       # se niega si falta mergear
+git branch                       # sólo main. Listo
 ```
 
 ::: figure {#git-el-ritual title="Cuatro bloques, siempre en este orden"}
@@ -90,7 +100,8 @@ Tres detalles que valen la pena:
 git push -u origin tarea-07-git
          │    │        └── qué branch subes
          │    └─────────── a qué remote: origin, tu fork
-         └──────────────── -u: recuerda la pareja. Después basta "git push"
+         └──────────────── -u: recuerda la pareja.
+                               Después basta "git push"
 ```
 
 - **Los dos `git status` del bloque C.** El primero te dice qué hay antes de agregar; el segundo, qué vas a guardar exactamente. Míralos de verdad.
@@ -102,10 +113,10 @@ git push -u origin tarea-07-git
 Aquí es donde más gente se equivoca.
 
 ```text
-   base repository: raya-lucaria/fdd_o26  ←  base: main
-                    ▲ el del CURSO, no el tuyo
-   head repository: tu-login/fdd_o26      ←  compare: tarea-07-git
-                                                      ▲ tu BRANCH, no main
+  base repository:  raya-lucaria/fdd_o26   ← el del CURSO
+  base:             main
+  head repository:  tu-login/fdd_o26       ← el TUYO
+  compare:          tarea-07-git           ← no main
 ```
 
 ::: table {#git-pr-casillas title="La barra de selección del pull request"}
@@ -126,14 +137,25 @@ El error clásico es dejar `base repository` en tu propio fork. El pull request 
 Antes de la entrega de verdad, corre el flujo completo con una branch desechable. Tres minutos, y te ahorra el susto.
 
 ```bash
-git switch main && git fetch upstream && git merge upstream/main   # bloque A
-git switch -c ensayo                                               # bloque B
+# A
+git switch main && git fetch upstream
+git merge upstream/main
+
+# B
+git switch -c ensayo
 touch estudiantes/$U/.gitkeep
-git status && git add estudiantes/$U/.gitkeep && git status        # bloque C
+
+# C
+git status
+git add estudiantes/$U/.gitkeep
+git status
 git commit -m "ensayo"
-git push -u origin ensayo                                          # sube, pero NO abras PR
-git switch main && git branch -D ensayo                            # bloque D, versión rápida
-git push origin --delete ensayo                                    # bórrala también del fork
+git push -u origin ensayo        # sube, pero NO abras PR
+
+# D
+git switch main
+git branch -D ensayo             # bórrala aquí
+git push origin --delete ensayo  # y también en tu fork
 ```
 
 Si esto salió sin error, el de verdad va a salir.
@@ -159,14 +181,15 @@ El pull request no compara tu branch contra el estado actual del curso, sino con
 Lo confirmas y lo arreglas así:
 
 ```bash
-git log --oneline tarea-07-git..upstream/main   # si no sale vacío, naciste atrasado
+# si esto NO sale vacío, naciste atrasado
+git log --oneline tarea-07-git..upstream/main
 
 git switch main
 git fetch upstream && git merge upstream/main
 git push origin main
 git switch tarea-07-git
-git merge main            # trae mis commits a TU branch
-git push                  # el -u de antes hace que esto baste
+git merge main     # trae mis commits a TU branch
+git push           # el -u de antes hace que esto baste
 ```
 
 El pull request se actualiza solo: ahora sólo muestra tus dos archivos. Si el merge da conflicto, se resuelve como en la página 3.

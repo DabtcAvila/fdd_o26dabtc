@@ -121,10 +121,14 @@ Aquí está la parte que importa. Vas a crear el choque a propósito, en tu labo
 **Haz:** primero una rama que cambia una línea.
 
 ```bash
-printf 'saludo = "hola"\nmensaje = "buenos días"\ndespedida = "adiós"\n' > texto.txt
+printf 'saludo = "hola"\n'  > texto.txt
+printf 'mensaje = "buenos días"\n' >> texto.txt
+printf 'despedida = "adiós"\n' >> texto.txt
 git add texto.txt && git commit -m "agrego el texto base"
 git switch -c version-formal
-printf 'saludo = "hola"\nmensaje = "buenas tardes, estimado"\ndespedida = "adiós"\n' > texto.txt
+printf 'saludo = "hola"\n'  > texto.txt
+printf 'mensaje = "buenas tardes, estimado"\n' >> texto.txt
+printf 'despedida = "adiós"\n' >> texto.txt
 git commit -am "uso un tono formal"
 ```
 
@@ -132,7 +136,8 @@ git commit -am "uso un tono formal"
 
 ```bash
 git switch main
-printf 'saludo = "hola"\nmensaje = "qué tal"\ndespedida = "adiós"\n' > texto.txt
+printf 'saludo = "hola"\nmensaje = "qué tal"\n' > texto.txt
+printf 'despedida = "adiós"\n' >> texto.txt
 git commit -am "uso un tono casual"
 git merge version-formal
 ```
@@ -142,7 +147,7 @@ git merge version-formal
 ```text
 Auto-merging texto.txt
 CONFLICT (content): Merge conflict in texto.txt
-Automatic merge failed; fix conflicts and then commit the result.
+Automatic merge failed; fix conflicts and then commit.
 ```
 
 **Eso es un éxito.** Provocaste exactamente lo que querías.
@@ -186,7 +191,9 @@ Resolver significa dejar el archivo como lo quieres, **sin marcadores**. Puede q
 **Haz:**
 
 ```bash
-printf 'saludo = "hola"\nmensaje = "buenas tardes"\ndespedida = "adiós"\n' > texto.txt
+printf 'saludo = "hola"\n'  > texto.txt
+printf 'mensaje = "buenas tardes"\n' >> texto.txt
+printf 'despedida = "adiós"\n' >> texto.txt
 git add texto.txt
 git status
 git commit -m "resuelvo el conflicto del mensaje"
@@ -208,10 +215,14 @@ Este merge sí creó un commit nuevo, con **dos padres**, porque las dos líneas
 
 ```bash
 git switch -c otra-version
-printf 'saludo = "qué onda"\nmensaje = "buenas tardes"\ndespedida = "adiós"\n' > texto.txt
+printf 'saludo = "qué onda"\n'  > texto.txt
+printf 'mensaje = "buenas tardes"\n' >> texto.txt
+printf 'despedida = "adiós"\n' >> texto.txt
 git commit -am "cambio el saludo"
 git switch main
-printf 'saludo = "buenos días"\nmensaje = "buenas tardes"\ndespedida = "adiós"\n' > texto.txt
+printf 'saludo = "buenos días"\n'  > texto.txt
+printf 'mensaje = "buenas tardes"\n' >> texto.txt
+printf 'despedida = "adiós"\n' >> texto.txt
 git commit -am "cambio el saludo de otra forma"
 git merge otra-version
 git merge --abort

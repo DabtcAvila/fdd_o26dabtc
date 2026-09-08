@@ -34,28 +34,28 @@ Todo lo de esta página se hace en el repositorio de verdad, dentro de tu carpet
 
 ```bash
 cd ~/fdd/fdd_o26
-echo "$U"                       # si sale vacío: U=$(gh api user --jq .login)
-git switch main                 # arranca siempre desde main
-git switch -c practica-a        # -c = create: créala Y muévete a ella
-git branch --show-current       # → practica-a
+echo "$U"                    # si sale vacío, redefínela
+git switch main              # arranca siempre desde main
+git switch -c practica-a     # -c = create: créala Y muévete
+git branch --show-current    # → practica-a
 
 echo "escrito en practica-a" > estudiantes/$U/nota.txt
-git add estudiantes/$U/nota.txt   # por ruta, nunca "git add ."
+git add estudiantes/$U/nota.txt   # por ruta, nunca "."
 git commit -m "practica: nota en la branch a"
-ls estudiantes/$U                 # nota.txt está
+ls estudiantes/$U            # nota.txt está
 
 git switch main
-ls estudiantes/$U                 # nota.txt NO está      ← la parte que importa
+ls estudiantes/$U            # NO está  ← lo importante
 
 git switch practica-a
-ls estudiantes/$U                 # volvió
+ls estudiantes/$U            # volvió
 ```
 
 ```text
 git switch -c practica-a
-       │    │      └── el nombre que le pones tú
+       │    │      └── el nombre, lo pones tú
        │    └───────── -c: créala si no existe
-       └────────────── cámbiate de branch (y ajusta los archivos del disco)
+       └────────────── cámbiate de branch, y ajusta el disco
 ```
 
 **No se borró.** Sigue guardado en el commit de `practica-a`. Lo que hizo `switch` fue poner en tu carpeta el contenido que corresponde a `main`, y en `main` ese archivo nunca existió.
@@ -70,38 +70,44 @@ git switch -c practica-a
 ## 2 · Dos branches, el mismo archivo
 
 ```bash
-git switch main            # las dos branches nacen del MISMO punto
+git switch main          # las dos nacen del MISMO punto
 git switch -c practica-b
 echo "escrito en practica-b" > estudiantes/$U/nota.txt
 git add estudiantes/$U/nota.txt
 git commit -m "practica: nota en la branch b"
 
-git merge practica-a       # trae practica-a a la branch donde estás
+git merge practica-a     # tráela a la branch donde estás
 ```
 
 **Deberías ver:**
 
 ```text
-CONFLICT (content): Merge conflict in estudiantes/tu-login/nota.txt
-Automatic merge failed; fix conflicts and then commit the result.
+CONFLICT (content): Merge conflict in
+  estudiantes/tu-login/nota.txt
+Automatic merge failed; fix conflicts and then commit.
 ```
 
 ```text
 <<<<<<< HEAD
-escrito en practica-b        ← lo que hay en la branch donde ESTÁS
+escrito en practica-b      ← la branch donde ESTÁS
 =======
-escrito en practica-a        ← lo que trae la branch que MERGEASTE
+escrito en practica-a      ← la branch que MERGEASTE
 >>>>>>> practica-a
 ```
 
 Resolver son tres pasos. Salir sin resolver, uno:
 
 ```bash
-echo "me quedo con las dos" > estudiantes/$U/nota.txt  # 1. edita: cero marcadores
-git add estudiantes/$U/nota.txt                        # 2. add = "ya lo resolví"
-git commit -m "practica: resuelvo el conflicto"        # 3. cierra el merge
+# 1. edita hasta que NO quede ningún marcador
+echo "me quedo con las dos" > estudiantes/$U/nota.txt
 
-# o, para dejar todo como antes del merge:
+# 2. add = "ya lo resolví"
+git add estudiantes/$U/nota.txt
+
+# 3. cierra el merge
+git commit -m "practica: resuelvo el conflicto"
+
+# ...o deja todo como antes de intentarlo:
 git merge --abort
 ```
 
@@ -124,22 +130,30 @@ Lo que acabas de provocarte a solas es exactamente lo que pasa cuando dos person
 
 ```bash
 git switch main
-git switch -c practica-atrasada          # nace del main de ahorita
+git switch -c practica-atrasada   # nace del main de ahorita
 git switch main
+
+# simula que el curso avanzó mientras trabajabas
 echo "avance del curso" > estudiantes/$U/simulacion.txt
 git add estudiantes/$U/simulacion.txt
 git commit -m "practica: simulo que el curso avanzó"
 
 git switch practica-atrasada
-git log --oneline practica-atrasada..main   # ← el comando que lo diagnostica
-git merge main                              # ← el rescate, un solo comando
-git log --oneline practica-atrasada..main   # ahora sale vacío
+
+# el comando que lo DIAGNOSTICA
+git log --oneline practica-atrasada..main
+
+# el RESCATE, un solo comando
+git merge main
+
+# ahora la lista sale vacía
+git log --oneline practica-atrasada..main
 ```
 
 ```text
 git log --oneline practica-atrasada..main
-                   │                  └── ...hasta este otro
-                   └───────────────────── qué le falta a este punto...
+                  │                  └── ...hasta este otro
+                  └──────────────── qué le falta a éste...
 ```
 
 **Si esa lista no está vacía, tu branch nació atrasada.**
@@ -157,10 +171,10 @@ Por eso el flujo empieza por ponerse al día, y no a la mitad.
 ```bash
 git switch main
 git fetch upstream
-git reset --hard upstream/main     # tira los commits de práctica de tu main
+git reset --hard upstream/main  # tira los commits de práctica
 git branch -D practica-a practica-b practica-atrasada
-git branch                         # sólo main
-git status                         # limpio
+git branch                      # sólo main
+git status                      # limpio
 ```
 
 > [!WARNING]

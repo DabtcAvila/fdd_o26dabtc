@@ -27,11 +27,14 @@ Meta: terminar la unidad con un pull request abierto y en verde.
 ```bash
 cd ~/fdd/fdd_o26
 echo "$U" || U=$(gh api user --jq .login)
-git remote -v | grep -q upstream || echo "PARA: te falta el paso 0"
+git remote -v | grep -q upstream || echo "te falta el paso 0"
 
-# A
-git switch main && git fetch upstream && git merge upstream/main && git push origin main
-# B
+# ─── A · PONTE AL DÍA
+git switch main
+git fetch upstream && git merge upstream/main
+git push origin main
+
+# ─── B · ABRE TU ESPACIO
 git switch -c tarea-07-git
 mkdir -p estudiantes/$U/07_git
 cp -r codigo/07_git/. estudiantes/$U/07_git/
@@ -39,7 +42,7 @@ ls -R estudiantes/$U/07_git
 
 #   ... llena la bitácora y corre el script (abajo) ...
 
-# C
+# ─── C · ENTREGA
 git status
 git add estudiantes/$U/07_git
 git status
@@ -88,10 +91,10 @@ bash estudiantes/$U/07_git/ejemplo.sh tu-nombre
 Entra a tu fork en GitHub. Aparece una barra amarilla con **Compare & pull request**; si no, pestaña *Pull requests* → *New pull request* → *compare across forks*.
 
 ```text
-   base repository: raya-lucaria/fdd_o26   ←   base: main
-                    ▲ el del CURSO
-   head repository: tu-login/fdd_o26       ←   compare: tarea-07-git
-                                                        ▲ tu BRANCH, no main
+  base repository:  raya-lucaria/fdd_o26   ← el del CURSO
+  base:             main
+  head repository:  tu-login/fdd_o26       ← el TUYO
+  compare:          tarea-07-git           ← no main
 ```
 
 Título: `unidad 07 · tu-login`. Créalo, y **espera a que la revisión quede en verde**.
@@ -110,7 +113,7 @@ Título: `unidad 07 · tu-login`. Créalo, y **espera a que la revisión quede e
 ```bash
 git add <lo que corregiste>
 git commit -m "corrijo lo que marcó la revisión"
-git push          # a la MISMA branch. El pull request se actualiza solo
+git push     # a la MISMA branch: el PR se actualiza solo
 ```
 
 **No abras otro pull request.**
@@ -118,12 +121,12 @@ git push          # a la MISMA branch. El pull request se actualiza solo
 ## Y cuando te lo mergee
 
 ```bash
-# D · CIERRA
+# ─── D · CIERRA
 git switch main
 git fetch upstream && git merge upstream/main
 git push origin main
 git branch -d tarea-07-git
-git branch                    # sólo main. Listo para la tarea 8
+git branch          # sólo main. Listo para la tarea 8
 ```
 
 ## Qué cuenta como entregado

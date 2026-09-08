@@ -26,19 +26,19 @@ Meta: que nunca tengas que preguntar dónde va un archivo ni cómo se llama tu c
 
 ```text
 fdd_o26/
-├── course/            ← ROJA   el sitio que estás leyendo
-├── codigo/            ← ROJA   el código que publico para cada unidad
+├── course/         ← ROJA   el sitio que estás leyendo
+├── codigo/         ← ROJA   el código de cada unidad
 │   └── 07_git/
 │       ├── bitacora.md
 │       └── ejemplo.sh
-├── tools/  skins/     ← ROJA   la maquinaria del sitio
-├── raya.yaml          ← ROJA
+├── tools/ skins/   ← ROJA   la maquinaria del sitio
+├── raya.yaml       ← ROJA
 └── estudiantes/
-    ├── tu-login/      ← VERDE  TUYA. Aquí escribes, y sólo aquí
+    ├── tu-login/   ← VERDE  TUYA. Escribes aquí, y sólo aquí
     │   └── 07_git/
-    │       ├── bitacora.md      ← copia de codigo/07_git/bitacora.md
-    │       └── ejemplo.sh       ← copia de codigo/07_git/ejemplo.sh
-    └── otro-login/    ← de alguien más. No la toques
+    │       ├── bitacora.md   ← copia de codigo/07_git/
+    │       └── ejemplo.sh    ← copia de codigo/07_git/
+    └── otro-login/ ← de alguien más. No la toques
 ```
 
 ::: figure {#git-el-mirror title="Tu carpeta es un espejo"}
@@ -58,23 +58,26 @@ No se inventa el nombre. No se traduce al español. No se decide. No se pregunta
 
 ```bash
 cd ~/fdd/fdd_o26
-echo "$U"                                       # compruébalo SIEMPRE antes
+echo "$U"                     # compruébalo SIEMPRE antes
 mkdir -p estudiantes/$U/07_git
-cp -r codigo/07_git/. estudiantes/$U/07_git/    # copia el CONTENIDO de la carpeta
-ls -R estudiantes/$U/07_git                     # míralo completo
 
-git restore codigo/                             # si tocaste la zona roja por error
+# el espejo. Ojo con el "/." y con la barra final
+cp -r codigo/07_git/. estudiantes/$U/07_git/
+
+ls -R estudiantes/$U/07_git   # míralo completo
+git restore codigo/           # si tocaste la zona roja
 ```
 
 La **barra y el punto** al final del origen no son adorno:
 
 ```text
 cp -r codigo/07_git/. estudiantes/$U/07_git/
- │  │            │  │                      └── destino, con barra: "dentro de esto"
- │  │            │  └───────────────────────── el punto: "el CONTENIDO de esta carpeta"
- │  │            └──────────────────────────── la carpeta origen
- │  └───────────────────────────────────────── -r: recursivo
- └──────────────────────────────────────────── copiar
+ │  │            │  │                  └── con barra:
+ │  │            │  │                     "dentro de esto"
+ │  │            │  └── el punto: "el CONTENIDO de la carpeta"
+ │  │            └───── la carpeta origen
+ │  └────────────────── -r: recursivo, entra a las subcarpetas
+ └───────────────────── copiar
 ```
 
 ::: table {#git-cp-punto title="La diferencia que arruina la entrega"}
@@ -100,17 +103,20 @@ Sin la barra y el punto, `cp` copia **la carpeta**; con ellos copia **su conteni
 En la página 3 te provocaste un conflicto. La condición que lo produjo fue muy específica: **dos versiones de la misma línea, del mismo archivo**. Ahora compara las dos formas de resolver el ejercicio de esta unidad:
 
 ```text
-  ✗ EDITANDO codigo/ DIRECTO
-    Lunes      yo publico   codigo/07_git/ejemplo.sh
-    Martes     tú editas    codigo/07_git/ejemplo.sh
-    Miércoles  yo corrijo   codigo/07_git/ejemplo.sh
-    Jueves     git merge upstream/main  →  CONFLICT   ...y a los treinta igual
+  EDITANDO codigo/ DIRECTO                          ✗
+    Lun   yo publico  codigo/07_git/ejemplo.sh
+    Mar   tú editas   codigo/07_git/ejemplo.sh
+    Mié   yo corrijo  codigo/07_git/ejemplo.sh
+    Jue   git merge upstream/main  →  CONFLICT
+          ...y lo mismo a las otras 29 personas
 
-  ✓ CON EL ESPEJO
-    Lunes      yo publico   codigo/07_git/ejemplo.sh
-    Martes     tú copias →  estudiantes/tu-login/07_git/ejemplo.sh  y editas ahí
-    Miércoles  yo corrijo   codigo/07_git/ejemplo.sh
-    Jueves     git merge upstream/main  →  Fast-forward. Tu copia intacta
+  CON EL ESPEJO                                     ✓
+    Lun   yo publico  codigo/07_git/ejemplo.sh
+    Mar   tú copias → estudiantes/tu-login/07_git/
+          y editas TU copia
+    Mié   yo corrijo  codigo/07_git/ejemplo.sh
+    Jue   git merge upstream/main  →  Fast-forward
+          tu copia, intacta
 ```
 
 Nadie toca las líneas de nadie. Todos los casos se vuelven el primer escenario del diagrama. **Ésa es toda la razón de la regla.**

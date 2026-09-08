@@ -24,9 +24,14 @@ Meta: comprobar en tres comandos que tu máquina está lista.
 ## Corre esto antes de leer nada más
 
 ```bash
-ssh -T git@github.com            # 1. ¿GitHub me reconoce?
-cd ~/fdd/fdd_o26 && git log --oneline -3   # 2. ¿tengo el repo del curso?
-gh api user --jq .login          # 3. ¿tengo gh, para preguntar quién soy?
+# 1. ¿GitHub me reconoce?
+ssh -T git@github.com
+
+# 2. ¿tengo el repositorio del curso en el disco?
+cd ~/fdd/fdd_o26 && git log --oneline -3
+
+# 3. ¿tengo gh, para preguntarle a GitHub quién soy?
+gh api user --jq .login
 ```
 
 ::: table {#git-compuertas title="Qué hacer con cada resultado"}
@@ -65,8 +70,8 @@ Y el matiz que más confunde: **Git sí sabe clonar.** Lo que agrega GitHub es h
 
 ```text
   1. GitHub, en corto   ← estás aquí
-  2. El fork            → tu copia del repositorio, y tus dos remotes
-  3. Branches           → practicarlas hasta que dejen de dar miedo
+  2. El fork            → tu copia y tus dos remotes
+  3. Branches           → practicarlas hasta que no den miedo
   4. Tu espejo          → dónde va cada archivo, y por qué
   5. El ritual          → los cuatro bloques del flujo
   6. El pull request    → la entrega de verdad

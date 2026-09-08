@@ -1,7 +1,7 @@
 ---
 id: clonar-y-actualizar
 title: "Clonar y mantener al día"
-nav_title: "Apéndice: clonar"
+nav_title: "Clonar el repo"
 summary: "Clona el repositorio del curso, configura tu identidad en git y compruébate que puedes traer lo nuevo con git pull."
 status: ready
 estimated_time: 20m

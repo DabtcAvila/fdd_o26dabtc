@@ -4,7 +4,7 @@ title: "Git y GitHub"
 nav_title: "Git y GitHub"
 summary: "Dos secciones. Primero Git en tu propia máquina, sin internet. Después GitHub, y el flujo con el que se entrega todo el resto del curso."
 status: ready
-estimated_time: 237m
+estimated_time: 242m
 tags: [git, github, ssh, commit, branch, merge, fork, pull-request, flujo]
 prerequisites: [expresiones-regulares]
 ---
@@ -27,7 +27,7 @@ prerequisites: [expresiones-regulares]
 | Sección | Empieza en | Acaba cuando | Páginas | Tiempo |
 |---|---|---|---:|---:|
 | **[[seccion-git|1. Git]]** | La historia del problema, en 2005 | Puedes predecir un conflicto antes de provocarlo, sin conexión | 7 | 122 min |
-| **[[seccion-github|2. GitHub]]** | El fork del repositorio del curso | Tu pull request está abierto y en verde | 6 | 115 min |
+| **[[seccion-github|2. GitHub]]** | El fork del repositorio del curso | Tu pull request está abierto y en verde | 6 | 120 min |
 
 :::
 
@@ -52,7 +52,7 @@ En la sección de GitHub aparece todo eso de golpe, y con ello la parte que se u
 | # | Página | Qué agrega | Tiempo |
 |---:|---|---|---:|
 | 1 | [[github-en-corto|GitHub, en corto]] | Git vs GitHub, y las tres comprobaciones de que estás listo | 10 min |
-| 2 | [[el-fork|El fork y tus dos remotes]] | El fork, `upstream` y `origin`, tu login exacto y tu carpeta | 20 min |
+| 2 | [[el-fork|El fork y tus dos remotes]] | Cómo se hace el fork, `upstream` y `origin`, tu login y tu carpeta | 25 min |
 | 3 | [[branches-en-serio|Branches, en serio]] | Qué le hace `switch` a tu disco, el conflicto propio, la branch atrasada | 30 min |
 | 4 | [[el-flujo-del-curso|La zona roja y tu espejo]] | Dónde va cada archivo, por qué, y qué revisa el robot | 20 min |
 | 5 | [[el-ritual-del-curso|El ritual]] | Los cuatro bloques del flujo, con sus comandos comentados | 20 min |

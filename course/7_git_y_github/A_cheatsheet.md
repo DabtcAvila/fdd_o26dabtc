@@ -1,7 +1,7 @@
 ---
 id: cheatsheet-git
 title: "Cheatsheet"
-nav_title: "Cheatsheet"
+nav_title: "Chuleta"
 summary: "Todos los comandos de la unidad en una sola página, agrupados por lo que quieres hacer, con el enlace a donde se explicó cada uno."
 status: ready
 estimated_time: 5m
@@ -22,45 +22,56 @@ La única parte que sí se memoriza son los cuatro bloques de [[el-ritual-del-cu
 Lo único de esta página que se memoriza. Los cuatro bloques están en [[el-ritual-del-curso|El ritual]].
 
 ```bash
-# ══ PASO 0 · UNA VEZ EN EL SEMESTRE ══════════════════════════════════
-#    ¿ya lo hice?  git remote -v | grep -q upstream && echo SALTA
-#    Primero el fork, en el navegador: github.com/raya-lucaria/fdd_o26
-U=$(gh api user --jq .login) && echo "$U"    # tu login EXACTO, no lo teclees
-git remote rename origin upstream            # el del curso: de aquí BAJAS
-git remote add origin git@github.com:$U/fdd_o26.git   # el tuyo: aquí SUBES
-git remote -v                                # comprueba: 4 líneas, 2 nombres
+# ═══ PASO 0 · UNA VEZ EN EL SEMESTRE ══════════════════
+# ¿ya lo hice?
+#   git remote -v | grep -q upstream && echo SALTA
+# Primero el fork, en el navegador:
+#   github.com/raya-lucaria/fdd_o26
 
-# ══ CADA VEZ QUE ENTREGAS ════════════════════════════════════════════
-cd ~/fdd/fdd_o26                             # siempre desde la raíz
-echo "$U"                                    # si está vacía, redefínela
+U=$(gh api user --jq .login)     # tu login EXACTO
+echo "$U"                        # NO lo teclees a mano
+git remote rename origin upstream   # el curso: aquí BAJAS
+git remote add origin git@github.com:$U/fdd_o26.git
+git remote -v                    # 4 líneas, 2 nombres
 
-# A · PONTE AL DÍA ───────────────────────────────────────────────────
-git switch main                              # párate en main
-git fetch upstream                           # baja del curso, sin tocar tus archivos
-git merge upstream/main                      # mételo. Aquí SÍ cambian
-git push origin main                         # deja tu fork igual que el curso
 
-# B · ABRE TU ESPACIO ────────────────────────────────────────────────
-git switch -c tarea-NN-nombre                # branch nueva, desde el main al día
-mkdir -p estudiantes/$U/NN_nombre            # tu mitad del espejo
-cp -r codigo/NN_nombre/. estudiantes/$U/NN_nombre/   # el "/." copia el CONTENIDO
+# ═══ CADA VEZ QUE ENTREGAS ════════════════════════════
+cd ~/fdd/fdd_o26                 # siempre desde la raíz
+echo "$U"                        # si está vacía, redefínela
+
+
+# ─── A · PONTE AL DÍA ──────────────────────────────────
+git switch main                  # párate en main
+git fetch upstream               # baja. NO toca tus archivos
+git merge upstream/main          # mételo. Aquí SÍ cambian
+git push origin main             # tu fork, al día
+
+
+# ─── B · ABRE TU ESPACIO ───────────────────────────────
+git switch -c tarea-NN-nombre    # nace del main al día
+mkdir -p estudiantes/$U/NN_nombre
+cp -r codigo/NN_nombre/. estudiantes/$U/NN_nombre/
 #   ... trabajas SÓLO dentro de estudiantes/$U/ ...
 
-# C · ENTREGA ────────────────────────────────────────────────────────
-git status                                   # ¿qué cambió? míralo de verdad
-git add estudiantes/$U/NN_nombre             # por ruta. NUNCA "git add ."
-git status                                   # ¿qué se guarda? eso y nada más
-git commit -m "unidad NN: entrega"
-git push -u origin tarea-NN-nombre           # sube LA BRANCH a tu fork
-#   → navegador: Compare & pull request
-#     base: raya-lucaria/fdd_o26 : main   ←   compare: tu-login : tarea-NN-nombre
 
-# D · CIERRA · cuando ya te lo mergearon ─────────────────────────────
+# ─── C · ENTREGA ───────────────────────────────────────
+git status                       # ¿qué cambió? míralo
+git add estudiantes/$U/NN_nombre # por ruta, nunca "."
+git status                       # eso, y nada más
+git commit -m "unidad NN: entrega"
+git push -u origin tarea-NN-nombre
+#   → navegador: Compare & pull request
+#     base repository: raya-lucaria/fdd_o26   base: main
+#     head repository: tu-login/fdd_o26
+#     compare:         tarea-NN-nombre
+
+
+# ─── D · CIERRA · ya te lo mergearon ───────────────────
 git switch main
 git fetch upstream && git merge upstream/main
 git push origin main
-git branch -d tarea-NN-nombre                # se niega si no está mergeada: te protege
-git branch                                   # sólo main. Listo para la próxima
+git branch -d tarea-NN-nombre    # se niega si falta mergear
+git branch                       # sólo main. Listo
 ```
 
 ## Orientarte

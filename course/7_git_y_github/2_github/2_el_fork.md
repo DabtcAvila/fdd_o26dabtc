@@ -4,20 +4,20 @@ title: "El fork y tus dos remotes"
 nav_title: "El fork"
 summary: "Qué es un fork y por qué existe, cómo dejar tu máquina hablando con dos repositorios distintos, y qué hace exactamente cada comando que lo logra."
 status: ready
-estimated_time: 20m
+estimated_time: 25m
 tags: [github, fork, remote, upstream, origin, fetch, merge, pull]
 prerequisites: [github-en-corto]
 ---
 
 # El fork y tus dos remotes
 
-**GitHub · página 2 de 6** · 20 min
+**GitHub · página 2 de 6** · 25 min
 
 Meta: tu máquina hablando con dos repositorios, y saber cuál es cuál sin pensarlo.
 
 ## En corto
 
-- Un **fork** es una copia del repositorio del curso, en tu cuenta, donde sí puedes escribir.
+- Un **fork** es una copia del repositorio del curso **en tu cuenta de GitHub**, donde sí puedes escribir.
 - Al clonar quedaste apuntando al del curso, donde **no** puedes. Se arregla hoy.
 - Terminas con dos apodos: **`upstream` para bajar**, **`origin` para subir**.
 - Esto es **una vez en el semestre**. Después nunca más.
@@ -25,27 +25,36 @@ Meta: tu máquina hablando con dos repositorios, y saber cuál es cuál sin pens
 ## Toda la página, en un bloque
 
 ```bash
-#  0. En el navegador: github.com/raya-lucaria/fdd_o26 → botón Fork
+# 0. El fork se hace en el navegador (paso 1, abajo).
+#    Sin él, nada de esto funciona.
 
 cd ~/fdd/fdd_o26
-U=$(gh api user --jq .login) && echo "$U"    # tu login EXACTO, no lo teclees
-git remote -v                                # ahora: 2 líneas, las dos del curso
-git remote rename origin upstream            # el del curso: de aquí BAJAS
-git remote add origin git@github.com:$U/fdd_o26.git   # el tuyo: aquí SUBES
-git remote -v                                # ahora: 4 líneas, 2 nombres
 
-git switch main            # párate en main
-git fetch upstream         # BAJA del curso. NO toca tus archivos
-git merge upstream/main    # lo mete a tu main. AQUÍ sí cambian
-git push origin main       # deja tu fork igual que el curso
+# tu login EXACTO. No lo teclees
+U=$(gh api user --jq .login) && echo "$U"
 
-mkdir -p estudiantes/$U && touch estudiantes/$U/.gitkeep   # tu carpeta
+git remote -v                     # ahora: 2 líneas del curso
+git remote rename origin upstream # el del curso: aquí BAJAS
+
+# y origin pasa a ser TU fork: aquí SUBES
+git remote add origin git@github.com:$U/fdd_o26.git
+
+git remote -v                     # ahora: 4 líneas, 2 nombres
+
+git switch main                   # párate en main
+git fetch upstream                # baja. NO toca tus archivos
+git merge upstream/main           # mételo. AQUÍ sí cambian
+git push origin main              # tu fork, al día
+
+# tu carpeta: el único lugar donde puedes escribir
+mkdir -p estudiantes/$U && touch estudiantes/$U/.gitkeep
 ```
 
 > [!NOTE]
 > **¿Ya lo hiciste en otra sesión?** Este comando te deja saltar la página:
 > ```bash
-> git remote -v | grep -q upstream && echo "LISTO" || echo "FALTA"
+> git remote -v | grep -q upstream \
+>   && echo "LISTO" || echo "FALTA"
 > ```
 
 ::: figure {#git-tres-repos title="Tres repositorios, y sólo en dos puedes escribir"}
@@ -58,6 +67,73 @@ Somos treinta personas y un repositorio. Si todos pudiéramos escribir en `raya-
 
 La solución no es repartir permisos: es que **nadie escriba ahí**. Cada quien trabaja en su copia y *propone* sus cambios. El fork es la copia; el pull request es la propuesta.
 
+> [!IMPORTANT]
+> El fork ocurre **en los servidores de GitHub**, no en tu computadora. Presionar el botón no cambia ni un archivo de tu disco. Son dos cosas separadas, y confundirlas es la causa del error del ejercicio del final de esta página.
+
+## Paso 1: haz tu fork
+
+Esto es navegador. **No hay comando de Git que lo haga**, porque el fork no es de Git: es de GitHub.
+
+**Haz:** entra a `https://github.com/raya-lucaria/fdd_o26`.
+
+Arriba a la derecha, en la fila de botones del repositorio, está **Fork**. Es el de en medio de los tres:
+
+```text
+  raya-lucaria / fdd_o26                         Public
+
+              ┌──────────┐ ┌────────┐ ┌────────┐
+              │ ⊙ Watch  │ │ ⑂ Fork │ │ ☆ Star │
+              └──────────┘ └───┬────┘ └────────┘
+                               │
+                          presiona éste
+```
+
+**Haz:** presiónalo. Se abre un formulario. **Déjalo todo como viene** y presiona *Create fork*:
+
+```text
+  Create a new fork
+
+  Owner *                 Repository name *
+  ┌──────────────────┐    ┌──────────────────────┐
+  │ tu-login       ▾ │  / │ fdd_o26              │
+  └──────────────────┘    └──────────────────────┘
+    ↑ tu cuenta             ↑ NO le cambies el nombre
+
+  Description  (opcional, déjalo vacío)
+
+  ☑ Copy the main branch only
+    ↑ déjala palomeada: es lo único que necesitas
+
+               ┌───────────────┐
+               │  Create fork  │
+               └───────────────┘
+```
+
+Los dos campos que importan: **Owner** tiene que ser tu cuenta —no una organización— y **Repository name** se queda como `fdd_o26`. Si le cambias el nombre, todos los comandos de esta unidad dejan de coincidir con lo que vas a teclear.
+
+**Deberías ver**, unos segundos después, el mismo repositorio bajo tu cuenta, y debajo del título una línea pequeña:
+
+```text
+  tu-login / fdd_o26                             Public
+
+  forked from raya-lucaria/fdd_o26
+  ↑ ESTA línea es el fork. Sin ella es sólo una copia suelta
+```
+
+Esa línea es el "recuerdo" del que hablaba la página 1: es lo que le permite a GitHub ofrecerte después el botón de pull request. Si no aparece, no hiciste un fork.
+
+**Compruébalo desde la terminal**, para no depender de mirar el navegador:
+
+```bash
+gh repo view $U/fdd_o26 --json parent \
+  --jq .parent.nameWithOwner
+```
+
+**Deberías ver** `raya-lucaria/fdd_o26`. Si responde `null` o un error, el fork no existe o quedó con otro nombre.
+
+> [!NOTE]
+> **¿Ya lo habías forkeado antes?** Pasa cada semestre: alguien lo forkeó por curiosidad en agosto, o repite la materia. No lo forkees otra vez —GitHub no te deja tener dos con el mismo nombre—, actualízalo. En tu fork, GitHub te muestra `This branch is 47 commits behind raya-lucaria:main` y junto un botón **Sync fork → Update branch**. Presiónalo antes de seguir. El bloque A del ritual hace exactamente eso mismo, pero desde la terminal.
+
 ## Los comandos, uno por uno
 
 ### `U=$(gh api user --jq .login)`
@@ -67,11 +143,11 @@ Tu **login** no es tu nombre de perfil. Cada semestre alguien crea su carpeta co
 ```text
 U=$(gh api user --jq .login)
 │  ││  │   │    │
-│  ││  │   │    └── de toda la respuesta, quédate con el campo "login"
+│  ││  │   │    └── quédate con el campo "login"
 │  ││  │   └─────── el recurso "quién soy yo"
-│  ││  └─────────── hazle una pregunta a la API de GitHub
-│  │└────────────── el programa oficial de GitHub para la terminal
-│  └─────────────── $( ): corre esto y quédate con lo que imprima
+│  ││  └─────────── pregúntale a la API de GitHub
+│  │└────────────── el programa de GitHub para la terminal
+│  └─────────────── corre esto y guarda lo que imprima
 └────────────────── la variable donde se guarda
 ```
 
@@ -86,12 +162,12 @@ Un `remote` **es sólo un apodo para una URL**. `origin` no es palabra reservada
 
 ```text
 git remote add origin git@github.com:$U/fdd_o26.git
-              │  │     │   │          │   └── el repositorio
-              │  │     │   │          └────── tu cuenta
-              │  │     │   └───────────────── el servidor
-              │  │     └───────────────────── el usuario de SSH: siempre "git"
-              │  └─────────────────────────── el apodo que le pones tú
-              └────────────────────────────── agrega un remote nuevo
+           │     │     │   │          │   └── el repositorio
+           │     │     │   │          └────── tu cuenta
+           │     │     │   └───────────────── el servidor
+           │     │     └──────────────── usuario SSH: "git"
+           │     └────────────────────── el apodo, lo pones tú
+           └──────────────────────────── agrega un remote
 ```
 
 **Deberías ver**, al final:
@@ -108,8 +184,22 @@ upstream  git@github.com:raya-lucaria/fdd_o26.git (push)
 > ```bash
 > cd ~/fdd && rm -rf fdd_o26
 > git clone git@github.com:$U/fdd_o26.git
-> cd fdd_o26 && git remote add upstream git@github.com:raya-lucaria/fdd_o26.git
+> cd fdd_o26
+> git remote add upstream \
+>   git@github.com:raya-lucaria/fdd_o26.git
 > ```
+
+> [!NOTE]
+> **El atajo, ahora que ya sabes qué hace.** `gh` puede hacer el fork **y** el arreglo de remotes en un solo comando, desde dentro del clon:
+>
+> ```bash
+> cd ~/fdd/fdd_o26
+> gh repo fork --remote
+> ```
+>
+> Hace las tres cosas de golpe: crea el fork en tu cuenta, renombra el `origin` que había a `upstream`, y agrega tu fork como `origin`. Exactamente el paso 1 y el paso 3 juntos.
+>
+> Se enseña **después** y no antes a propósito: el día que algo falle vas a tener que leer `git remote -v` y entender qué ves. Un comando que hace tres cosas por ti no te enseña eso. Úsalo de la segunda vez en adelante.
 
 ### `fetch`, `merge` y `pull`
 
