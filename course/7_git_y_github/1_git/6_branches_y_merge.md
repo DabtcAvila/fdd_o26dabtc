@@ -204,11 +204,13 @@ git log --oneline
 
 **Deberías ver** que después del `add` el estado cambia a `All conflicts fixed but you are still merging`, y que el commit final aparece en el log.
 
-Antes de commitear conviene comprobar que no quedó ningún marcador:
+Antes de commitear conviene comprobar que no quedó ningún marcador. En vez de buscarlos con la vista, que se cuenten solos:
 
 ```bash
-grep -c '^[<=>]\{7\}' texto.txt     # tiene que decir 0
+grep -c '^[<=>]\{7\}' texto.txt
 ```
+
+Ese `grep` cuenta las líneas que empiezan con siete `<`, `=` o `>` —o sea, los tres marcadores y nada más—. **Tiene que responder `0`.** Si responde otra cosa, todavía hay marcadores dentro y hay que volver al archivo.
 
 > [!WARNING]
 > **Si dejas un marcador, Git lo commitea sin decirte nada.** No hay advertencia ni error: el `<<<<<<< HEAD` se queda dentro de tu archivo, y lo descubres semanas después cuando el código no corre. Por eso se comprueba y no se confía.

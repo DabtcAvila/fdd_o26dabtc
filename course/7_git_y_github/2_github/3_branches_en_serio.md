@@ -140,14 +140,36 @@ En `nano` se guarda con `Ctrl+O`, Enter, y se sale con `Ctrl+X`. Si prefieres VS
 
 ### Paso 2: comprueba que no quedó ningún marcador
 
-Éste es el paso que casi nadie hace, y el que evita el error de la advertencia de abajo:
+Éste es el paso que casi nadie hace, y el que evita el error de la advertencia de abajo.
+
+**Para qué sirve:** los marcadores son fáciles de dejar a medias, sobre todo en un archivo largo donde el conflicto está en la línea 200. Este comando **los cuenta por ti**, en vez de que los busques con la vista.
 
 ```bash
-cat estudiantes/$U/nota.txt              # míralo con tus ojos
+cat estudiantes/$U/nota.txt   # míralo con tus ojos
 grep -c '^[<=>]\{7\}' estudiantes/$U/nota.txt
 ```
 
-El `grep` **tiene que decir `0`**. Ese patrón —una línea que empieza con siete `<`, `=` o `>`— es de la [[expresiones-regulares|unidad pasada]], y busca exactamente las tres líneas que Git insertó.
+Qué hace, pieza por pieza:
+
+```text
+grep -c '^[<=>]\{7\}' nota.txt
+     │    ││    │
+     │    ││    └── ...siete veces seguidas
+     │    │└─────── uno de estos tres caracteres...
+     │    └──────── al principio de la línea...
+     └───────────── -c: no me las muestres, cuéntalas
+```
+
+Es decir: **cuenta las líneas que empiezan con `<<<<<<<`, `=======` o `>>>>>>>`**, que son exactamente las tres que Git insertó y ninguna otra. El patrón es de la [[expresiones-regulares|unidad de expresiones regulares]].
+
+::: table {#git-grep-marcadores title="Qué hacer con el número que te responde"}
+
+| Si dice | Qué significa | Qué haces |
+|---|---|---|
+| `0` | No queda ningún marcador | Sigue al paso 3 |
+| `1`, `2` o `3` | Todavía hay marcadores dentro | Vuelve al editor y bórralos |
+
+:::
 
 > [!WARNING]
 > **Si dejas un marcador, Git lo commitea sin decirte nada.** No hay advertencia, no hay error: tu archivo se queda con un `<<<<<<< HEAD` dentro para siempre, y lo descubres semanas después cuando el código no corre. Por eso se comprueba, y no se confía.
