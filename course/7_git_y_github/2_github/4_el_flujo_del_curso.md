@@ -133,7 +133,7 @@ Nadie toca las líneas de nadie. Todos los casos se vuelven el primer escenario 
 
 ## Qué revisa la revisión automática
 
-Cada pull request dispara una revisión antes de que yo lo vea. Está para que un error se detecte en treinta segundos y no en una semana.
+Cada pull request dispara una revisión antes de que yo lo vea. Está para que un error se detecte en treinta segundos y no en una semana. La única excepción es tu **primer** pull request del semestre: ése lo tengo que autorizar yo antes de que corra.
 
 ::: table {#git-robot title="Las cuatro revisiones, todas bloqueantes"}
 

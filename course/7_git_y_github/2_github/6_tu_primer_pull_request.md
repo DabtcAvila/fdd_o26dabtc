@@ -99,6 +99,9 @@ Entra a tu fork en GitHub. Aparece una barra amarilla con **Compare & pull reque
 
 Título: `unidad 07 · tu-login`. Créalo, y **espera a que la revisión quede en verde**.
 
+> [!NOTE]
+> **La primera vez, la revisión no arranca sola.** GitHub me pide autorizar el primer pull request de cada persona antes de correr nada. Si el tuyo dice *waiting for approval*, o simplemente no aparece ningún check, **no hiciste nada mal**: está esperándome a mí. De tu segunda entrega en adelante corre sola y al instante.
+
 ::: table {#git-entrega-checklist title="Si la revisión sale roja"}
 
 | Dice | Qué pasó | Qué haces |
