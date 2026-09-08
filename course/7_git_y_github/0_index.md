@@ -4,7 +4,7 @@ title: "Git y GitHub"
 nav_title: "Git y GitHub"
 summary: "Dos secciones. Primero Git en tu propia máquina, sin internet. Después GitHub, y el flujo con el que se entrega todo el resto del curso."
 status: ready
-estimated_time: 247m
+estimated_time: 252m
 tags: [git, github, ssh, commit, branch, merge, fork, pull-request, flujo]
 prerequisites: [expresiones-regulares]
 ---
@@ -27,7 +27,7 @@ prerequisites: [expresiones-regulares]
 | Sección | Empieza en | Acaba cuando | Páginas | Tiempo |
 |---|---|---|---:|---:|
 | **[[seccion-git|1. Git]]** | La historia del problema, en 2005 | Puedes predecir un conflicto antes de provocarlo, sin conexión | 7 | 122 min |
-| **[[seccion-github|2. GitHub]]** | El fork del repositorio del curso | Tu pull request está abierto y en verde | 6 | 125 min |
+| **[[seccion-github|2. GitHub]]** | El fork del repositorio del curso | Tu pull request está abierto y en verde | 6 | 130 min |
 
 :::
 
@@ -55,7 +55,7 @@ En la sección de GitHub aparece todo eso de golpe, y con ello la parte que se u
 | 2 | [[el-fork|El fork y tus dos remotes]] | Cómo se hace el fork, `upstream` y `origin`, tu login y tu carpeta | 25 min |
 | 3 | [[branches-en-serio|Branches, en serio]] | Qué le hace `switch` a tu disco, resolver un conflicto, la branch atrasada | 35 min |
 | 4 | [[el-flujo-del-curso|La zona roja y tu espejo]] | Dónde va cada archivo, por qué, y qué revisa el robot | 20 min |
-| 5 | [[el-ritual-del-curso|El ritual]] | Los cuatro bloques del flujo, con sus comandos comentados | 20 min |
+| 5 | [[el-ritual-del-curso|El ritual]] | Los cuatro bloques, y qué hace cada comando del flujo | 25 min |
 | 6 | [[tu-primer-pull-request|Tu primer pull request]] | La entrega de verdad, de principio a fin | 15 min |
 
 El trabajo previo a clase —cuenta, llave SSH y clonado— vive en el apéndice: [[cuenta-y-llave|Cuenta y llave]] y [[clonar-y-actualizar|Clonar y mantener al día]].

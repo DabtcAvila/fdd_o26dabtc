@@ -159,7 +159,9 @@ U=$(gh api user --jq .login)
 
 ### `git remote rename` y `git remote add`
 
-Un `remote` **es sólo un apodo para una URL**. `origin` no es palabra reservada de Git: es convención. Por eso se puede renombrar.
+`git remote -v` **lista los repositorios remotos que tu copia conoce**: el apodo de cada uno y su URL. La `-v` es de *verbose*, y es lo que hace que muestre las URLs y no sólo los nombres. Cada remote aparece dos veces, una para bajar (`fetch`) y otra para subir (`push`).
+
+Y un `remote` **es sólo un apodo para una URL**. `origin` no es palabra reservada de Git: es convención. Por eso se puede renombrar.
 
 ```text
 git remote add origin git@github.com:$U/fdd_o26.git
