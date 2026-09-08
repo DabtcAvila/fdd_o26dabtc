@@ -4,14 +4,14 @@ title: "Branches, en serio"
 nav_title: "Branches"
 summary: "Por qué el curso pide una branch por tarea: qué le hace switch a tus archivos, qué pasa cuando dos branches tocan lo mismo, y cómo se rescata una branch que nació atrasada."
 status: ready
-estimated_time: 30m
+estimated_time: 35m
 tags: [git, branch, switch, merge, conflicto, flujo]
 prerequisites: [el-fork]
 ---
 
 # Branches, en serio
 
-**GitHub · página 3 de 6** · 30 min
+**GitHub · página 3 de 6** · 35 min
 
 Meta: que crear, cambiar y borrar branches deje de dar miedo, porque el resto del curso se entrega desde una.
 
@@ -21,6 +21,7 @@ Meta: que crear, cambiar y borrar branches deje de dar miedo, porque el resto de
 - `git switch` **reescribe los archivos de tu carpeta** para que coincidan con la branch a la que llegas.
 - Una branch por tarea no es burocracia: mantiene tu `main` limpio para la semana siguiente.
 - Una branch nacida de un `main` atrasado arrastra basura a tu pull request. Se rescata con un comando.
+- Y resolver un conflicto es **editar el archivo y borrar los marcadores**. Git no comprueba que lo hayas hecho.
 
 Todo lo de esta página se hace en el repositorio de verdad, dentro de tu carpeta. Al final se limpia.
 
@@ -87,29 +88,88 @@ CONFLICT (content): Merge conflict in
 Automatic merge failed; fix conflicts and then commit.
 ```
 
+### Qué le pasó a tu archivo
+
+```bash
+git status                      # both modified: nota.txt
+cat estudiantes/$U/nota.txt
+```
+
+Git **no borró nada**: metió las dos versiones en el mismo archivo, separadas por tres líneas marcadoras.
+
 ```text
 <<<<<<< HEAD
-escrito en practica-b      ← la branch donde ESTÁS
+escrito en practica-b
 =======
-escrito en practica-a      ← la branch que MERGEASTE
+escrito en practica-a
 >>>>>>> practica-a
 ```
 
-Resolver son tres pasos. Salir sin resolver, uno:
+::: table {#git-marcadores title="Las tres líneas que Git inserta"}
+
+| Línea | Qué marca |
+|---|---|
+| `<<<<<<< HEAD` | aquí empieza **tu** versión, la de la branch donde estás |
+| `=======` | aquí acaba la tuya y empieza la otra |
+| `>>>>>>> practica-a` | aquí acaba la de la branch que mergeaste, y dice cuál es |
+
+:::
+
+> **Resolver el conflicto son dos cosas, y las dos son obligatorias:**
+> 1. Dejar el archivo con el contenido que quieres.
+> 2. **Borrar las tres líneas marcadoras.**
+
+Nadie te obliga a escoger un lado. Puedes quedarte con una mitad, con la otra, con las dos, o escribir algo nuevo. Git no opina: sólo se niega a decidir por ti.
+
+### Paso 1: edítalo con un editor
+
+Aquí **no** sirve `echo` ni `printf`: sobrescriben el archivo entero, y en un archivo de verdad tienes que conservar todo lo que no está en conflicto. Ábrelo:
 
 ```bash
-# 1. edita hasta que NO quede ningún marcador
-echo "me quedo con las dos" > estudiantes/$U/nota.txt
+nano estudiantes/$U/nota.txt
+```
 
-# 2. add = "ya lo resolví"
+Digamos que quieres quedarte con las dos frases. **Borra las tres líneas marcadoras** y deja el archivo exactamente así:
+
+```text
+escrito en practica-b
+escrito en practica-a
+```
+
+En `nano` se guarda con `Ctrl+O`, Enter, y se sale con `Ctrl+X`. Si prefieres VS Code, `code estudiantes/$U/nota.txt` te muestra botones de *Accept Current* / *Accept Incoming* que hacen lo mismo por ti.
+
+### Paso 2: comprueba que no quedó ningún marcador
+
+Éste es el paso que casi nadie hace, y el que evita el error de la advertencia de abajo:
+
+```bash
+cat estudiantes/$U/nota.txt              # míralo con tus ojos
+grep -c '^[<=>]\{7\}' estudiantes/$U/nota.txt
+```
+
+El `grep` **tiene que decir `0`**. Ese patrón —una línea que empieza con siete `<`, `=` o `>`— es de la [[expresiones-regulares|unidad pasada]], y busca exactamente las tres líneas que Git insertó.
+
+> [!WARNING]
+> **Si dejas un marcador, Git lo commitea sin decirte nada.** No hay advertencia, no hay error: tu archivo se queda con un `<<<<<<< HEAD` dentro para siempre, y lo descubres semanas después cuando el código no corre. Por eso se comprueba, y no se confía.
+
+### Paso 3: cierra el merge
+
+```bash
+# add = "ya lo revisé, ésta es la buena"
 git add estudiantes/$U/nota.txt
-
-# 3. cierra el merge
+git status                        # All conflicts fixed
 git commit -m "practica: resuelvo el conflicto"
+```
 
-# ...o deja todo como antes de intentarlo:
+Aquí `git add` significa algo distinto de lo habitual: no es "apartar para el próximo commit", es **"ya lo resolví"**. Por eso el conflicto se cierra con el mismo comando que usas para todo lo demás.
+
+### Si te arrepientes: la salida de emergencia
+
+```bash
 git merge --abort
 ```
+
+Deja todo exactamente como estaba antes de intentar el merge, marcadores incluidos. **Sólo funciona mientras el merge sigue abierto**: una vez que hiciste el `commit` del paso 3, ya no hay nada que abortar.
 
 ![Ciudad densa bajo lluvia intensa en teal frío y concreto húmedo, vista desde lo alto entre dos torres enfrentadas: tras una ventana iluminada de cada torre trabaja una figura pequeña de espaldas, y un solo cable tenso une las dos ventanas con una gota de luz ámbar suspendida en el centro exacto, sin avanzar hacia ningún lado.](../_assets/ilus-git-colaboracion.jpg)
 

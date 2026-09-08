@@ -188,6 +188,8 @@ Fíjate en lo que Git **sí** resolvió solo: las líneas de saludo y despedida 
 
 Resolver significa dejar el archivo como lo quieres, **sin marcadores**. Puede quedarse una mitad, la otra, o algo nuevo que escribas tú.
 
+En un archivo de verdad esto se hace **abriéndolo en un editor** —`nano texto.txt`— y borrando a mano las tres líneas marcadoras. Aquí se reescribe entero con `printf` sólo porque son tres líneas y así el laboratorio es reproducible.
+
 **Haz:**
 
 ```bash
@@ -201,6 +203,15 @@ git log --oneline
 ```
 
 **Deberías ver** que después del `add` el estado cambia a `All conflicts fixed but you are still merging`, y que el commit final aparece en el log.
+
+Antes de commitear conviene comprobar que no quedó ningún marcador:
+
+```bash
+grep -c '^[<=>]\{7\}' texto.txt     # tiene que decir 0
+```
+
+> [!WARNING]
+> **Si dejas un marcador, Git lo commitea sin decirte nada.** No hay advertencia ni error: el `<<<<<<< HEAD` se queda dentro de tu archivo, y lo descubres semanas después cuando el código no corre. Por eso se comprueba y no se confía.
 
 Ahí `git add` significa algo distinto de lo habitual: es cómo le dices a Git **"ya lo revisé, esta versión es la buena"**. Por eso el conflicto se cierra con el mismo comando que usas para todo lo demás.
 
