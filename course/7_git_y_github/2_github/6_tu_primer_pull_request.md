@@ -121,7 +121,7 @@ Título: `unidad 07 · tu-login`. Créalo, y **espera a que la revisión quede e
 | Archivo fuera de tu carpeta | Tocaste la zona roja | `git restore codigo/`, commit, push |
 | El nombre no coincide | Tu carpeta no se llama como tu login | Renómbrala **en dos pasos**, abajo |
 | Basura detectada | Se coló un `.DS_Store` o un `__pycache__/` | `git rm --cached <archivo>`, commit, push |
-| El PR viene de tu rama default | Se te olvidó la branch | Crea la branch, muévete y abre otro PR |
+| El PR viene de tu branch default | Se te olvidó la branch | Crea la branch, muévete y abre otro PR |
 
 :::
 

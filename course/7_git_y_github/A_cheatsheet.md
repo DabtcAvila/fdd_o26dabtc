@@ -19,7 +19,7 @@ La única parte que sí se memoriza son los cuatro bloques de [[el-ritual-del-cu
 
 ## El flujo, completo
 
-Lo único de esta página que se memoriza. Los cuatro bloques están en [[el-ritual-del-curso|El ritual]].
+Lo único de esta página que se memoriza. Son dos bloques: el paso 0 va una vez en el semestre, y A–D en cada entrega. Explicados en [[el-ritual-del-curso|El ritual]].
 
 ```bash
 # ═══ PASO 0 · UNA VEZ EN EL SEMESTRE ══════════════════
@@ -36,8 +36,11 @@ git remote rename origin upstream   # el curso: aquí BAJAS
 git remote add origin \
   git@github.com:$GHUSER/fdd_o26_$GHUSER.git
 git remote -v                    # 4 líneas, 2 nombres
+```
 
+Y esto es lo de cada entrega. **Éste es el bloque que se copia cada semana**; el de arriba no se vuelve a tocar.
 
+```bash
 # ═══ CADA VEZ QUE ENTREGAS ════════════════════════════
 cd ~/fdd/fdd_o26                 # siempre desde la raíz
 echo "$GHUSER"                   # tu login, del perfil
@@ -153,7 +156,7 @@ Para resolver un conflicto: edita el archivo hasta que no queden marcadores, `gi
 |---|---|---|
 | Saber mi login exacto | `gh api user --jq .login` | [[el-fork|GitHub · 2]] |
 | Bajar lo nuevo del curso | `git fetch upstream` | [[el-fork|GitHub · 2]] |
-| Juntarlo con mi rama | `git merge upstream/main` | [[el-fork|GitHub · 2]] |
+| Juntarlo con mi branch | `git merge upstream/main` | [[el-fork|GitHub · 2]] |
 | Subir a mi fork | `git push origin main` | [[el-fork|GitHub · 2]] |
 | Subir una branch por primera vez | `git push -u origin <nombre>` | [[el-ritual-del-curso|GitHub · 5]] |
 | Bajar y juntar de un jalón | `git pull` | [[el-fork|GitHub · 2]] |

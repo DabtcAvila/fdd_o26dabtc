@@ -24,7 +24,7 @@ Meta: que esto salga sin pensar, siempre en el mismo orden.
 
 ## La tarjeta
 
-Si no vas a leer nada más, lee esto.
+Si no vas a leer nada más, lee esto. Son **dos bloques**: el de arriba se corre una vez en el semestre, el de abajo en cada entrega.
 
 ```bash
 # ═══ PASO 0 · UNA VEZ EN EL SEMESTRE ══════════════════
@@ -41,8 +41,11 @@ git remote rename origin upstream   # el curso: aquí BAJAS
 git remote add origin \
   git@github.com:$GHUSER/fdd_o26_$GHUSER.git
 git remote -v                    # 4 líneas, 2 nombres
+```
 
+Y esto es lo de cada entrega. **Éste es el bloque que se copia cada semana**; el de arriba no se vuelve a tocar.
 
+```bash
 # ═══ CADA VEZ QUE ENTREGAS ════════════════════════════
 cd ~/fdd/fdd_o26                 # siempre desde la raíz
 echo "$GHUSER"                   # tu login, del perfil
@@ -215,7 +218,7 @@ Si esto salió sin error, el de verdad va a salir.
 > **Los cuatro bloques se preguntan de memoria en el examen**: en orden, qué hace cada uno y con qué comandos. Todas las tareas de aquí a diciembre se entregan así, y una desviación del flujo cuenta como entrega no hecha. La forma de aprendérselo no es leerlo: es hacerlo hasta que salga solo.
 
 ::: problem {#git-p12-orden title="Se me olvidó el bloque A"}
-Trabajaste toda la tarde. Hiciste la branch, copiaste el código, editaste, commiteaste y pusheaste. Al abrir el pull request, GitHub te muestra que tu rama toca **once archivos**, y sólo dos son tuyos: los otros nueve están en `course/` y son cambios que yo publiqué el martes.
+Trabajaste toda la tarde. Hiciste la branch, copiaste el código, editaste, commiteaste y pusheaste. Al abrir el pull request, GitHub te muestra que tu branch toca **once archivos**, y sólo dos son tuyos: los otros nueve están en `course/` y son cambios que yo publiqué el martes.
 
 ¿Qué te saltaste, por qué produce ese resultado, y cómo lo arreglas sin perder tu trabajo?
 :::
@@ -227,7 +230,7 @@ Piensa desde qué punto de la historia nació tu branch, y qué había pasado en
 ::: answer {of="git-p12-orden"}
 Te saltaste el **bloque A**. Tu branch nació de un `main` atrasado, del último día que sincronizaste.
 
-El pull request no compara tu branch contra el estado actual del curso, sino contra **el punto donde las dos historias se separaron**. Como tu `main` no tenía mis commits del martes, todo lo que publiqué después aparece como diferencia de tu rama. No los escribiste tú, pero desde fuera tu propuesta incluye "revertir esos nueve archivos". La revisión lo rechaza, y con razón: hay cambios fuera de tu carpeta.
+El pull request no compara tu branch contra el estado actual del curso, sino contra **el punto donde las dos historias se separaron**. Como tu `main` no tenía mis commits del martes, todo lo que publiqué después aparece como diferencia de tu branch. No los escribiste tú, pero desde fuera tu propuesta incluye "revertir esos nueve archivos". La revisión lo rechaza, y con razón: hay cambios fuera de tu carpeta.
 
 Lo confirmas y lo arreglas así:
 

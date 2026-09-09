@@ -39,7 +39,7 @@ git config --global pull.rebase false
 git config --global --list
 ```
 
-**Deberías ver** las cuatro líneas que acabas de poner. `--global` significa «para todos los repositorios de esta computadora»: se hace una vez en la vida de la máquina.
+**Deberías ver**, entre lo que imprima, las cuatro líneas que acabas de poner. `git config --global --list` lista **toda** la configuración global de la máquina, así que si ya habías configurado algo antes van a salir más. `--global` significa «para todos los repositorios de esta computadora»: se hace una vez en la vida de la máquina.
 
 ## Paso 2: clona el repositorio
 

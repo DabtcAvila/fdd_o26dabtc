@@ -23,13 +23,13 @@ Meta: tu máquina hablando con dos repositorios, y saber cuál es cuál sin pens
 - Son **dos pasos**: el fork en el navegador, y el resto en la terminal.
 - Esto es **una vez en el semestre**. Después nunca más.
 
-> [!NOTE]
-> **¿Ya lo hiciste en otra sesión?** Este comando te deja saltar la página:
-> ```bash
-> cd ~/fdd/fdd_o26
-> git remote -v | grep -q upstream \
->   && echo "LISTO" || echo "FALTA"
-> ```
+**¿Ya lo hiciste en otra sesión?** Este comando te deja saltar la página entera:
+
+```bash
+cd ~/fdd/fdd_o26
+git remote -v | grep -q upstream \
+  && echo "LISTO" || echo "FALTA"
+```
 
 ## Paso 1 · El fork, en el navegador
 
@@ -94,8 +94,7 @@ Esa línea es el "recuerdo" del que hablaba la página 1: es lo que le permite a
 
 **Compruébalo sin salir del navegador:** si la línea `forked from` está ahí, ya está.
 
-> [!NOTE]
-> **¿Ya lo habías forkeado antes?** Pasa cada semestre: alguien lo forkeó por curiosidad en agosto, o repite la materia. No lo forkees otra vez —GitHub no te deja tener dos con el mismo nombre—, actualízalo. En tu fork, GitHub te muestra `This branch is 47 commits behind raya-lucaria:main` y junto un botón **Sync fork → Update branch**. Presiónalo antes de seguir. El bloque A del ritual hace exactamente eso mismo, pero desde la terminal.
+**¿Ya lo habías forkeado antes?** Pasa cada semestre. No lo forkees otra vez —GitHub no te deja tener dos con el mismo nombre—: actualízalo. Tu fork te muestra `This branch is 47 commits behind raya-lucaria:main` y junto un botón **Sync fork → Update branch**. Presiónalo antes de seguir; el bloque A del ritual hace lo mismo desde la terminal.
 
 ## Paso 2 · El resto, en un bloque
 
@@ -135,7 +134,7 @@ touch estudiantes/$GHUSER/.gitkeep
 
 Somos treinta personas y un repositorio. Si todos pudiéramos escribir en `raya-lucaria/fdd_o26`, cualquiera rompería la clase sin querer.
 
-La solución no es repartir permisos: es que **nadie escriba ahí**. Cada quien trabaja en su copia y *propone* sus cambios. El fork es la copia; el pull request es la propuesta.
+La solución no es repartir permisos: es que **nadie escriba ahí**. Cada quien trabaja en su copia y *propone* sus cambios. El fork es la copia; el **pull request** —abreviado **PR**, y así lo vas a ver en GitHub y en el resto de estas páginas— es la propuesta.
 
 ## Los comandos, uno por uno
 
@@ -162,8 +161,7 @@ Abre una terminal nueva y compruébalo:
 echo "$GHUSER"   # tu login, no una línea vacía
 ```
 
-> [!NOTE]
-> Si lo tecleas mal no se queda callado: `git push` responde `Repository not found` al primer intento, y si tu carpeta queda con otro nombre la revisión automática te dice el nombre exacto que esperaba.
+Si lo tecleas mal no se queda callado: `git push` responde `Repository not found` al primer intento, y si tu carpeta queda con otro nombre la revisión automática te dice el nombre exacto que esperaba.
 
 
 ### `git remote rename` y `git remote add`

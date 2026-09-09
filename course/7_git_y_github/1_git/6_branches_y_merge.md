@@ -28,6 +28,10 @@ Meta: provocarte un conflicto a propósito y resolverlo, para que el día que ll
 
 ## Qué es realmente una branch
 
+En español una branch es una **rama**, y vas a ver las dos palabras en estas páginas y en cualquier tutorial. Aquí decimos *branch* casi siempre, porque es lo que dice el comando que vas a teclear.
+
+En español una branch es una **rama**, y vas a ver las dos palabras en estas páginas y en cualquier tutorial. Aquí decimos *branch* casi siempre, porque es lo que dice el comando que vas a teclear.
+
 **Haz:**
 
 ```bash

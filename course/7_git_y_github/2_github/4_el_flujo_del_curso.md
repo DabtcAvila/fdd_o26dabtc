@@ -46,9 +46,9 @@ fdd_o26/
 ![Dos árboles de archivos lado a lado: a la izquierda en rojo la carpeta de código del curso que es de sólo lectura, y a la derecha en verde tu carpeta dentro de estudiantes con tu nombre de usuario de GitHub, con los mismos nombres de subcarpeta y archivo en los dos lados](../_assets/git-el-mirror.svg)
 :::
 
-## La regla del mirror
+## La regla del espejo
 
-Se repite igual en todas las unidades del resto del curso:
+Se repite igual en todas las unidades del resto del curso. En inglés se le dice *mirror*, y así aparece en los mensajes:
 
 > **Tu carpeta es un espejo de `codigo/`. Misma ruta, mismo nombre, sin excepciones.**
 > Yo publico en `codigo/07_git/` y tú copias a `estudiantes/tu-login/07_git/`.
@@ -148,7 +148,7 @@ Cada pull request dispara una revisión antes de que yo lo vea. Está para que u
 | **Ubicación** | Tocaste algo fuera de `estudiantes/tu-login/` |
 | **Nombre** | Tu carpeta no se llama exactamente como tu login |
 | **Basura** | Agregaste `.DS_Store`, `Thumbs.db`, `__pycache__/`, `node_modules/`, `.venv/`, `*.pyc`, o algo que empiece con `.env` |
-| **Branch** | El pull request viene de la rama default de tu fork |
+| **Branch** | El pull request viene de la branch default de tu fork |
 
 :::
 
