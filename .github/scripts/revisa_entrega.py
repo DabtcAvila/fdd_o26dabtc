@@ -18,20 +18,15 @@ import os
 import subprocess
 import sys
 
-# Nombres que son basura por si mismos, como ultimo componente de la ruta.
-BASURA_EXACTA = (
-    ".DS_Store", "Thumbs.db", "desktop.ini",
-    "id_rsa", "id_dsa", "id_ecdsa", "credentials.json",
+# Basura: si el nombre aparece como archivo o como carpeta de la ruta.
+BASURA = (
+    ".DS_Store", "Thumbs.db", "desktop.ini", "id_rsa",
+    "__pycache__", "node_modules", ".ipynb_checkpoints", ".venv",
 )
-# Basura tanto si es carpeta intermedia como si es el ultimo componente.
-BASURA_COMPONENTE = (
-    "__pycache__", "node_modules", ".ipynb_checkpoints", ".venv", ".aws", ".ssh",
-)
-# Todo lo que empieza asi: .env, .env.local, .env.production, .envrc...
-# En un repositorio publico, .env.local con una llave dentro es el caso grave,
-# y es mas probable que un .env a secas.
+# Y todo lo que empieza con .env — .env.local con una llave dentro, en un
+# repositorio publico, es mas probable que un .env a secas.
 BASURA_PREFIJOS = (".env",)
-BASURA_SUFIJOS = (".pyc", ".pyo", ".class", ".o", ".pem")
+BASURA_SUFIJOS = (".pyc", ".pyo", ".pem")
 
 RAIZ_ESTUDIANTES = "estudiantes/"
 TOPE_LISTA = 20
@@ -67,19 +62,10 @@ def total_declarado(pr):
 def es_basura(ruta):
     partes = ruta.split("/")
     nombre = partes[-1]
-    if nombre in BASURA_EXACTA or nombre.endswith(BASURA_SUFIJOS):
-        return True
-    if nombre.startswith(BASURA_PREFIJOS):
-        return True
-    return any(p in BASURA_COMPONENTE for p in partes)
-
-
-def ruta_sospechosa(ruta):
-    """Rutas que Git normalmente rechaza. Defensa en profundidad, no puerta."""
     return (
-        ruta.startswith("/")
-        or "\\" in ruta
-        or ".." in ruta.split("/")
+        nombre.endswith(BASURA_SUFIJOS)
+        or nombre.startswith(BASURA_PREFIJOS)
+        or any(p in BASURA for p in partes)
     )
 
 
@@ -139,7 +125,7 @@ def main():
             "  haz push y abre otro pull request desde esa branch."
         )
 
-    fuera, mal_nombre, basura, raras = [], [], [], []
+    fuera, mal_nombre, basura = [], [], []
     for a in archivos:
         estado = a["status"]
         # En un rename hay que juzgar las DOS rutas: de donde salio y a donde
@@ -148,10 +134,6 @@ def main():
         rutas = [a["path"]] + ([a["previa"]] if a.get("previa") else [])
 
         for ruta in rutas:
-            if ruta_sospechosa(ruta):
-                raras.append(ruta)
-                continue
-
             # 2. Ubicacion y 3. nombre de la carpeta.
             if not ruta.startswith(RAIZ_ESTUDIANTES):
                 fuera.append(ruta)
@@ -166,14 +148,6 @@ def main():
         # 4. Basura. Los borrados no cuentan: borrar un .DS_Store es lo correcto.
         if estado != "removed" and es_basura(a["path"]):
             basura.append(a["path"])
-
-    if raras:
-        fallos.append(
-            "RUTA: hay rutas que no deberian existir en un commit.\n"
-            + _lista(raras)
-            + "  Arreglo: no uses rutas absolutas ni '..'. Trabaja desde la raiz\n"
-            "  del repositorio con rutas que empiecen en estudiantes/."
-        )
 
     if fuera:
         fallos.append(

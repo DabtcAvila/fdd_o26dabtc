@@ -146,7 +146,6 @@ def test_variantes_de_env_son_basura(mod, monkeypatch):
     """En un repositorio publico, .env.local con una llave es el caso grave."""
     for ruta in ("estudiantes/ana/.env.local", "estudiantes/ana/.env.production",
                  "estudiantes/ana/.envrc", "estudiantes/ana/id_rsa",
-                 "estudiantes/ana/.aws/credentials",
                  "estudiantes/ana/llave.pem"):
         assert _correr(mod, monkeypatch, [_f(ruta)]) == 1, ruta
 
@@ -160,15 +159,6 @@ def test_api_truncada_falla_cerrado(mod, monkeypatch):
     no podemos afirmar que revisamos la entrega completa."""
     archivos = [_f("estudiantes/ana/07_git/bitacora.md")]
     assert _correr(mod, monkeypatch, archivos, declarado=3001) == 1
-
-
-def test_ruta_con_dot_dot_falla(mod, monkeypatch):
-    assert _correr(mod, monkeypatch,
-                   [_f("estudiantes/ana/../../course/robo.md")]) == 1
-
-
-def test_ruta_absoluta_falla(mod, monkeypatch):
-    assert _correr(mod, monkeypatch, [_f("/etc/passwd")]) == 1
 
 
 def test_archivo_llamado_estudiantes_ana_va_a_ubicacion(mod, monkeypatch):

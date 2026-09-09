@@ -73,7 +73,9 @@ git switch -c practica-a
 
 ---
 
-## 2 · Dos branches, el mismo archivo
+## 2 · Dos branches tuyas también chocan
+
+Esto ya lo hiciste en [[branches-y-merge|Branches y merge]], con su laboratorio de juguete. Aquí sólo cambia el escenario: las dos branches son tuyas y el archivo está en tu carpeta. **El mecanismo es idéntico**, y por eso no lo repetimos.
 
 ```bash
 git switch main          # las dos nacen del MISMO punto
@@ -82,143 +84,13 @@ echo "escrito en practica-b" > estudiantes/$GHUSER/nota.txt
 git add estudiantes/$GHUSER/nota.txt
 git commit -m "practica: nota en la branch b"
 
-git merge practica-a     # tráela a la branch donde estás
+git merge practica-a     # → CONFLICT (add/add)
 ```
 
-**Deberías ver:**
-
-```text
-Auto-merging estudiantes/tu-login/nota.txt
-CONFLICT (add/add): Merge conflict in
-  estudiantes/tu-login/nota.txt
-Automatic merge failed; fix conflicts and then
-commit the result.
-```
-
-### Qué le pasó a tu archivo
-
-```bash
-git status                      # both added: nota.txt
-cat estudiantes/$GHUSER/nota.txt
-```
-
-Git **no borró nada**: metió las dos versiones en el mismo archivo, separadas por tres líneas marcadoras.
-
-```text
-<<<<<<< HEAD
-escrito en practica-b
-=======
-escrito en practica-a
->>>>>>> practica-a
-```
-
-::: table {#git-marcadores title="Las tres líneas que Git inserta"}
-
-| Línea | Qué marca |
-|---|---|
-| `<<<<<<< HEAD` | aquí empieza **tu** versión, la de la branch donde estás |
-| `=======` | aquí acaba la tuya y empieza la otra |
-| `>>>>>>> practica-a` | aquí acaba la de la branch que mergeaste, y dice cuál es |
-
-:::
-
-> **Resolver el conflicto son dos cosas, y las dos son obligatorias:**
-> 1. Dejar el archivo con el contenido que quieres.
-> 2. **Borrar las tres líneas marcadoras.**
-
-Nadie te obliga a escoger un lado. Puedes quedarte con una mitad, con la otra, con las dos, o escribir algo nuevo. Git no opina: sólo se niega a decidir por ti.
-
-### Paso 1: edítalo con un editor
-
-Aquí **no** sirve `echo` ni `printf`: sobrescriben el archivo entero, y en un archivo de verdad tienes que conservar todo lo que no está en conflicto. Ábrelo:
-
-```bash
-nano estudiantes/$GHUSER/nota.txt
-```
-
-Digamos que quieres quedarte con las dos frases. **Borra las tres líneas marcadoras** y deja el archivo exactamente así:
-
-```text
-escrito en practica-b
-escrito en practica-a
-```
-
-En `nano`, que es el editor que viste en la unidad de terminal:
-
-| Para | Teclas |
-|---|---|
-| **Borrar la línea donde está el cursor** | `Ctrl+K` |
-| Moverte | las flechas |
-| Guardar | `Ctrl+O`, luego Enter |
-| Salir | `Ctrl+X` |
-
-Son tres `Ctrl+K`, uno por cada marcador. Si prefieres VS Code, `code estudiantes/$GHUSER/nota.txt` te muestra botones de *Accept Current* / *Accept Incoming* que hacen lo mismo por ti.
-
-### Paso 2: comprueba que no quedó ningún marcador
-
-Éste es el paso que casi nadie hace, y el que evita el error de la advertencia de abajo.
-
-**Para qué sirve:** los marcadores son fáciles de dejar a medias, sobre todo en un archivo largo donde el conflicto está en la línea 200. Este comando **los cuenta por ti**, en vez de que los busques con la vista.
-
-```bash
-cat estudiantes/$GHUSER/nota.txt   # míralo con tus ojos
-grep -c '^[<=>]\{7\}' estudiantes/$GHUSER/nota.txt
-```
-
-Qué hace, pieza por pieza:
-
-```text
-grep -c '^[<=>]\{7\}' nota.txt
-     │    ││    │
-     │    ││    └── ...siete veces seguidas
-     │    │└─────── uno de estos tres caracteres...
-     │    └──────── al principio de la línea...
-     └───────────── -c: no me las muestres, cuéntalas
-```
-
-Es decir: **cuenta las líneas que empiezan con `<<<<<<<`, `=======` o `>>>>>>>`**. El patrón es de la [[expresiones-regulares|unidad de expresiones regulares]].
-
-Cada conflicto mete tres líneas, así que con dos conflictos en el mismo archivo el resultado es `6`. Por eso la regla es «cero», no «menos de tres». Y ojo con un falso positivo honesto: en Markdown, una línea de `=======` bajo un título es un subrayado legítimo y también cuenta. Si el número no baja a cero y no ves marcadores, mira si es eso.
-
-::: table {#git-grep-marcadores title="Qué hacer con el número que te responde"}
-
-| Si dice | Qué significa | Qué haces |
-|---|---|---|
-| `0` | No queda ningún marcador | Sigue al paso 3 |
-| **cualquier otro número** | Todavía hay marcadores dentro | Vuelve al editor y bórralos |
-
-:::
-
-> [!WARNING]
-> **Si dejas un marcador, Git lo commitea sin decirte nada.** No hay advertencia, no hay error: tu archivo se queda con un `<<<<<<< HEAD` dentro para siempre, y lo descubres semanas después cuando el código no corre. Por eso se comprueba, y no se confía.
-
-### Paso 3: cierra el merge
-
-```bash
-# add = "ya lo revisé, ésta es la buena"
-git add estudiantes/$GHUSER/nota.txt
-git status                        # All conflicts fixed
-git commit -m "practica: resuelvo el conflicto"
-```
-
-Aquí `git add` significa algo distinto de lo habitual: no es "apartar para el próximo commit", es **"ya lo resolví"**. Por eso el conflicto se cierra con el mismo comando que usas para todo lo demás.
-
-### Si te arrepientes: la salida de emergencia
-
-```bash
-git merge --abort
-```
-
-Deja todo exactamente como estaba antes de intentar el merge, marcadores incluidos. **Sólo funciona mientras el merge sigue abierto**: una vez que hiciste el `commit` del paso 3, ya no hay nada que abortar.
-
-![Ciudad densa bajo lluvia intensa en teal frío y concreto húmedo, vista desde lo alto entre dos torres enfrentadas: tras una ventana iluminada de cada torre trabaja una figura pequeña de espaldas, y un solo cable tenso une las dos ventanas con una gota de luz ámbar suspendida en el centro exacto, sin avanzar hacia ningún lado.](../_assets/ilus-git-colaboracion.jpg)
-
-Lo que acabas de provocarte a solas es exactamente lo que pasa cuando dos personas tocan el mismo archivo. La mecánica es idéntica; lo único que cambia es que del otro lado hay alguien más. Por eso conviene romperlo aquí primero.
+Resuélvelo como en 7.1: edita hasta que no quede ningún marcador, comprueba con `grep -c '^[<=>]\{7\}' <archivo>` que dice `0`, y cierra con `git add` y `git commit`. O sal con `git merge --abort`.
 
 > [!NOTE]
-> Un conflicto no es un error. Es Git negándose a inventar. La única forma de que nunca aparezca es que dos personas no toquen las mismas líneas, y de ahí sale la regla de la página 4.
-
----
+> Lo que acabas de provocarte a solas es lo que pasa cuando dos personas tocan el mismo archivo. La única forma de que no aparezca nunca es que nadie toque las líneas de nadie, y de ahí sale la regla de la página 4.
 
 ## 3 · La branch atrasada, que es la que rompe entregas
 
@@ -315,34 +187,6 @@ tarea-07-git      tarea-08-python      tarea-09-sql
 ```
 
 Sin espacios, sin acentos, en minúsculas. Y **nunca se entrega desde `main`**: un pull request que sale de tu `main` se rechaza automáticamente.
-
-::: problem {#git-p9-marcadores title="Commiteé con los marcadores dentro"}
-Un compañero resuelve su conflicto con prisa. Borra dos de las tres líneas marcadoras, deja el archivo como quiere, y hace `git add` y `git commit`.
-
-Git no le dice nada. El commit se crea, `git status` queda limpio, y él sigue con su vida. Dos semanas después su script no corre y el error apunta a una línea que dice `>>>>>>> practica-a`.
-
-¿Por qué Git no le avisó, y qué debió haber hecho?
-:::
-
-::: hint {of="git-p9-marcadores"}
-Piensa qué significa exactamente `git add` durante un merge, y qué es lo que Git sabe comprobar y qué no.
-:::
-
-::: answer {of="git-p9-marcadores"}
-Git **no lee el contenido de tus archivos**. Los marcadores no son sintaxis de Git: son texto que Git escribió dentro del archivo para que tú decidieras. Una vez escritos, para Git son caracteres como cualquier otro.
-
-Y `git add`, durante un merge, significa una sola cosa: **"ya lo revisé, esta versión es la buena"**. Es una afirmación tuya, no una comprobación suya. Cuando le dices eso, Git te cree. Por eso el commit se crea sin una advertencia, sin un warning, sin nada.
-
-Ésa es la única parte de todo el flujo donde Git no te protege. En todo lo demás —un push atrasado, una branch sin mergear, un switch con trabajo sin guardar— hay un mensaje que te detiene. Aquí no.
-
-Debió haber corrido la comprobación del paso 2 antes del `add`:
-
-```bash
-grep -c '^[<=>]\{7\}' <archivo>   # tiene que decir 0
-```
-
-Y para arreglarlo ahora: editar el archivo, borrar lo que quedó, y commitear la corrección. El commit viejo se queda en la historia con la basura dentro, que es el costo de no haber mirado.
-:::
 
 > [!NOTE]
 > **Si sólo recuerdas una cosa:** una branch por tarea, nacida de un `main` recién actualizado. Si `git log --oneline tu-branch..upstream/main` no sale vacío, tu pull request va a incluir cosas que no son tuyas.

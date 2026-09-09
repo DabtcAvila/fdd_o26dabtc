@@ -123,6 +123,8 @@ En la página 3 te provocaste un conflicto. La condición que lo produjo fue muy
           tu copia, intacta
 ```
 
+![Ciudad densa bajo lluvia intensa en teal frío y concreto húmedo, vista desde lo alto entre dos torres enfrentadas: tras una ventana iluminada de cada torre trabaja una figura pequeña de espaldas, y un solo cable tenso une las dos ventanas con una gota de luz ámbar suspendida en el centro exacto, sin avanzar hacia ningún lado.](../_assets/ilus-git-colaboracion.jpg)
+
 Nadie toca las líneas de nadie. Todos los casos se vuelven el primer escenario del diagrama. **Ésa es toda la razón de la regla.**
 
 ::: table {#git-zonas title="Qué puedes tocar"}

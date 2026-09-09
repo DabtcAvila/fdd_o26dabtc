@@ -139,63 +139,38 @@ La solución no es repartir permisos: es que **nadie escriba ahí**. Cada quien 
 
 ## Los comandos, uno por uno
 
-### `$GHUSER`, tu login, guardado para siempre
+### `$GHUSER`, tu login
 
-Tu **login** es lo único de todo el flujo que cambia de persona a persona. Y no cambia nunca durante el semestre, así que **se guarda una vez y ya**.
-
-Está en la barra de direcciones del fork que acabas de crear:
+Es lo único del flujo que cambia de persona a persona, y no cambia nunca durante el semestre. Está en la URL del fork que acabas de crear:
 
 ```text
   github.com/butronand-png/fdd_o26_butronand-png
              └────┬──────┘
-              tu login, tal cual. Cópialo de ahí
+              tu login. Cópialo de ahí
 ```
 
-Guárdalo en la configuración de tu shell, para que exista en toda terminal que abras de aquí a diciembre:
+Guárdalo en tu perfil del shell, **una vez en la vida**, con tu login de verdad. Así existe en toda terminal que abras y ningún comando de la unidad te va a fallar por una variable vacía:
 
 ```bash
-echo $SHELL      # ¿zsh o bash? esto te lo dice
-
-# macOS suele traer zsh; Linux y WSL2 suelen traer bash.
-# Corre SÓLO la línea de tu shell, con tu login de verdad:
-echo 'export GHUSER=tu-login' >> ~/.zshrc
-echo 'export GHUSER=tu-login' >> ~/.bashrc
+echo 'export GHUSER=tu-login' >> ~/.zshrc    # macOS
+echo 'export GHUSER=tu-login' >> ~/.bashrc   # Linux y WSL2
 ```
 
-Cierra la terminal, abre otra, y compruébalo:
+Abre una terminal nueva y compruébalo:
 
 ```bash
-echo "$GHUSER"   # tiene que imprimir tu login, no vacío
+echo "$GHUSER"   # tu login, no una línea vacía
 ```
-
-**Por qué en el perfil y no a secas:** una variable escrita en la terminal muere al cerrarla. Tu login no cambia en todo el semestre, así que no tiene por qué morirse. Puesto ahí, ningún comando de esta unidad te va a fallar por una variable vacía.
 
 > [!NOTE]
-> **¿Y si lo tecleo mal?** No se queda callado. Si el login está mal, la URL de tu fork está mal y `git push` responde `Repository not found` al primer intento. Y si tu carpeta queda con otro nombre, la revisión automática te lo dice **con el nombre exacto que esperaba**. Los dos errores se detectan solos, así que teclearlo es seguro.
-
-Si tienes `gh` instalado te lo dice sin buscarlo. Es cómodo, no es obligatorio, y **`gh` no se instala en este curso**:
-
-```bash
-gh api user --jq .login
-```
+> Si lo tecleas mal no se queda callado: `git push` responde `Repository not found` al primer intento, y si tu carpeta queda con otro nombre la revisión automática te dice el nombre exacto que esperaba.
 
 
 ### `git remote rename` y `git remote add`
 
 `git remote -v` **lista los repositorios remotos que tu copia conoce**: el apodo de cada uno y su URL. La `-v` es de *verbose*, y es lo que hace que muestre las URLs y no sólo los nombres. Cada remote aparece dos veces, una para bajar (`fetch`) y otra para subir (`push`).
 
-Y un `remote` **es sólo un apodo para una URL**. `origin` no es palabra reservada de Git: es convención. Por eso se puede renombrar.
-
-```text
-git remote add origin \
-  git@github.com:$GHUSER/fdd_o26_$GHUSER.git
-           │     │     │   │          │   └── el repositorio
-           │     │     │   │          └────── tu cuenta
-           │     │     │   └───────────────── el servidor
-           │     │     └──────────────── usuario SSH: "git"
-           │     └────────────────────── el apodo, lo pones tú
-           └──────────────────────────── agrega un remote
-```
+Y un `remote` **es sólo un apodo para una URL**: en `git remote add origin <url>`, `origin` lo pones tú. No es palabra reservada de Git, es convención, y por eso se puede renombrar.
 
 **Deberías ver**, al final:
 

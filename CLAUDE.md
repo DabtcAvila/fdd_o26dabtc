@@ -102,7 +102,7 @@ Consequences worth internalizing:
 
 **The trigger is `pull_request_target`, and it must stay that way.** With `pull_request` GitHub runs the workflow *and the script* from the PR's merge ref, so a student could rewrite `revisa_entrega.py` in their own PR and approve themselves. The price of `pull_request_target` is that this job must never execute PR code: the checkout is pinned to `base.sha` with `persist-credentials: false`, and the script only queries the API — it never reads the working tree. `tools/test_revisa_entrega.py` asserts both of those structurally (note: PyYAML parses the `on:` key as the boolean `True`, not `"on"`).
 
-Two subtleties worth keeping: a rename reports only the destination in `filename`, so the script also validates `previous_filename` — otherwise `git mv course/x estudiantes/me/x` passes green and the merge deletes the course file. And the `/files` endpoint caps at 3000, so the script compares its count against the PR's `changed_files` and fails closed on a mismatch.
+One subtlety worth keeping: a rename reports only the destination in `filename`, so the script also validates `previous_filename` — otherwise `git mv course/x estudiantes/me/x` passes green and the merge deletes the course file. (The `/files` endpoint also caps at 3000, so the script compares its count against the PR's `changed_files` and fails closed on a mismatch.) It deliberately does **not** chase `..` or absolute paths: Git rejects those in the index already.
 
 The content that promises these checks is `course/7_git_y_github/2_github/4_el_flujo_del_curso.md`, so the two move together. The mirror rule is **not** machine-checked — say so wherever it is described.
 

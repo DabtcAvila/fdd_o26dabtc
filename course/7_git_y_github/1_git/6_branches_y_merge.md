@@ -223,6 +223,34 @@ Este merge sí creó un commit nuevo, con **dos padres**, porque las dos líneas
 > [!TIP]
 > Si el editor que se abre es `vim` y no sabes salir: escribe `:wq` y presiona Enter. Para evitarlo de una vez, `git config --global core.editor nano` deja uno más simple, donde se guarda con `Ctrl+O` y se sale con `Ctrl+X`.
 
+::: problem {#git-p9-marcadores title="Commiteé con los marcadores dentro"}
+Un compañero resuelve su conflicto con prisa. Borra dos de las tres líneas marcadoras, deja el archivo como quiere, y hace `git add` y `git commit`.
+
+Git no le dice nada. El commit se crea, `git status` queda limpio, y él sigue con su vida. Dos semanas después su script no corre y el error apunta a una línea que dice `>>>>>>> practica-a`.
+
+¿Por qué Git no le avisó, y qué debió haber hecho?
+:::
+
+::: hint {of="git-p9-marcadores"}
+Piensa qué significa exactamente `git add` durante un merge, y qué es lo que Git sabe comprobar y qué no.
+:::
+
+::: answer {of="git-p9-marcadores"}
+Git **no lee el contenido de tus archivos**. Los marcadores no son sintaxis de Git: son texto que Git escribió dentro del archivo para que tú decidieras. Una vez escritos, para Git son caracteres como cualquier otro.
+
+Y `git add`, durante un merge, significa una sola cosa: **"ya lo revisé, esta versión es la buena"**. Es una afirmación tuya, no una comprobación suya. Cuando le dices eso, Git te cree. Por eso el commit se crea sin una advertencia, sin un warning, sin nada.
+
+Ésa es la única parte de todo el flujo donde Git no te protege. En todo lo demás —un push atrasado, una branch sin mergear, un switch con trabajo sin guardar— hay un mensaje que te detiene. Aquí no.
+
+Debió haber corrido la comprobación de arriba antes del `add`:
+
+```bash
+grep -c '^[<=>]\{7\}' <archivo>   # tiene que decir 0
+```
+
+Y para arreglarlo ahora: editar el archivo, borrar lo que quedó, y commitear la corrección. El commit viejo se queda en la historia con la basura dentro, que es el costo de no haber mirado.
+:::
+
 ## La salida de emergencia
 
 **Haz:** provoca otro conflicto y esta vez no lo resuelvas.
