@@ -211,7 +211,25 @@ Antes de commitear conviene comprobar que no quedó ningún marcador. En vez de 
 grep -c '^[<=>]\{7\}' texto.txt
 ```
 
-Ese `grep` cuenta las líneas que empiezan con siete `<`, `=` o `>` —o sea, los tres marcadores y nada más—. **Tiene que responder `0`.** Si responde otra cosa, todavía hay marcadores dentro y hay que volver al archivo.
+Qué hace, pieza por pieza:
+
+```text
+grep -c '^[<=>]\{7\}' texto.txt
+     │    ││    │
+     │    ││    └── ...siete veces seguidas
+     │    │└─────── uno de estos tres caracteres...
+     │    └──────── al principio de la línea...
+     └───────────── -c: no me las muestres, cuéntalas
+```
+
+Es decir: **cuenta las líneas que empiezan con `<<<<<<<`, `=======` o `>>>>>>>`**.
+
+| Si dice | Qué significa | Qué haces |
+|---|---|---|
+| `0` | No queda ningún marcador | Commitea |
+| cualquier otro número | Todavía hay marcadores dentro | Vuelve al archivo |
+
+Cada conflicto mete tres líneas, así que con dos conflictos en el mismo archivo el resultado es `6`. Por eso la regla es «cero», no «menos de tres». Y un falso positivo honesto: en Markdown, una línea de `=======` bajo un título es un subrayado legítimo y también cuenta. Si el número no baja a cero y no ves marcadores, mira si es eso.
 
 > [!WARNING]
 > **Si dejas un marcador, Git lo commitea sin decirte nada.** No hay advertencia ni error: el `<<<<<<< HEAD` se queda dentro de tu archivo, y lo descubres semanas después cuando el código no corre. Por eso se comprueba y no se confía.
