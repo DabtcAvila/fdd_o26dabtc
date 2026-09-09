@@ -96,9 +96,15 @@ Consequences worth internalizing:
 
 ## CI
 
-`.github/workflows/pages.yml` runs `pytest tools/` as job `checks`, then calls the reusable workflow, which validates, builds, inspects, and deploys. `needs: checks` is what makes the tests a real gate — without it both jobs race and the site publishes even when the suite fails. The `course-pages` job is skipped for pull requests from forks: a student PR carries a read-only token, so the deploy would always fail and paint their check red.
+`.github/workflows/pages.yml` runs `pytest tools/` as job `checks`, then calls the reusable workflow, which validates, builds, inspects, and deploys. `needs: checks` is what makes the tests a real gate — without it both jobs race and the site publishes even when the suite fails. It runs on fork PRs too, on purpose: the useful work there is `raya validate`, which catches a broken course before the merge. The reusable workflow already gates the deploy itself to a push on the default branch, so nothing publishes from a PR.
 
-`.github/workflows/entregas.yml` is the student-submission gate, and `.github/scripts/revisa_entrega.py` holds its logic. Four blocking rules: every touched file lives under `estudiantes/<PR author's login>/`, that folder name matches the login exactly (case included), no garbage was **added** (deletions are ignored on purpose — removing a stray `.DS_Store` is the right move), and the PR does not come from the author's `main`. Accounts listed in the workflow's `MANTENEDORES` env var are exempt. `tools/test_revisa_entrega.py` guards all four in both directions; the content that promises these checks is `course/7_git_y_github/2_github/4_el_flujo_del_curso.md`, so the two move together.
+`.github/workflows/entregas.yml` is the student-submission gate, and `.github/scripts/revisa_entrega.py` holds its logic. Four blocking rules: every touched file lives under `estudiantes/<PR author's login>/`, that folder name matches the login exactly (case included), no garbage was **added** (deletions are ignored on purpose — removing a stray `.DS_Store` is the right move), and the PR does not come from the fork's default branch. Accounts listed in the workflow's `MANTENEDORES` env var are exempt, and bots are skipped entirely.
+
+**The trigger is `pull_request_target`, and it must stay that way.** With `pull_request` GitHub runs the workflow *and the script* from the PR's merge ref, so a student could rewrite `revisa_entrega.py` in their own PR and approve themselves. The price of `pull_request_target` is that this job must never execute PR code: the checkout is pinned to `base.sha` with `persist-credentials: false`, and the script only queries the API — it never reads the working tree. `tools/test_revisa_entrega.py` asserts both of those structurally (note: PyYAML parses the `on:` key as the boolean `True`, not `"on"`).
+
+Two subtleties worth keeping: a rename reports only the destination in `filename`, so the script also validates `previous_filename` — otherwise `git mv course/x estudiantes/me/x` passes green and the merge deletes the course file. And the `/files` endpoint caps at 3000, so the script compares its count against the PR's `changed_files` and fails closed on a mismatch.
+
+The content that promises these checks is `course/7_git_y_github/2_github/4_el_flujo_del_curso.md`, so the two move together. The mirror rule is **not** machine-checked — say so wherever it is described.
 
 Deployment requires the repository to stay **public**: GitHub Pages is not available for private repos on this organization's plan.
 
