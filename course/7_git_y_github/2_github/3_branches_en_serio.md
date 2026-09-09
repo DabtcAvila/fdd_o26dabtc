@@ -64,7 +64,12 @@ git switch -c practica-a
 > Una branch no es una carpeta ni una copia. Es un punto de la historia, y `git switch` **sincroniza tu carpeta con ese punto**.
 
 > [!WARNING]
-> Con cambios sin commitear, Git se niega a cambiar de branch: `Your local changes would be overwritten`. No te regaña, te avisa de que el switch los borraría. Salidas: `git commit` o `git stash`.
+> Con cambios sin commitear, Git **puede** negarse a cambiar de branch:
+> ```text
+> error: Your local changes to the following files
+> would be overwritten by checkout:
+> ```
+> Sólo se niega si ese archivo **difiere** entre las dos branches; si es igual, te deja pasar y se lleva la edición contigo. No te regaña: te avisa de que el switch la borraría. Salidas: `git commit` o `git stash`.
 
 ---
 
@@ -83,15 +88,17 @@ git merge practica-a     # tráela a la branch donde estás
 **Deberías ver:**
 
 ```text
-CONFLICT (content): Merge conflict in
+Auto-merging estudiantes/tu-login/nota.txt
+CONFLICT (add/add): Merge conflict in
   estudiantes/tu-login/nota.txt
-Automatic merge failed; fix conflicts and then commit.
+Automatic merge failed; fix conflicts and then
+commit the result.
 ```
 
 ### Qué le pasó a tu archivo
 
 ```bash
-git status                      # both modified: nota.txt
+git status                      # both added: nota.txt
 cat estudiantes/$U/nota.txt
 ```
 
@@ -160,14 +167,16 @@ grep -c '^[<=>]\{7\}' nota.txt
      └───────────── -c: no me las muestres, cuéntalas
 ```
 
-Es decir: **cuenta las líneas que empiezan con `<<<<<<<`, `=======` o `>>>>>>>`**, que son exactamente las tres que Git insertó y ninguna otra. El patrón es de la [[expresiones-regulares|unidad de expresiones regulares]].
+Es decir: **cuenta las líneas que empiezan con `<<<<<<<`, `=======` o `>>>>>>>`**. El patrón es de la [[expresiones-regulares|unidad de expresiones regulares]].
+
+Cada conflicto mete tres líneas, así que con dos conflictos en el mismo archivo el resultado es `6`. Por eso la regla es «cero», no «menos de tres». Y ojo con un falso positivo honesto: en Markdown, una línea de `=======` bajo un título es un subrayado legítimo y también cuenta. Si el número no baja a cero y no ves marcadores, mira si es eso.
 
 ::: table {#git-grep-marcadores title="Qué hacer con el número que te responde"}
 
 | Si dice | Qué significa | Qué haces |
 |---|---|---|
 | `0` | No queda ningún marcador | Sigue al paso 3 |
-| `1`, `2` o `3` | Todavía hay marcadores dentro | Vuelve al editor y bórralos |
+| **cualquier otro número** | Todavía hay marcadores dentro | Vuelve al editor y bórralos |
 
 :::
 
@@ -213,32 +222,41 @@ Lo que acabas de provocarte a solas es exactamente lo que pasa cuando dos person
 ```bash
 git switch main
 git switch -c practica-atrasada   # nace del main de ahorita
-git switch main
 
-# simula que el curso avanzó mientras trabajabas
+# haz algo en tu branch, como en una tarea de verdad
+echo "mi trabajo" > estudiantes/$U/tarea.txt
+git add estudiantes/$U/tarea.txt
+git commit -m "practica: mi trabajo de la tarea"
+
+# ahora simulamos que el curso avanzó mientras tú trabajabas.
+# El avance va en su propia branch: tu main no se toca en toda
+# la práctica, y por eso la limpieza del final es indolora.
+git switch -c curso-simulado main
 echo "avance del curso" > estudiantes/$U/simulacion.txt
 git add estudiantes/$U/simulacion.txt
 git commit -m "practica: simulo que el curso avanzó"
 
 git switch practica-atrasada
 
-# el comando que lo DIAGNOSTICA
-git log --oneline practica-atrasada..main
+# el comando que lo DIAGNOSTICA: qué le falta a tu branch
+git log --oneline practica-atrasada..curso-simulado
 
 # el RESCATE, un solo comando
-git merge main
+git merge curso-simulado
 
 # ahora la lista sale vacía
-git log --oneline practica-atrasada..main
+git log --oneline practica-atrasada..curso-simulado
 ```
 
 ```text
-git log --oneline practica-atrasada..main
+git log --oneline practica-atrasada..curso-simulado
                   │                  └── ...hasta este otro
                   └──────────────── qué le falta a éste...
 ```
 
 **Si esa lista no está vacía, tu branch nació atrasada.**
+
+Aquí se compara contra `curso-simulado` porque ahí pusimos el avance. **En la vida real se compara contra `upstream/main`**, que es donde de verdad avanza el curso: tu `main` local puede estar tan atrasado como tu branch, y entonces `..main` te sale vacío y te miente.
 
 Por qué importa: el pull request **no compara tu branch contra el curso de hoy**, sino contra el punto donde las dos historias se separaron.
 
@@ -252,15 +270,16 @@ Por eso el flujo empieza por ponerse al día, y no a la mitad.
 
 ```bash
 git switch main
-git fetch upstream
-git reset --hard upstream/main  # tira los commits de práctica
-git branch -D practica-a practica-b practica-atrasada
+git branch -D practica-a practica-b \
+              practica-atrasada curso-simulado
 git branch                      # sólo main
-git status                      # limpio
+git status                      # sólo tu carpeta, untracked
 ```
 
-> [!WARNING]
-> `git reset --hard` **descarta trabajo sin preguntar**. Aquí es seguro porque tu `main` local sólo tiene los commits de práctica. Fuera de este contexto, léelo dos veces.
+Todo lo que creaste vivía en branches, así que borrarlas basta: **tu `main` nunca se tocó**, y por eso aquí no hace falta ningún comando destructivo. Ésa es justamente la ventaja de trabajar en branches, vivida en carne propia.
+
+> [!NOTE]
+> `-D` con mayúscula borra aunque la branch tenga commits sin mergear. Aquí es lo que queremos, porque era práctica. En una branch de tarea de verdad se usa `-d`, que se niega si hay trabajo sin guardar en ningún lado.
 
 ## El ciclo de vida de una branch
 
@@ -272,6 +291,7 @@ git status                      # limpio
 | Te mueves | `git switch <nombre>` | Reescribe tu carpeta con el contenido de esa branch |
 | No sabes dónde estás | `git branch --show-current` | Imprime el nombre. Cuesta cero, úsalo |
 | Nació atrasada | `git merge main` | Le trae lo que le faltaba |
+| ¿Nació atrasada? | `git log --oneline <branch>..upstream/main` | Si no sale vacío, sí |
 | Ya te mergearon el PR | `git branch -d tarea-07-git` | La borra **sólo si ya está mergeada** |
 | Era práctica, tírala | `git branch -D practica-a` | La borra aunque tenga trabajo sin mergear |
 
@@ -310,7 +330,7 @@ Moraleja doble: commit antes de cambiar de branch, y cuando Git se niegue a algo
 :::
 
 > [!NOTE]
-> **Si sólo recuerdas una cosa:** una branch por tarea, nacida de un `main` recién actualizado. Si `git log --oneline tu-branch..main` no sale vacío, tu pull request va a incluir cosas que no son tuyas.
+> **Si sólo recuerdas una cosa:** una branch por tarea, nacida de un `main` recién actualizado. Si `git log --oneline tu-branch..upstream/main` no sale vacío, tu pull request va a incluir cosas que no son tuyas.
 
 ## Cierre
 

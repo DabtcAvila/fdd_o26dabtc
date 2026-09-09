@@ -281,7 +281,7 @@ def git_lo_que_no_se_sube():
 
     monton = [
         ("ejemplo.sh", ACENTO, "lo escribiste tú"),
-        ("notas.md", ACENTO, "lo escribiste tú"),
+        ("bitacora.md", ACENTO, "lo escribiste tú"),
         (".DS_Store", ROJO, "lo puso el Finder"),
         ("__pycache__/", ROJO, "lo puso Python"),
         (".env", ROJO, "tus credenciales"),
@@ -298,7 +298,7 @@ def git_lo_que_no_se_sube():
         y += 50
 
     p.append(caja(560, 78, 480, 340, PANEL, ACENTO))
-    p.append(teclado(800, 112, "git add ejemplo.sh notas.md", ACENTO, 15))
+    p.append(teclado(800, 112, "git add ejemplo.sh bitacora.md", ACENTO, 15))
     p.append(texto(800, 136, "se lleva las dos que nombraste", ACENTO, 13.5))
     y = 164
     for nombre, color, glosa in monton:
@@ -586,30 +586,31 @@ def git_el_mirror():
             y += 34
         return salida
 
-    p.append(caja(40, 82, 420, 236, PANEL, ROJO))
+    p.append(caja(40, 82, 420, 250, PANEL, ROJO))
     p.append(texto(250, 112, "zona roja — sólo lectura", ROJO, 15, peso="600"))
-    p.extend(arbol(70, 152, ROJO, [
+    p.extend(arbol(70, 146, ROJO, [
         (0, "codigo/", False), (1, "07_git/", True),
-        (2, "ejemplo.sh", False), (2, "notas.md", False),
+        (2, "ejemplo.sh", False), (2, "bitacora.md", False),
     ]))
-    p.append(texto(250, 300, "lo que yo publico. No lo edites.", SUAVE, 12.5))
+    p.append(texto(250, 318, "lo que yo publico. No lo edites.", SUAVE, 12.5))
 
-    p.append(caja(620, 82, 420, 236, PANEL, ACENTO))
+    p.append(caja(620, 82, 420, 250, PANEL, ACENTO))
     p.append(texto(830, 112, "zona verde — tuya", ACENTO, 15, peso="600"))
-    p.extend(arbol(650, 152, ACENTO, [
+    p.extend(arbol(650, 146, ACENTO, [
         (0, "estudiantes/", False), (1, "tu-login/", False),
         (2, "07_git/", True), (3, "ejemplo.sh", False),
+        (3, "bitacora.md", False),
     ]))
-    p.append(texto(830, 300, "aquí trabajas. Sólo aquí.", SUAVE, 12.5))
+    p.append(texto(830, 318, "aquí trabajas. Sólo aquí.", SUAVE, 12.5))
 
     p.append(flecha(468, 196, 612, 196, ACENTO, 2.5))
     p.append(chip(540, 168, "copiar", ACENTO, tam=13))
 
-    p.append(caja(120, 350, 840, 64, FONDO, ACENTO, radio=10, grosor=1.6))
-    p.append(teclado(540, 378, "cp -r codigo/07_git/. estudiantes/$U/07_git/", ACENTO, 16))
-    p.append(texto(540, 402, "la barra y el punto copian el contenido, no la carpeta: sin ellos acabas con 07_git dentro de 07_git", SUAVE, 12))
+    p.append(caja(120, 360, 840, 64, FONDO, ACENTO, radio=10, grosor=1.6))
+    p.append(teclado(540, 388, "cp -r codigo/07_git/. estudiantes/$U/07_git/", ACENTO, 16))
+    p.append(texto(540, 412, "la barra y el punto copian el contenido, no la carpeta: sin ellos acabas con 07_git dentro de 07_git", SUAVE, 12))
 
-    p.append(texto(ancho / 2, 448, "El nombre 07_git no se inventa ni se traduce: es el mismo de los dos lados, y el robot lo compara.", SUAVE, 13.5))
+    p.append(texto(ancho / 2, 448, "El nombre 07_git no se inventa ni se traduce: es el mismo de los dos lados. Esto lo reviso yo, no la revisión automática.", SUAVE, 13.5))
     p.append(texto(ancho / 2, 474, "Tu carpeta se llama exactamente como tu usuario de GitHub, que sale de un comando y no del teclado.", SUAVE, 13.5))
     p.append(cierre())
     return "".join(p)

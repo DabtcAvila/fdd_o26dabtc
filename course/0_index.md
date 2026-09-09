@@ -31,9 +31,9 @@ lees aquí y lo que está en el repositorio son la misma cosa vista de dos maner
 Ahí están las notas de cada sesión, el material de apoyo, el calendario y la
 definición de cada tarea.
 
-**Las tareas se entregan en Canvas**, no aquí. El repositorio es de dónde sacas el
-material; Canvas es a dónde subes la evidencia:
-https://itam.instructure.com/courses/17979/assignments/225402
+**Desde la unidad 7 las tareas se entregan por pull request a este repositorio**,
+con el flujo de [[el-ritual-del-curso|El ritual]]. Antes del 8 de septiembre de
+2026 se entregaban en Canvas; esas entregas siguen ahí y no se mueven.
 
 ## Fechas académicas que afectan al curso
 

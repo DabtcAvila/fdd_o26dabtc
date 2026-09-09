@@ -32,8 +32,9 @@ content:
     ellos, la segunda vez que corras el comando acabas con 07 guion bajo git
     dentro de 07 guion bajo git, y la revisión automática lo deja pasar porque
     técnicamente está dentro de tu carpeta. No copies arrastrando en el Finder
-    ni en el Explorador: producen nombres con la palabra copia y ésos sí se
-    rechazan.
+    ni en el Explorador: producen nombres con la palabra copia, que no son el
+    nombre del espejo. La revision automatica no los detecta, asi que ese error
+    llega hasta mi y cuenta como entrega mal hecha.
     Sabrás que terminaste cuando el pull request esté abierto y su revisión
     automática esté en verde. Ese es el criterio: entregado significa pull
     request abierto antes de la fecha, con el check en verde. Que yo lo mergee

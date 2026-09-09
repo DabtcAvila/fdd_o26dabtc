@@ -85,14 +85,12 @@ Los dos campos que importan: **Owner** tiene que ser tu cuenta —no una organiz
 
 Esa línea es el "recuerdo" del que hablaba la página 1: es lo que le permite a GitHub ofrecerte después el botón de pull request. Si no aparece, no hiciste un fork.
 
-**Compruébalo desde la terminal**, para no depender de mirar el navegador:
+**Compruébalo sin salir del navegador:** si la línea `forked from` está ahí, ya está. Más adelante, cuando tengas `$U` definida, también se puede desde la terminal:
 
 ```bash
 gh repo view $U/fdd_o26 --json parent \
-  --jq .parent.nameWithOwner
+  --jq .parent.nameWithOwner        # → raya-lucaria/fdd_o26
 ```
-
-**Deberías ver** `raya-lucaria/fdd_o26`. Si responde `null` o un error, el fork no existe o quedó con otro nombre.
 
 > [!NOTE]
 > **¿Ya lo habías forkeado antes?** Pasa cada semestre: alguien lo forkeó por curiosidad en agosto, o repite la materia. No lo forkees otra vez —GitHub no te deja tener dos con el mismo nombre—, actualízalo. En tu fork, GitHub te muestra `This branch is 47 commits behind raya-lucaria:main` y junto un botón **Sync fork → Update branch**. Presiónalo antes de seguir. El bloque A del ritual hace exactamente eso mismo, pero desde la terminal.

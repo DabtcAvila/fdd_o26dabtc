@@ -23,10 +23,12 @@ Lo único de esta página que se memoriza. Los cuatro bloques están en [[el-rit
 
 ```bash
 # ═══ PASO 0 · UNA VEZ EN EL SEMESTRE ══════════════════
-# ¿ya lo hice?
-#   git remote -v | grep -q upstream && echo SALTA
 # Primero el fork, en el navegador:
 #   github.com/raya-lucaria/fdd_o26
+
+cd ~/fdd/fdd_o26                 # el paso 0 va aquí dentro
+# ¿ya lo hice?  si imprime SALTA, brinca al bloque A
+git remote -v | grep -q upstream && echo SALTA
 
 U=$(gh api user --jq .login)     # tu login EXACTO
 echo "$U"                        # NO lo teclees a mano
@@ -115,12 +117,11 @@ Nunca `git add .`. La regla es agregar una ruta que puedas nombrar y que acabes 
 | Último commit | Deshacerlo y tirar el trabajo | `git reset --hard HEAD~1` | [[deshacer-en-git|Git · 5]] |
 | Estorba, lo quiero después | Apartarlo | `git stash` | [[deshacer-en-git|Git · 5]] |
 | Está en el stash | Traerlo de vuelta | `git stash pop` | [[deshacer-en-git|Git · 5]] |
-| Ya lo compartí | Deshacerlo sin reescribir | `git revert <hash>` | [[el-fork|GitHub · 2]] |
 | Creí haberlo perdido | Buscarlo | `git reflog` | [[deshacer-en-git|Git · 5]] |
 
 :::
 
-`git restore` es el único que borra sin red de seguridad. `reset` reescribe la historia; sobre algo ya compartido, usa `revert`.
+`git restore` y `git reset --hard` son los que borran sin red de seguridad. `reset` además reescribe la historia: sobre algo que ya subiste, no lo uses.
 
 ## Branches
 
@@ -135,7 +136,7 @@ Nunca `git add .`. La regla es agregar una ruta que puedas nombrar y que acabes 
 | Borrar una branch ya mergeada | `git branch -d <nombre>` | [[branches-y-merge|Git · 6]] |
 | Borrarla aunque no esté mergeada | `git branch -D <nombre>` | [[branches-en-serio|GitHub · 3]] |
 | Saber en qué branch estoy, sólo el nombre | `git branch --show-current` | [[branches-en-serio|GitHub · 3]] |
-| Saber si mi branch nació atrasada | `git log --oneline <branch>..main` | [[branches-en-serio|GitHub · 3]] |
+| Saber si mi branch nació atrasada | `git log --oneline <branch>..upstream/main` | [[branches-en-serio|GitHub · 3]] |
 | Rescatar una branch atrasada | `git merge main` | [[branches-en-serio|GitHub · 3]] |
 | Borrar la branch también del fork | `git push origin --delete <nombre>` | [[el-ritual-del-curso|GitHub · 5]] |
 

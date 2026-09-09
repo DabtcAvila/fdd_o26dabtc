@@ -20,6 +20,7 @@ Meta: comprobar en tres comandos que tu máquina está lista.
 - Git corre en tu máquina. **GitHub es un servidor donde se guardan repositorios de Git**, con cosas encima que Git no tiene.
 - La sección pasada fue sin conexión. Ésta es toda red.
 - Hoy no se instala nada: se comprueba y se trabaja.
+- Dos comprobaciones obligatorias y una opcional.
 
 ## Corre esto antes de leer nada más
 
@@ -30,9 +31,11 @@ ssh -T git@github.com
 # 2. ¿tengo el repositorio del curso en el disco?
 cd ~/fdd/fdd_o26 && git log --oneline -3
 
-# 3. ¿tengo gh, para preguntarle a GitHub quién soy?
+# 3. opcional: ¿tengo gh? no se instala en este curso
 gh api user --jq .login
 ```
+
+Las dos primeras son obligatorias. **La tercera no**: `gh` es el programa de GitHub para la terminal, es cómodo y no lo necesitas. Si responde `command not found`, sigue igual — la página 2 te da la alternativa.
 
 ::: table {#git-compuertas title="Qué hacer con cada resultado"}
 
@@ -40,7 +43,7 @@ gh api user --jq .login
 |---|---|---|
 | `ssh -T` | dice `Hi <tu-usuario>!` | [[cuenta-y-llave|Apéndice: cuenta y llave]] |
 | `git log` | te muestra tres commits | [[clonar-y-actualizar|Apéndice: clonar]] |
-| `gh api user` | imprime una palabra | nada; la página 2 da la salida sin `gh` |
+| `gh api user` | imprime una palabra | nada, es opcional; la página 2 da la alternativa |
 
 :::
 

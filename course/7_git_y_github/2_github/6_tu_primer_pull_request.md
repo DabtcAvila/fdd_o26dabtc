@@ -22,12 +22,17 @@ Meta: terminar la unidad con un pull request abierto y en verde.
 - **Entregado** = pull request abierto antes de la fecha, con la revisión en verde.
 - A partir de hoy **no hay Canvas**: todo el curso se entrega por GitHub.
 
-## Todo, en un bloque
+## Primera mitad: abre tu espacio
 
 ```bash
 cd ~/fdd/fdd_o26
-echo "$U" || U=$(gh api user --jq .login)
-git remote -v | grep -q upstream || echo "te falta el paso 0"
+# define $U si falta, y compruébala
+[ -n "$U" ] || U=$(gh api user --jq .login)
+echo "$U"                        # tiene que salir tu login
+
+# ¿tienes los dos remotes? si imprime FALTA, para aquí
+git remote -v | grep -q upstream \
+  && echo "remotes OK" || echo "FALTA: ve a la página 2"
 
 # ─── A · PONTE AL DÍA
 git switch main
@@ -39,27 +44,20 @@ git switch -c tarea-07-git
 mkdir -p estudiantes/$U/07_git
 cp -r codigo/07_git/. estudiantes/$U/07_git/
 ls -R estudiantes/$U/07_git
-
-#   ... llena la bitácora y corre el script (abajo) ...
-
-# ─── C · ENTREGA
-git status
-git add estudiantes/$U/07_git
-git status
-git commit -m "unidad 07: mi carpeta y mi bitacora"
-git push -u origin tarea-07-git
-#   → navegador: Compare & pull request
 ```
+
+> [!WARNING]
+> **Aquí te detienes.** Lo que sigue es llenar la bitácora, y si pegas la segunda mitad antes de hacerlo vas a entregar un archivo vacío — la revisión lo aprueba, porque está dentro de tu carpeta, y vas a creer que entregaste.
 
 Después del `ls -R` **deberías ver** exactamente esto, con tu login:
 
 ```text
-estudiantes/tu-login/07_git/
-├── bitacora.md
-└── ejemplo.sh
+estudiantes/tu-login/07_git:
+bitacora.md
+ejemplo.sh
 ```
 
-Si ves `07_git/07_git/`, se te fue el `/.`:
+Si aparece una segunda cabecera `.../07_git/07_git:`, se te fue el `/.`:
 
 ```bash
 rm -rf estudiantes/$U/07_git && mkdir -p estudiantes/$U/07_git
@@ -82,6 +80,19 @@ bash estudiantes/$U/07_git/ejemplo.sh tu-nombre
 
 > [!NOTE]
 > Reportar el pendiente cuenta. Presumir un avance que no ocurrió, no. La bitácora es para que yo sepa dónde se atoró el grupo.
+
+## Segunda mitad: entrega
+
+Ahora sí, con la bitácora llena:
+
+```bash
+git status                     # ¿qué cambió? míralo de verdad
+git add estudiantes/$U/07_git  # por ruta, nunca "."
+git status                     # eso, y nada más
+git commit -m "unidad 07: mi carpeta y mi bitacora"
+git push -u origin tarea-07-git
+#   → navegador: Compare & pull request
+```
 
 > [!WARNING]
 > Mira el segundo `git status` de verdad. Si aparece **cualquier** ruta que no empiece con `estudiantes/`, te van a rechazar. Sácala con `git restore --staged <archivo>` antes de commitear.
@@ -107,11 +118,20 @@ Título: `unidad 07 · tu-login`. Créalo, y **espera a que la revisión quede e
 | Dice | Qué pasó | Qué haces |
 |---|---|---|
 | Archivo fuera de tu carpeta | Tocaste la zona roja | `git restore codigo/`, commit, push |
-| El nombre no coincide | Tu carpeta no se llama como tu login | `git mv estudiantes/<malo> estudiantes/$U` |
+| El nombre no coincide | Tu carpeta no se llama como tu login | Renómbrala **en dos pasos**, abajo |
 | Basura detectada | Se coló un `.DS_Store` o un `__pycache__/` | `git rm --cached <archivo>`, commit, push |
 | El PR viene de `main` | Se te olvidó la branch | Crea la branch, muévete y abre otro PR |
 
 :::
+
+Si lo que falló fue **el nombre de tu carpeta**, se renombra en dos pasos. De golpe falla en macOS y en Windows, porque ahí el sistema de archivos no distingue mayúsculas:
+
+```bash
+git mv estudiantes/<malo> estudiantes/_tmp_entrega
+git mv estudiantes/_tmp_entrega estudiantes/$U
+```
+
+Y en cualquier caso:
 
 ```bash
 git add <lo que corregiste>

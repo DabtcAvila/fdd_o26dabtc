@@ -28,10 +28,12 @@ Si no vas a leer nada más, lee esto.
 
 ```bash
 # ═══ PASO 0 · UNA VEZ EN EL SEMESTRE ══════════════════
-# ¿ya lo hice?
-#   git remote -v | grep -q upstream && echo SALTA
 # Primero el fork, en el navegador:
 #   github.com/raya-lucaria/fdd_o26
+
+cd ~/fdd/fdd_o26                 # el paso 0 va aquí dentro
+# ¿ya lo hice?  si imprime SALTA, brinca al bloque A
+git remote -v | grep -q upstream && echo SALTA
 
 U=$(gh api user --jq .login)     # tu login EXACTO
 echo "$U"                        # NO lo teclees a mano
@@ -190,7 +192,7 @@ git merge upstream/main
 
 # B
 git switch -c ensayo
-touch estudiantes/$U/.gitkeep
+mkdir -p estudiantes/$U && touch estudiantes/$U/.gitkeep
 
 # C
 git status

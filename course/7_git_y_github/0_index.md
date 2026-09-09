@@ -18,7 +18,7 @@ prerequisites: [expresiones-regulares]
 - **Git es una herramienta que vive en tu máquina y no sabe qué es internet.** GitHub es una empresa que hospeda repositorios de Git y le agrega encima lo que Git no tiene.
 - Son cosas distintas, y por eso la unidad está partida en **dos secciones**.
 - La primera no toca la red ni una vez. La segunda es toda red.
-- Al final vas a abrir un pull request. Ése es el examen práctico de la unidad.
+- Al final vas a abrir un pull request. Ésa es la entrega de la unidad, y el formato de todas las que siguen.
 
 ## Las dos secciones
 
@@ -27,7 +27,7 @@ prerequisites: [expresiones-regulares]
 | Sección | Empieza en | Acaba cuando | Páginas | Tiempo |
 |---|---|---|---:|---:|
 | **[[seccion-git|1. Git]]** | La historia del problema, en 2005 | Puedes predecir un conflicto antes de provocarlo, sin conexión | 7 | 122 min |
-| **[[seccion-github|2. GitHub]]** | El fork del repositorio del curso | Tu pull request está abierto y en verde | 6 | 130 min |
+| **[[seccion-github|2. GitHub]]** | Git contra GitHub, en una tabla | Tu pull request está abierto y en verde | 6 | 130 min |
 
 :::
 
@@ -68,7 +68,7 @@ El trabajo previo a clase —cuenta, llave SSH y clonado— vive en el apéndice
 
 ## En qué orden leerlas
 
-Las dos primeras páginas de la sección de GitHub son el setup que se pidió **antes** de clase, así que en el calendario van primero. Están archivadas bajo GitHub porque eso es lo que son: crear una cuenta y una llave no tiene nada que ver con Git como herramienta.
+Las dos hojas del apéndice —cuenta y llave, y clonar— son el setup que se pidió **antes** de clase. Están archivadas bajo GitHub porque eso es lo que son: crear una cuenta y una llave no tiene nada que ver con Git como herramienta.
 
 Para leer la unidad completa, el orden natural es el de arriba: Git entero, y después GitHub. **La sección de Git no necesita nada de la de GitHub**, ni siquiera la llave SSH.
 
