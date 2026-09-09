@@ -147,7 +147,8 @@ git merge version-formal
 ```text
 Auto-merging texto.txt
 CONFLICT (content): Merge conflict in texto.txt
-Automatic merge failed; fix conflicts and then commit.
+Automatic merge failed; fix conflicts and then
+commit the result.
 ```
 
 **Eso es un éxito.** Provocaste exactamente lo que querías.

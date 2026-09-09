@@ -26,6 +26,7 @@ Meta: tu máquina hablando con dos repositorios, y saber cuál es cuál sin pens
 > [!NOTE]
 > **¿Ya lo hiciste en otra sesión?** Este comando te deja saltar la página:
 > ```bash
+> cd ~/fdd/fdd_o26
 > git remote -v | grep -q upstream \
 >   && echo "LISTO" || echo "FALTA"
 > ```
@@ -58,9 +59,10 @@ Arriba a la derecha, en la fila de botones del repositorio, está **Fork**. Es e
 
   Owner *                 Repository name *
   ┌──────────────────┐    ┌──────────────────────┐
-  │ tu-login       ▾ │  / │ fdd_o26              │
+  │ tu-login       ▾ │  / │ fdd_o26_tu-login     │
   └──────────────────┘    └──────────────────────┘
-    ↑ tu cuenta             ↑ NO le cambies el nombre
+    ↑ tu cuenta             ↑ AQUÍ SÍ: guion bajo
+                              y tu login
 
   Description  (opcional, déjalo vacío)
 
@@ -72,12 +74,17 @@ Arriba a la derecha, en la fila de botones del repositorio, está **Fork**. Es e
                └───────────────┘
 ```
 
-Los dos campos que importan: **Owner** tiene que ser tu cuenta —no una organización— y **Repository name** se queda como `fdd_o26`. Si le cambias el nombre, todos los comandos de esta unidad dejan de coincidir con lo que vas a teclear.
+Los dos campos que importan:
+
+- **Owner** tiene que ser tu cuenta, no una organización.
+- **Repository name**: bórralo y escribe `fdd_o26_` seguido de tu login. Si tu login es `butronand-png`, queda `fdd_o26_butronand-png`.
+
+Ese sufijo es para ti: en tu lista de repositorios vas a tener el del curso y el tuyo, y con el nombre a secas cuesta distinguirlos. Todos los comandos de esta unidad ya cuentan con él.
 
 **Deberías ver**, unos segundos después, el mismo repositorio bajo tu cuenta, y debajo del título una línea pequeña:
 
 ```text
-  tu-login / fdd_o26                             Public
+  tu-login / fdd_o26_tu-login                    Public
 
   forked from raya-lucaria/fdd_o26
   ↑ ESTA línea es el fork. Sin ella es sólo una copia suelta
@@ -85,12 +92,7 @@ Los dos campos que importan: **Owner** tiene que ser tu cuenta —no una organiz
 
 Esa línea es el "recuerdo" del que hablaba la página 1: es lo que le permite a GitHub ofrecerte después el botón de pull request. Si no aparece, no hiciste un fork.
 
-**Compruébalo sin salir del navegador:** si la línea `forked from` está ahí, ya está. Más adelante, cuando tengas `$U` definida, también se puede desde la terminal:
-
-```bash
-gh repo view $U/fdd_o26 --json parent \
-  --jq .parent.nameWithOwner        # → raya-lucaria/fdd_o26
-```
+**Compruébalo sin salir del navegador:** si la línea `forked from` está ahí, ya está.
 
 > [!NOTE]
 > **¿Ya lo habías forkeado antes?** Pasa cada semestre: alguien lo forkeó por curiosidad en agosto, o repite la materia. No lo forkees otra vez —GitHub no te deja tener dos con el mismo nombre—, actualízalo. En tu fork, GitHub te muestra `This branch is 47 commits behind raya-lucaria:main` y junto un botón **Sync fork → Update branch**. Presiónalo antes de seguir. El bloque A del ritual hace exactamente eso mismo, pero desde la terminal.
@@ -104,13 +106,14 @@ Con el fork ya hecho, lo demás es terminal. Todo lo que falta de esta página c
 cd ~/fdd/fdd_o26
 
 # tu login EXACTO. No lo teclees
-U=$(gh api user --jq .login) && echo "$U"
+GHUSER=$(gh api user --jq .login) && echo "$GHUSER"
 
 git remote -v                     # ahora: 2 líneas del curso
 git remote rename origin upstream # el del curso: aquí BAJAS
 
 # y origin pasa a ser TU fork: aquí SUBES
-git remote add origin git@github.com:$U/fdd_o26.git
+git remote add origin \
+  git@github.com:$GHUSER/fdd_o26_$GHUSER.git
 
 git remote -v                     # ahora: 4 líneas, 2 nombres
 
@@ -120,7 +123,8 @@ git merge upstream/main           # mételo. AQUÍ sí cambian
 git push origin main              # tu fork, al día
 
 # tu carpeta: el único lugar donde puedes escribir
-mkdir -p estudiantes/$U && touch estudiantes/$U/.gitkeep
+mkdir -p estudiantes/$GHUSER
+touch estudiantes/$GHUSER/.gitkeep
 ```
 
 ::: figure {#git-tres-repos title="Tres repositorios, y sólo en dos puedes escribir"}
@@ -135,25 +139,46 @@ La solución no es repartir permisos: es que **nadie escriba ahí**. Cada quien 
 
 ## Los comandos, uno por uno
 
-### `U=$(gh api user --jq .login)`
+### `$GHUSER`, tu login, guardado para siempre
 
-Tu **login** no es tu nombre de perfil. Cada semestre alguien crea su carpeta con el nombre equivocado.
+Tu **login** es lo único de todo el flujo que cambia de persona a persona. Y no cambia nunca durante el semestre, así que **se guarda una vez y ya**.
+
+Está en la barra de direcciones del fork que acabas de crear:
 
 ```text
-U=$(gh api user --jq .login)
-│  ││  │   │    │
-│  ││  │   │    └── quédate con el campo "login"
-│  ││  │   └─────── el recurso "quién soy yo"
-│  ││  └─────────── pregúntale a la API de GitHub
-│  │└────────────── el programa de GitHub para la terminal
-│  └─────────────── corre esto y guarda lo que imprima
-└────────────────── la variable donde se guarda
+  github.com/butronand-png/fdd_o26_butronand-png
+             └────┬──────┘
+              tu login, tal cual. Cópialo de ahí
 ```
 
-**Sin `gh`:** tu login es el campo *Username* de `https://github.com/settings/profile`. Entonces `U=tu-login-exacto`.
+Guárdalo en la configuración de tu shell, para que exista en toda terminal que abras de aquí a diciembre:
 
-> [!WARNING]
-> `$U` **muere al cerrar la terminal.** Cada vez que un comando diga `$U`, tiene que haber un `echo "$U"` correcto antes, o vas a crear carpetas llamadas `estudiantes//07_git`.
+```bash
+echo $SHELL      # ¿zsh o bash? esto te lo dice
+
+# macOS suele traer zsh; Linux y WSL2 suelen traer bash.
+# Corre SÓLO la línea de tu shell, con tu login de verdad:
+echo 'export GHUSER=tu-login' >> ~/.zshrc
+echo 'export GHUSER=tu-login' >> ~/.bashrc
+```
+
+Cierra la terminal, abre otra, y compruébalo:
+
+```bash
+echo "$GHUSER"   # tiene que imprimir tu login, no vacío
+```
+
+**Por qué en el perfil y no a secas:** una variable escrita en la terminal muere al cerrarla. Tu login no cambia en todo el semestre, así que no tiene por qué morirse. Puesto ahí, ningún comando de esta unidad te va a fallar por una variable vacía.
+
+> [!NOTE]
+> **¿Y si lo tecleo mal?** No se queda callado. Si el login está mal, la URL de tu fork está mal y `git push` responde `Repository not found` al primer intento. Y si tu carpeta queda con otro nombre, la revisión automática te lo dice **con el nombre exacto que esperaba**. Los dos errores se detectan solos, así que teclearlo es seguro.
+
+Si tienes `gh` instalado te lo dice sin buscarlo. Es cómodo, no es obligatorio, y **`gh` no se instala en este curso**:
+
+```bash
+gh api user --jq .login
+```
+
 
 ### `git remote rename` y `git remote add`
 
@@ -162,7 +187,8 @@ U=$(gh api user --jq .login)
 Y un `remote` **es sólo un apodo para una URL**. `origin` no es palabra reservada de Git: es convención. Por eso se puede renombrar.
 
 ```text
-git remote add origin git@github.com:$U/fdd_o26.git
+git remote add origin \
+  git@github.com:$GHUSER/fdd_o26_$GHUSER.git
            │     │     │   │          │   └── el repositorio
            │     │     │   │          └────── tu cuenta
            │     │     │   └───────────────── el servidor
@@ -174,8 +200,8 @@ git remote add origin git@github.com:$U/fdd_o26.git
 **Deberías ver**, al final:
 
 ```text
-origin    git@github.com:tu-login/fdd_o26.git (fetch)
-origin    git@github.com:tu-login/fdd_o26.git (push)
+origin    git@github.com:tu-login/fdd_o26_tu-login.git (fetch)
+origin    git@github.com:tu-login/fdd_o26_tu-login.git (push)
 upstream  git@github.com:raya-lucaria/fdd_o26.git (fetch)
 upstream  git@github.com:raya-lucaria/fdd_o26.git (push)
 ```
@@ -183,24 +209,16 @@ upstream  git@github.com:raya-lucaria/fdd_o26.git (push)
 > [!NOTE]
 > **Salida de rescate.** Si algo salió raro, borra y clona tu fork, que ya viene con el `origin` correcto:
 > ```bash
+> # PRIMERO comprueba que la variable no esté vacía. Si sale
+> # vacía, NO sigas: el clone fallaría y ya borraste todo.
+> echo "$GHUSER"
+>
 > cd ~/fdd && rm -rf fdd_o26
-> git clone git@github.com:$U/fdd_o26.git
+> git clone git@github.com:$GHUSER/fdd_o26_$GHUSER.git fdd_o26
 > cd fdd_o26
 > git remote add upstream \
 >   git@github.com:raya-lucaria/fdd_o26.git
 > ```
-
-> [!NOTE]
-> **El atajo, ahora que ya sabes qué hace.** `gh` puede hacer el fork **y** el arreglo de remotes en un solo comando, desde dentro del clon:
->
-> ```bash
-> cd ~/fdd/fdd_o26
-> gh repo fork --remote
-> ```
->
-> Hace las tres cosas de golpe: crea el fork en tu cuenta, renombra el `origin` que había a `upstream`, y agrega tu fork como `origin`. Exactamente el paso 1 y el arreglo de remotes, juntos.
->
-> Se enseña **después** y no antes a propósito: el día que algo falle vas a tener que leer `git remote -v` y entender qué ves. Un comando que hace tres cosas por ti no te enseña eso. Úsalo de la segunda vez en adelante.
 
 ### `fetch`, `merge` y `pull`
 
@@ -231,7 +249,7 @@ upstream  git@github.com:raya-lucaria/fdd_o26.git (push)
 `upstream` es metáfora de río: el material fluye **de arriba hacia abajo**, del curso hacia ti. Río arriba nunca empujas con un comando. Para eso está el pull request.
 
 > [!WARNING]
-> Tu carpeta tiene que llamarse **idéntico** a tu login: mismas mayúsculas, mismos guiones. Por eso se usa `$U` y no el teclado. El semestre pasado alguien la creó con guion bajo, y los logins de GitHub no admiten guion bajo.
+> Tu carpeta tiene que llamarse **idéntico** a tu login: mismas mayúsculas, mismos guiones. Por eso todos los comandos usan `$GHUSER` y no el teclado. El semestre pasado alguien la creó con guion bajo, y los logins de GitHub no admiten guion bajo.
 
 ::: problem {#git-p10-remote title="Permission denied al hacer push"}
 Un compañero hizo su fork, clonó el repositorio del curso la semana pasada, y hoy corre `git push origin main`. GitHub le responde con un error de permisos y un 403. Insiste en que su llave SSH funciona, y tiene razón: `ssh -T` lo saluda por su nombre.

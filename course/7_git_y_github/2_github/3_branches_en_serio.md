@@ -35,21 +35,21 @@ Todo lo de esta página se hace en el repositorio de verdad, dentro de tu carpet
 
 ```bash
 cd ~/fdd/fdd_o26
-echo "$U"                    # si sale vacío, redefínela
+echo "$GHUSER"                    # si sale vacío, redefínela
 git switch main              # arranca siempre desde main
 git switch -c practica-a     # -c = create: créala Y muévete
 git branch --show-current    # → practica-a
 
-echo "escrito en practica-a" > estudiantes/$U/nota.txt
-git add estudiantes/$U/nota.txt   # por ruta, nunca "."
+echo "escrito en practica-a" > estudiantes/$GHUSER/nota.txt
+git add estudiantes/$GHUSER/nota.txt   # por ruta, nunca "."
 git commit -m "practica: nota en la branch a"
-ls estudiantes/$U            # nota.txt está
+ls estudiantes/$GHUSER            # nota.txt está
 
 git switch main
-ls estudiantes/$U            # NO está  ← lo importante
+ls estudiantes/$GHUSER            # NO está  ← lo importante
 
 git switch practica-a
-ls estudiantes/$U            # volvió
+ls estudiantes/$GHUSER            # volvió
 ```
 
 ```text
@@ -78,8 +78,8 @@ git switch -c practica-a
 ```bash
 git switch main          # las dos nacen del MISMO punto
 git switch -c practica-b
-echo "escrito en practica-b" > estudiantes/$U/nota.txt
-git add estudiantes/$U/nota.txt
+echo "escrito en practica-b" > estudiantes/$GHUSER/nota.txt
+git add estudiantes/$GHUSER/nota.txt
 git commit -m "practica: nota en la branch b"
 
 git merge practica-a     # tráela a la branch donde estás
@@ -99,7 +99,7 @@ commit the result.
 
 ```bash
 git status                      # both added: nota.txt
-cat estudiantes/$U/nota.txt
+cat estudiantes/$GHUSER/nota.txt
 ```
 
 Git **no borró nada**: metió las dos versiones en el mismo archivo, separadas por tres líneas marcadoras.
@@ -133,7 +133,7 @@ Nadie te obliga a escoger un lado. Puedes quedarte con una mitad, con la otra, c
 Aquí **no** sirve `echo` ni `printf`: sobrescriben el archivo entero, y en un archivo de verdad tienes que conservar todo lo que no está en conflicto. Ábrelo:
 
 ```bash
-nano estudiantes/$U/nota.txt
+nano estudiantes/$GHUSER/nota.txt
 ```
 
 Digamos que quieres quedarte con las dos frases. **Borra las tres líneas marcadoras** y deja el archivo exactamente así:
@@ -143,7 +143,16 @@ escrito en practica-b
 escrito en practica-a
 ```
 
-En `nano` se guarda con `Ctrl+O`, Enter, y se sale con `Ctrl+X`. Si prefieres VS Code, `code estudiantes/$U/nota.txt` te muestra botones de *Accept Current* / *Accept Incoming* que hacen lo mismo por ti.
+En `nano`, que es el editor que viste en la unidad de terminal:
+
+| Para | Teclas |
+|---|---|
+| **Borrar la línea donde está el cursor** | `Ctrl+K` |
+| Moverte | las flechas |
+| Guardar | `Ctrl+O`, luego Enter |
+| Salir | `Ctrl+X` |
+
+Son tres `Ctrl+K`, uno por cada marcador. Si prefieres VS Code, `code estudiantes/$GHUSER/nota.txt` te muestra botones de *Accept Current* / *Accept Incoming* que hacen lo mismo por ti.
 
 ### Paso 2: comprueba que no quedó ningún marcador
 
@@ -152,8 +161,8 @@ En `nano` se guarda con `Ctrl+O`, Enter, y se sale con `Ctrl+X`. Si prefieres VS
 **Para qué sirve:** los marcadores son fáciles de dejar a medias, sobre todo en un archivo largo donde el conflicto está en la línea 200. Este comando **los cuenta por ti**, en vez de que los busques con la vista.
 
 ```bash
-cat estudiantes/$U/nota.txt   # míralo con tus ojos
-grep -c '^[<=>]\{7\}' estudiantes/$U/nota.txt
+cat estudiantes/$GHUSER/nota.txt   # míralo con tus ojos
+grep -c '^[<=>]\{7\}' estudiantes/$GHUSER/nota.txt
 ```
 
 Qué hace, pieza por pieza:
@@ -187,7 +196,7 @@ Cada conflicto mete tres líneas, así que con dos conflictos en el mismo archiv
 
 ```bash
 # add = "ya lo revisé, ésta es la buena"
-git add estudiantes/$U/nota.txt
+git add estudiantes/$GHUSER/nota.txt
 git status                        # All conflicts fixed
 git commit -m "practica: resuelvo el conflicto"
 ```
@@ -224,16 +233,16 @@ git switch main
 git switch -c practica-atrasada   # nace del main de ahorita
 
 # haz algo en tu branch, como en una tarea de verdad
-echo "mi trabajo" > estudiantes/$U/tarea.txt
-git add estudiantes/$U/tarea.txt
+echo "mi trabajo" > estudiantes/$GHUSER/tarea.txt
+git add estudiantes/$GHUSER/tarea.txt
 git commit -m "practica: mi trabajo de la tarea"
 
 # ahora simulamos que el curso avanzó mientras tú trabajabas.
 # El avance va en su propia branch: tu main no se toca en toda
 # la práctica, y por eso la limpieza del final es indolora.
 git switch -c curso-simulado main
-echo "avance del curso" > estudiantes/$U/simulacion.txt
-git add estudiantes/$U/simulacion.txt
+echo "avance del curso" > estudiantes/$GHUSER/simulacion.txt
+git add estudiantes/$GHUSER/simulacion.txt
 git commit -m "practica: simulo que el curso avanzó"
 
 git switch practica-atrasada
@@ -307,26 +316,32 @@ tarea-07-git      tarea-08-python      tarea-09-sql
 
 Sin espacios, sin acentos, en minúsculas. Y **nunca se entrega desde `main`**: un pull request que sale de tu `main` se rechaza automáticamente.
 
-::: problem {#git-p9-branch title="Cambié de branch y mi archivo desapareció"}
-Una compañera trabajó toda la tarde en `tarea-07-git`, dejó el archivo terminado, y sin hacer commit se cambió a `main` para revisar una cosa. Git no la dejó: le dijo `Your local changes would be overwritten by checkout`.
+::: problem {#git-p9-marcadores title="Commiteé con los marcadores dentro"}
+Un compañero resuelve su conflicto con prisa. Borra dos de las tres líneas marcadoras, deja el archivo como quiere, y hace `git add` y `git commit`.
 
-Ella entendió que su trabajo estaba en peligro, así que borró el archivo para poder cambiarse. Después regresó a `tarea-07-git` y el archivo, obviamente, ya no estaba.
+Git no le dice nada. El commit se crea, `git status` queda limpio, y él sigue con su vida. Dos semanas después su script no corre y el error apunta a una línea que dice `>>>>>>> practica-a`.
 
-¿Qué debió haber hecho, y qué le habría pasado si el mensaje no hubiera aparecido?
+¿Por qué Git no le avisó, y qué debió haber hecho?
 :::
 
-::: hint {of="git-p9-branch"}
-El mensaje no era una advertencia sobre el pasado. Era una advertencia sobre lo que estaba a punto de ocurrir.
+::: hint {of="git-p9-marcadores"}
+Piensa qué significa exactamente `git add` durante un merge, y qué es lo que Git sabe comprobar y qué no.
 :::
 
-::: answer {of="git-p9-branch"}
-Debió hacer `git commit`, si el trabajo estaba listo, o `git stash`, si quería apartarlo y recuperarlo con `git stash pop` al volver.
+::: answer {of="git-p9-marcadores"}
+Git **no lee el contenido de tus archivos**. Los marcadores no son sintaxis de Git: son texto que Git escribió dentro del archivo para que tú decidieras. Una vez escritos, para Git son caracteres como cualquier otro.
 
-Lo importante es leer el mensaje al derecho. `Your local changes would be overwritten` no dice "tu trabajo está en peligro": dice **"si me dejas cambiar de branch, voy a sobrescribir esto"**. Git se niega justamente para no perderlo, igual que `git branch -d`.
+Y `git add`, durante un merge, significa una sola cosa: **"ya lo revisé, esta versión es la buena"**. Es una afirmación tuya, no una comprobación suya. Cuando le dices eso, Git te cree. Por eso el commit se crea sin una advertencia, sin un warning, sin nada.
 
-Si hubiera hecho commit antes, el cambio de branch habría hecho lo de la primera parte de esta página: el archivo habría desaparecido del listado en `main` y habría vuelto al regresar. **Desaparecer del `ls` y desaparecer de la historia son cosas distintas**, y confundirlas es lo que la llevó a borrarlo.
+Ésa es la única parte de todo el flujo donde Git no te protege. En todo lo demás —un push atrasado, una branch sin mergear, un switch con trabajo sin guardar— hay un mensaje que te detiene. Aquí no.
 
-Moraleja doble: commit antes de cambiar de branch, y cuando Git se niegue a algo, la respuesta casi nunca es forzarlo.
+Debió haber corrido la comprobación del paso 2 antes del `add`:
+
+```bash
+grep -c '^[<=>]\{7\}' <archivo>   # tiene que decir 0
+```
+
+Y para arreglarlo ahora: editar el archivo, borrar lo que quedó, y commitear la corrección. El commit viejo se queda en la historia con la basura dentro, que es el costo de no haber mirado.
 :::
 
 > [!NOTE]

@@ -35,16 +35,17 @@ cd ~/fdd/fdd_o26                 # el paso 0 va aquí dentro
 # ¿ya lo hice?  si imprime SALTA, brinca al bloque A
 git remote -v | grep -q upstream && echo SALTA
 
-U=$(gh api user --jq .login)     # tu login EXACTO
-echo "$U"                        # NO lo teclees a mano
+GHUSER=$(gh api user --jq .login)     # tu login EXACTO
+echo "$GHUSER"                        # NO lo teclees a mano
 git remote rename origin upstream   # el curso: aquí BAJAS
-git remote add origin git@github.com:$U/fdd_o26.git
+git remote add origin \
+  git@github.com:$GHUSER/fdd_o26_$GHUSER.git
 git remote -v                    # 4 líneas, 2 nombres
 
 
 # ═══ CADA VEZ QUE ENTREGAS ════════════════════════════
 cd ~/fdd/fdd_o26                 # siempre desde la raíz
-echo "$U"                        # si está vacía, redefínela
+echo "$GHUSER"                   # tu login, del perfil
 
 
 # ─── A · PONTE AL DÍA ──────────────────────────────────
@@ -56,14 +57,14 @@ git push origin main             # tu fork, al día
 
 # ─── B · ABRE TU ESPACIO ───────────────────────────────
 git switch -c tarea-07-git       # nace del main al día
-mkdir -p estudiantes/$U/07_git   # tu mitad del espejo
-cp -r codigo/07_git/. estudiantes/$U/07_git/
-#   ... trabajas SÓLO dentro de estudiantes/$U/ ...
+mkdir -p estudiantes/$GHUSER/07_git   # tu mitad del espejo
+cp -r codigo/07_git/. estudiantes/$GHUSER/07_git/
+#   ... trabajas SÓLO dentro de estudiantes/$GHUSER/ ...
 
 
 # ─── C · ENTREGA ───────────────────────────────────────
 git status                       # ¿qué cambió? míralo
-git add estudiantes/$U/07_git    # por ruta, nunca "."
+git add estudiantes/$GHUSER/07_git    # por ruta, nunca "."
 git status                       # eso, y nada más
 git commit -m "unidad 07: mi copia de trabajo"
 git push -u origin tarea-07-git  # sube LA BRANCH al fork
@@ -124,7 +125,7 @@ La tabla de arriba dice qué hace cada **bloque**. Ésta dice qué hace cada **c
 | `git remote rename <viejo> <nuevo>` | Le cambia el apodo a un remote. No mueve nada, sólo lo renombra | [[el-fork|GitHub · 2]] |
 | `git remote add <apodo> <url>` | Agrega un remote nuevo con ese apodo | [[el-fork|GitHub · 2]] |
 | `gh api user --jq .login` | Le pregunta a GitHub cuál es tu login exacto | [[el-fork|GitHub · 2]] |
-| `echo "$U"` | Imprime lo que guardaste en `$U`, para comprobar que no está vacío | [[el-fork|GitHub · 2]] |
+| `echo "$GHUSER"` | Imprime lo que guardaste en `$GHUSER`, para comprobar que no está vacío | [[el-fork|GitHub · 2]] |
 | `git switch <branch>` | Te mueve a esa branch **y reescribe los archivos de tu carpeta** | [[branches-en-serio|GitHub · 3]] |
 | `git switch -c <branch>` | La crea desde donde estás parado y te mueve a ella | [[branches-en-serio|GitHub · 3]] |
 | `git branch` | Lista tus branches y marca en cuál estás | [[branches-en-serio|GitHub · 3]] |
@@ -155,7 +156,7 @@ git push -u origin tarea-07-git
 
 - **Los dos `git status` del bloque C.** El primero te dice qué hay antes de agregar; el segundo, qué vas a guardar exactamente. Míralos de verdad.
 - **Si `git branch -d` se niega**, léelo: esa branch tiene commits que no están en ningún lado. Casi siempre significa que se te olvidó un `push`, no que haya que escalar a `-D`.
-- **Si abriste terminal nueva, `$U` está vacía.** Compruébalo, o vas a crear `estudiantes//07_git`.
+- **Si abriste terminal nueva, `$GHUSER` está vacía.** Compruébalo, o vas a crear `estudiantes//07_git`.
 
 ## El pull request: las cuatro casillas
 
@@ -164,7 +165,7 @@ Aquí es donde más gente se equivoca.
 ```text
   base repository:  raya-lucaria/fdd_o26   ← el del CURSO
   base:             main
-  head repository:  tu-login/fdd_o26       ← el TUYO
+  head repository:  tu-login/fdd_o26_tu-login
   compare:          tarea-07-git           ← no main
 ```
 
@@ -174,7 +175,7 @@ Aquí es donde más gente se equivoca.
 |---|---|
 | base repository | `raya-lucaria/fdd_o26` |
 | base | `main` |
-| head repository | `tu-login/fdd_o26` |
+| head repository | `tu-login/fdd_o26_tu-login` |
 | compare | `tarea-07-git` |
 
 :::
@@ -192,11 +193,12 @@ git merge upstream/main
 
 # B
 git switch -c ensayo
-mkdir -p estudiantes/$U && touch estudiantes/$U/.gitkeep
+mkdir -p estudiantes/$GHUSER
+touch estudiantes/$GHUSER/.gitkeep
 
 # C
 git status
-git add estudiantes/$U/.gitkeep
+git add estudiantes/$GHUSER/.gitkeep
 git status
 git commit -m "ensayo"
 git push -u origin ensayo        # sube, pero NO abras PR

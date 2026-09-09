@@ -6,7 +6,7 @@ summary: "Crea tu cuenta de GitHub, genera un par de llaves SSH y déjalo config
 status: ready
 estimated_time: 25m
 tags: [github, ssh, ssh-keygen, ssh-agent, llaves]
-prerequisites: [seccion-github]
+prerequisites: [git-y-github]
 ---
 
 # Cuenta y llave

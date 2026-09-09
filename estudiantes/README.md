@@ -7,9 +7,9 @@ Ese nombre no se teclea, se obtiene:
 
 ```bash
 cd ~/fdd/fdd_o26
-U=$(gh api user --jq .login) && echo "$U"
-mkdir -p estudiantes/$U
-touch estudiantes/$U/.gitkeep
+GHUSER=$(gh api user --jq .login) && echo "$GHUSER"
+mkdir -p estudiantes/$GHUSER
+touch estudiantes/$GHUSER/.gitkeep
 ```
 
 Sin `gh` instalado, tu login es el campo *Username* de

@@ -30,16 +30,17 @@ cd ~/fdd/fdd_o26                 # el paso 0 va aquí dentro
 # ¿ya lo hice?  si imprime SALTA, brinca al bloque A
 git remote -v | grep -q upstream && echo SALTA
 
-U=$(gh api user --jq .login)     # tu login EXACTO
-echo "$U"                        # NO lo teclees a mano
+GHUSER=$(gh api user --jq .login)     # tu login EXACTO
+echo "$GHUSER"                        # NO lo teclees a mano
 git remote rename origin upstream   # el curso: aquí BAJAS
-git remote add origin git@github.com:$U/fdd_o26.git
+git remote add origin \
+  git@github.com:$GHUSER/fdd_o26_$GHUSER.git
 git remote -v                    # 4 líneas, 2 nombres
 
 
 # ═══ CADA VEZ QUE ENTREGAS ════════════════════════════
 cd ~/fdd/fdd_o26                 # siempre desde la raíz
-echo "$U"                        # si está vacía, redefínela
+echo "$GHUSER"                   # tu login, del perfil
 
 
 # ─── A · PONTE AL DÍA ──────────────────────────────────
@@ -51,20 +52,20 @@ git push origin main             # tu fork, al día
 
 # ─── B · ABRE TU ESPACIO ───────────────────────────────
 git switch -c tarea-NN-nombre    # nace del main al día
-mkdir -p estudiantes/$U/NN_nombre
-cp -r codigo/NN_nombre/. estudiantes/$U/NN_nombre/
-#   ... trabajas SÓLO dentro de estudiantes/$U/ ...
+mkdir -p estudiantes/$GHUSER/NN_nombre
+cp -r codigo/NN_nombre/. estudiantes/$GHUSER/NN_nombre/
+#   ... trabajas SÓLO dentro de estudiantes/$GHUSER/ ...
 
 
 # ─── C · ENTREGA ───────────────────────────────────────
 git status                       # ¿qué cambió? míralo
-git add estudiantes/$U/NN_nombre # por ruta, nunca "."
+git add estudiantes/$GHUSER/NN_nombre # por ruta, nunca "."
 git status                       # eso, y nada más
 git commit -m "unidad NN: entrega"
 git push -u origin tarea-NN-nombre
 #   → navegador: Compare & pull request
 #     base repository: raya-lucaria/fdd_o26   base: main
-#     head repository: tu-login/fdd_o26
+#     head repository: tu-login/fdd_o26_tu-login
 #     compare:         tarea-NN-nombre
 
 

@@ -28,9 +28,10 @@ Meta: que nunca tengas que preguntar dónde va un archivo ni cómo se llama tu c
 fdd_o26/
 ├── course/         ← ROJA   el sitio que estás leyendo
 ├── codigo/         ← ROJA   el código de cada unidad
-│   └── 07_git/
-│       ├── bitacora.md
-│       └── ejemplo.sh
+│   ├── 07_git/
+│   │   ├── bitacora.md
+│   │   └── ejemplo.sh
+│   └── github/     ← el de las tareas de DataCamp
 ├── tools/ skins/   ← ROJA   la maquinaria del sitio
 ├── raya.yaml       ← ROJA
 └── estudiantes/
@@ -56,22 +57,25 @@ No se inventa el nombre. No se traduce al español. No se decide. No se pregunta
 
 ## Cómo se copia
 
+El espejo se copia **desde tu branch de tarea**, nunca desde `main`. Si vienes de la página anterior estás parado en `main`, así que lo primero es crearla:
+
 ```bash
 cd ~/fdd/fdd_o26
-echo "$U"                     # compruébalo SIEMPRE antes
-mkdir -p estudiantes/$U/07_git
+git switch main
+git switch -c tarea-07-git   # la branch de esta tarea
+mkdir -p estudiantes/$GHUSER/07_git
 
 # el espejo. Ojo con el "/." y con la barra final
-cp -r codigo/07_git/. estudiantes/$U/07_git/
+cp -r codigo/07_git/. estudiantes/$GHUSER/07_git/
 
-ls -R estudiantes/$U/07_git   # míralo completo
+ls -R estudiantes/$GHUSER/07_git   # míralo completo
 git restore codigo/           # si tocaste la zona roja
 ```
 
 La **barra y el punto** al final del origen no son adorno:
 
 ```text
-cp -r codigo/07_git/. estudiantes/$U/07_git/
+cp -r codigo/07_git/. estudiantes/$GHUSER/07_git/
  │  │            │  │                  └── con barra:
  │  │            │  │                     "dentro de esto"
  │  │            │  └── el punto: "el CONTENIDO de la carpeta"
@@ -141,8 +145,8 @@ Cada pull request dispara una revisión antes de que yo lo vea. Está para que u
 |---|---|
 | **Ubicación** | Tocaste algo fuera de `estudiantes/tu-login/` |
 | **Nombre** | Tu carpeta no se llama exactamente como tu login |
-| **Basura** | Agregaste `.DS_Store`, `__pycache__/`, `.env`, `node_modules/`, `*.pyc` |
-| **Branch** | El pull request viene de tu `main` |
+| **Basura** | Agregaste `.DS_Store`, `Thumbs.db`, `__pycache__/`, `node_modules/`, `.venv/`, `*.pyc`, o algo que empiece con `.env` |
+| **Branch** | El pull request viene de la rama default de tu fork |
 
 :::
 

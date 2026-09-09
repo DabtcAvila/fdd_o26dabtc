@@ -26,9 +26,9 @@ Meta: terminar la unidad con un pull request abierto y en verde.
 
 ```bash
 cd ~/fdd/fdd_o26
-# define $U si falta, y compruébala
-[ -n "$U" ] || U=$(gh api user --jq .login)
-echo "$U"                        # tiene que salir tu login
+# define $GHUSER si falta, y compruébala
+[ -n "$GHUSER" ] || GHUSER=$(gh api user --jq .login)
+echo "$GHUSER"                   # tiene que salir tu login
 
 # ¿tienes los dos remotes? si imprime FALTA, para aquí
 git remote -v | grep -q upstream \
@@ -41,9 +41,9 @@ git push origin main
 
 # ─── B · ABRE TU ESPACIO
 git switch -c tarea-07-git
-mkdir -p estudiantes/$U/07_git
-cp -r codigo/07_git/. estudiantes/$U/07_git/
-ls -R estudiantes/$U/07_git
+mkdir -p estudiantes/$GHUSER/07_git
+cp -r codigo/07_git/. estudiantes/$GHUSER/07_git/
+ls -R estudiantes/$GHUSER/07_git
 ```
 
 > [!WARNING]
@@ -60,13 +60,14 @@ ejemplo.sh
 Si aparece una segunda cabecera `.../07_git/07_git:`, se te fue el `/.`:
 
 ```bash
-rm -rf estudiantes/$U/07_git && mkdir -p estudiantes/$U/07_git
-cp -r codigo/07_git/. estudiantes/$U/07_git/
+rm -rf estudiantes/$GHUSER/07_git
+mkdir -p estudiantes/$GHUSER/07_git
+cp -r codigo/07_git/. estudiantes/$GHUSER/07_git/
 ```
 
 ## Qué hay que llenar
 
-Abre **tu copia** —`estudiantes/$U/07_git/bitacora.md`, nunca la de `codigo/`—:
+Abre **tu copia** —`estudiantes/$GHUSER/07_git/bitacora.md`, nunca la de `codigo/`—:
 
 1. Tu nombre y tu usuario de GitHub.
 2. La salida literal de `git remote -v` y de `git log --oneline -3`.
@@ -75,7 +76,7 @@ Abre **tu copia** —`estudiantes/$U/07_git/bitacora.md`, nunca la de `codigo/`�
 Y corre el script que copiaste, para que la carpeta no sea sólo texto:
 
 ```bash
-bash estudiantes/$U/07_git/ejemplo.sh tu-nombre
+bash estudiantes/$GHUSER/07_git/ejemplo.sh tu-nombre
 ```
 
 > [!NOTE]
@@ -87,7 +88,7 @@ Ahora sí, con la bitácora llena:
 
 ```bash
 git status                     # ¿qué cambió? míralo de verdad
-git add estudiantes/$U/07_git  # por ruta, nunca "."
+git add estudiantes/$GHUSER/07_git  # por ruta, nunca "."
 git status                     # eso, y nada más
 git commit -m "unidad 07: mi carpeta y mi bitacora"
 git push -u origin tarea-07-git
@@ -104,7 +105,7 @@ Entra a tu fork en GitHub. Aparece una barra amarilla con **Compare & pull reque
 ```text
   base repository:  raya-lucaria/fdd_o26   ← el del CURSO
   base:             main
-  head repository:  tu-login/fdd_o26       ← el TUYO
+  head repository:  tu-login/fdd_o26_tu-login
   compare:          tarea-07-git           ← no main
 ```
 
@@ -120,7 +121,7 @@ Título: `unidad 07 · tu-login`. Créalo, y **espera a que la revisión quede e
 | Archivo fuera de tu carpeta | Tocaste la zona roja | `git restore codigo/`, commit, push |
 | El nombre no coincide | Tu carpeta no se llama como tu login | Renómbrala **en dos pasos**, abajo |
 | Basura detectada | Se coló un `.DS_Store` o un `__pycache__/` | `git rm --cached <archivo>`, commit, push |
-| El PR viene de `main` | Se te olvidó la branch | Crea la branch, muévete y abre otro PR |
+| El PR viene de tu rama default | Se te olvidó la branch | Crea la branch, muévete y abre otro PR |
 
 :::
 
@@ -128,7 +129,7 @@ Si lo que falló fue **el nombre de tu carpeta**, se renombra en dos pasos. De g
 
 ```bash
 git mv estudiantes/<malo> estudiantes/_tmp_entrega
-git mv estudiantes/_tmp_entrega estudiantes/$U
+git mv estudiantes/_tmp_entrega estudiantes/$GHUSER
 ```
 
 Y en cualquier caso:

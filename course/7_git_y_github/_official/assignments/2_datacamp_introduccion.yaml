@@ -26,9 +26,10 @@ content:
     del certificado suelto sin contexto, ni una donde no se distinga de qué
     curso se trata. Recorta lo que sobre, pero deja visible el nombre del curso.
     La entrega es un pull request, con el mismo ritual de cuatro bloques de
-    siempre. Puedes usar la misma branch y el mismo pull request que la tarea de
-    tu carpeta, porque vencen el mismo día, o abrir uno aparte; las dos formas
-    están bien mientras el flujo sea correcto.
+    siempre, y desde su propia branch. Aunque vence el mismo día que la tarea de
+    tu carpeta, es otra entrega: otra branch y otro pull request. Una branch por
+    tarea, sin excepciones, que es justo la regla que la revisión automática
+    comprueba.
     Sabrás que terminaste cuando el pull request esté abierto y su revisión esté
     en verde. Si sale roja, lee el mensaje, corrige y haz push a la misma
     branch; el pull request se actualiza solo y no hay que abrir otro.

@@ -607,7 +607,7 @@ def git_el_mirror():
     p.append(chip(540, 168, "copiar", ACENTO, tam=13))
 
     p.append(caja(120, 360, 840, 64, FONDO, ACENTO, radio=10, grosor=1.6))
-    p.append(teclado(540, 388, "cp -r codigo/07_git/. estudiantes/$U/07_git/", ACENTO, 16))
+    p.append(teclado(540, 388, "cp -r codigo/07_git/. estudiantes/$GHUSER/07_git/", ACENTO, 16))
     p.append(texto(540, 412, "la barra y el punto copian el contenido, no la carpeta: sin ellos acabas con 07_git dentro de 07_git", SUAVE, 12))
 
     p.append(texto(ancho / 2, 448, "El nombre 07_git no se inventa ni se traduce: es el mismo de los dos lados. Esto lo reviso yo, no la revisión automática.", SUAVE, 13.5))
@@ -636,11 +636,11 @@ def git_el_ritual():
           "git push origin main", ""],
          "Tu main queda igual al del curso."),
         (288, AMBAR, "B", "Abre tu espacio",
-         ["git switch -c tarea-07-git", "mkdir -p estudiantes/$U/07_git",
+         ["git switch -c tarea-07-git", "mkdir -p estudiantes/$GHUSER/07_git",
           "cp -r codigo/07_git/. \u2192 ahí", "", "y trabaja sólo ahí dentro"],
          "Nunca en main. Sólo tu carpeta."),
         (546, CIAN, "C", "Entrega",
-         ["git status", "git add estudiantes/$U/07_git", "git status",
+         ["git status", "git add estudiantes/$GHUSER/07_git", "git status",
           "git commit -m \"...\"", "git push -u origin tarea-07-git"],
          "Y abre el pull request."),
         (804, VIOLETA, "D", "Cierra",
@@ -873,10 +873,10 @@ def git_branch_disco():
 
     paneles = [
         (40, AMBAR, "git switch tarea-07-git",
-         ["estudiantes/tu-login/", "├── .gitkeep", "└── nota.txt"], True,
+         ["estudiantes/tu-login/", "└── nota.txt", ""], True,
          "nota.txt está"),
         (566, ACENTO, "git switch main",
-         ["estudiantes/tu-login/", "└── .gitkeep", ""], False,
+         ["estudiantes/tu-login/", "(vacía)", ""], False,
          "nota.txt no está"),
     ]
     for x, color, cmd, filas, tiene, pie in paneles:
