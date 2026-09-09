@@ -44,12 +44,14 @@ def _f(path, status="added", previa=""):
 
 
 def _correr(mod, monkeypatch, archivos, autor="ana", rama="tarea-07-git",
-            mantenedores="uumami", rama_default="main", declarado=None):
+            mantenedores="uumami", rama_default="main", declarado=None,
+            estricta_desde=""):
     monkeypatch.setenv("AUTOR", autor)
     monkeypatch.setenv("RAMA", rama)
     monkeypatch.setenv("RAMA_DEFAULT", rama_default)
     monkeypatch.setenv("PR", "1")
     monkeypatch.setenv("MANTENEDORES", mantenedores)
+    monkeypatch.setenv("BRANCH_ESTRICTA_DESDE", estricta_desde)
     monkeypatch.setenv("GITHUB_REPOSITORY", "raya-lucaria/fdd_o26")
     monkeypatch.setattr(mod, "archivos_del_pr", lambda pr: archivos)
     n = len(archivos) if declarado is None else declarado
@@ -97,6 +99,44 @@ def test_borrar_basura_no_falla(mod, monkeypatch):
 def test_pull_request_desde_main_falla(mod, monkeypatch):
     archivos = [_f("estudiantes/ana/07_git/bitacora.md")]
     assert _correr(mod, monkeypatch, archivos, rama="main") == 1
+
+
+def test_la_regla_de_branch_avisa_antes_de_la_fecha_de_corte(mod, monkeypatch, capsys):
+    """El grupo ya tenia pull requests abiertos desde main cuando la regla
+    entro, asi que hay un periodo de gracia con fecha explicita."""
+    archivos = [_f("estudiantes/ana/07_git/bitacora.md")]
+    assert _correr(mod, monkeypatch, archivos, rama="main",
+                   estricta_desde="2099-01-01") == 0
+    salida = capsys.readouterr().out
+    assert "AVISO" in salida and "2099-01-01" in salida
+
+
+def test_la_regla_de_branch_rechaza_pasada_la_fecha(mod, monkeypatch):
+    archivos = [_f("estudiantes/ana/07_git/bitacora.md")]
+    assert _correr(mod, monkeypatch, archivos, rama="main",
+                   estricta_desde="2000-01-01") == 1
+
+
+def test_sin_fecha_la_regla_es_estricta(mod, monkeypatch):
+    """Borrar la variable del workflow endurece la regla, no la apaga."""
+    archivos = [_f("estudiantes/ana/07_git/bitacora.md")]
+    assert _correr(mod, monkeypatch, archivos, rama="main",
+                   estricta_desde="") == 1
+
+
+def test_el_aviso_no_tapa_los_otros_fallos(mod, monkeypatch):
+    """Estar en periodo de gracia no debe aprobar una entrega mal ubicada."""
+    archivos = [_f("codigo/07_git/ejemplo.sh", "modified")]
+    assert _correr(mod, monkeypatch, archivos, rama="main",
+                   estricta_desde="2099-01-01") == 1
+
+
+def test_el_workflow_declara_la_fecha_de_corte(wf):
+    env = wf["jobs"]["revision"]["steps"][-1]["env"]
+    assert "BRANCH_ESTRICTA_DESDE" in env, (
+        "sin la fecha la regla es estricta; si eso es lo que se quiere, "
+        "borra tambien esta prueba"
+    )
 
 
 def test_el_mantenedor_queda_exento(mod, monkeypatch):

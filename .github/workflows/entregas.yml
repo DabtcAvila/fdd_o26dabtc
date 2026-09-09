@@ -44,4 +44,10 @@ jobs:
           RAMA: ${{ github.event.pull_request.head.ref }}
           RAMA_DEFAULT: ${{ github.event.pull_request.head.repo.default_branch }}
           MANTENEDORES: uumami
+          # La regla de la branch solo AVISA hasta esta fecha, y a partir de
+          # ella rechaza. Existe porque el grupo ya tenia pull requests
+          # abiertos desde main cuando la regla entro. Cubre la entrega del
+          # 10 de septiembre y la de DataCamp del 17. Para endurecerla ya,
+          # borra esta linea.
+          BRANCH_ESTRICTA_DESDE: "2026-09-18"
         run: python3 .github/scripts/revisa_entrega.py

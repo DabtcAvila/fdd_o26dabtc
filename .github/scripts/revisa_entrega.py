@@ -13,6 +13,7 @@ siempre de la rama base: un fork no puede reemplazarlos. A cambio, aqui NO se
 lee ni se ejecuta nada del arbol de trabajo del pull request; todo lo que se
 juzga viene de la API.
 """
+import datetime
 import json
 import os
 import subprocess
@@ -69,6 +70,14 @@ def es_basura(ruta):
     )
 
 
+def _estricto_en_branch():
+    """La regla de la branch rechaza a partir de la fecha de corte."""
+    desde = os.environ.get("BRANCH_ESTRICTA_DESDE", "").strip()
+    if not desde:
+        return True
+    return datetime.date.today() >= datetime.date.fromisoformat(desde)
+
+
 def _lista(rutas):
     filas = "".join(f"    - {r}\n" for r in sorted(rutas)[:TOPE_LISTA])
     if len(rutas) > TOPE_LISTA:
@@ -93,7 +102,7 @@ def main():
     pr = os.environ["PR"]
     archivos = archivos_del_pr(pr)
     mio = f"{RAIZ_ESTUDIANTES}{autor}/"
-    fallos = []
+    fallos, avisos = [], []
 
     # 0. Un pull request sin archivos no es una entrega.
     if not archivos:
@@ -117,13 +126,28 @@ def main():
         return 1
 
     # 1. La branch. Va primero porque invalida la entrega entera.
+    #
+    # Durante las primeras entregas esto solo avisa: el grupo ya tenia pull
+    # requests abiertos desde main cuando la regla entro. A partir de la fecha
+    # de corte rechaza. Para endurecerlo antes o despues, mueve
+    # BRANCH_ESTRICTA_DESDE en entregas.yml; para hacerlo estricto ya, borra
+    # esa variable.
     if rama == rama_default:
-        fallos.append(
-            f"BRANCH: este pull request sale de '{rama}', la rama default de tu\n"
-            "  fork. Cada tarea se entrega desde su propia branch.\n"
+        texto = (
+            f"BRANCH: este pull request sale de '{rama}', la branch default de\n"
+            "  tu fork. Cada tarea se entrega desde su propia branch, porque\n"
+            "  desde main solo puedes tener un pull request abierto a la vez.\n"
             "  Arreglo: git switch -c tarea-NN-nombre, vuelve a commitear ahi,\n"
             "  haz push y abre otro pull request desde esa branch."
         )
+        if _estricto_en_branch():
+            fallos.append(texto)
+        else:
+            avisos.append(
+                texto + "\n"
+                f"  POR AHORA ESTO SOLO ES UN AVISO. A partir del "
+                f"{os.environ.get('BRANCH_ESTRICTA_DESDE')} rechaza la entrega."
+            )
 
     fuera, mal_nombre, basura = [], [], []
     for a in archivos:
@@ -182,6 +206,9 @@ def main():
             "  commit y push. Si es una credencial, cambiala: este repositorio\n"
             "  es publico y ya quedo en la historia."
         )
+
+    for a in avisos:
+        print(f"AVISO\n- {a}\n")
 
     if fallos:
         print("La entrega no paso la revision.\n")
