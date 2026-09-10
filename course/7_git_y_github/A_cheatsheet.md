@@ -15,11 +15,11 @@ prerequisites: [el-ritual-del-curso]
 
 Aquí sólo están los comandos que esta unidad enseñó. Si un comando no aparece, es a propósito: no lo necesitas todavía.
 
-La única parte que sí se memoriza son los cuatro bloques de [[el-ritual-del-curso|El ritual]], y están completos aquí abajo.
+La única parte que sí se memoriza son los tres bloques de [[el-ritual-del-curso|El ritual]], y están completos aquí abajo.
 
 ## El flujo, completo
 
-Lo único de esta página que se memoriza. Son dos bloques: el paso 0 va una vez en el semestre, y A–D en cada entrega. Explicados en [[el-ritual-del-curso|El ritual]].
+Lo único de esta página que se memoriza. Son dos bloques: el paso 0 va una vez en el semestre, y A–C en cada entrega. Explicados en [[el-ritual-del-curso|El ritual]].
 
 ```bash
 # ═══ PASO 0 · UNA VEZ EN EL SEMESTRE ══════════════════
@@ -70,14 +70,9 @@ git push -u origin tarea-NN-nombre
 #     base repository: raya-lucaria/fdd_o26   base: main
 #     head repository: tu-login/fdd_o26_tu-login
 #     compare:         tarea-NN-nombre
-
-
-# ─── D · CIERRA · ya te lo mergearon ───────────────────
-git switch main
-git fetch upstream && git merge upstream/main
-git push origin main
-git branch -d tarea-NN-nombre    # se niega si falta mergear
-git branch                       # sólo main. Listo
+#
+#   Al mergearse, el pull request te ofrece "Delete branch".
+#   No hay cuarto bloque: el A ya te devuelve a main.
 ```
 
 ## Orientarte
@@ -203,5 +198,4 @@ Patrones útiles de `.gitignore`: `.DS_Store`, `__pycache__/`, `*.pyc`, `.env`, 
 4. Tu carpeta es un espejo de `codigo/`: misma ruta, mismo nombre.
 5. Una branch por tarea, nacida de un `main` recién actualizado. Nunca entregues desde `main`.
 6. Un pull request rechazado se corrige con `push` a la misma branch, no abriendo otro.
-7. Después del merge, cierra: vuelve a `main`, sincroniza y borra la branch.
 8. Todo se entrega por GitHub. No hay Canvas.

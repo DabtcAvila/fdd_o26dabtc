@@ -617,55 +617,50 @@ def git_el_mirror():
 
 
 def git_el_ritual():
-    """El flujo completo, en cuatro bloques con nombre."""
+    """El flujo completo, en tres bloques con nombre."""
     ancho, alto = 1080, 580
     aria = (
-        "Cuatro carriles verticales con el flujo completo. El primero, ponte al "
+        "Tres carriles verticales con el flujo completo. El primero, ponte al "
         "dia, sincroniza main con el repositorio del curso y actualiza tu fork. "
         "El segundo, abre tu espacio, crea la branch de la tarea y copia el "
         "codigo a tu carpeta. El tercero, entrega, revisa el estado, agrega por "
-        "ruta, commitea, sube la branch y abre el pull request. El cuarto, "
-        "cierra, regresa a main, vuelve a sincronizar y borra la branch"
+        "ruta, commitea, sube la branch y abre el pull request"
     )
     p = [marco(ancho, alto, aria)]
-    p.append(texto(ancho / 2, 42, "El ritual: cuatro bloques, siempre en este orden", TEXTO, 21, peso="600"))
+    p.append(texto(ancho / 2, 42, "El ritual: tres bloques, siempre en este orden", TEXTO, 21, peso="600"))
 
     bloques = [
-        (30, ACENTO, "A", "Ponte al día",
+        (40, ACENTO, "A", "Ponte al día",
          ["git switch main", "git fetch upstream", "git merge upstream/main",
           "git push origin main", ""],
          "Tu main queda igual al del curso."),
-        (288, AMBAR, "B", "Abre tu espacio",
+        (373, AMBAR, "B", "Abre tu espacio",
          ["git switch -c tarea-07-git", "mkdir -p estudiantes/$GHUSER/07_git",
           "cp -r codigo/07_git/. \u2192 ahí", "", "y trabaja sólo ahí dentro"],
          "Nunca en main. Sólo tu carpeta."),
-        (546, CIAN, "C", "Entrega",
-         ["git status", "git add estudiantes/$GHUSER/07_git", "git status",
+        (706, CIAN, "C", "Entrega",
+         ["git status", "git add estudiantes/$GHUSER/...", "git status",
           "git commit -m \"...\"", "git push -u origin tarea-07-git"],
          "Y abre el pull request."),
-        (804, VIOLETA, "D", "Cierra",
-         ["git switch main", "git fetch upstream", "git merge upstream/main",
-          "git push origin main", "git branch -d tarea-07-git"],
-         "git branch: sólo main."),
     ]
     for x, color, letra, titulo, pasos, cierre_txt in bloques:
-        cx = x + 123
-        p.append(caja(x, 80, 246, 392, PANEL, color))
+        cx = x + 167
+        p.append(caja(x, 80, 334, 392, PANEL, color))
         p.append(estado(cx, 118, letra, r=24, borde=color, color_texto=color))
         p.append(texto(cx, 168, titulo, color, 18, peso="600"))
         y = 200
         for paso in pasos:
             if paso:
-                p.append(caja(x + 14, y, 218, 36, FONDO, color, radio=7, grosor=1.2))
-                p.append(teclado(cx, y + 24, paso, color, 11, peso="normal"))
+                p.append(caja(x + 20, y, 294, 36, FONDO, color, radio=7, grosor=1.2))
+                p.append(teclado(cx, y + 24, paso, color, 12, peso="normal"))
             y += 44
-        p.append(texto(cx, 448, cierre_txt, SUAVE, 11.5))
+        p.append(texto(cx, 448, cierre_txt, SUAVE, 12.5))
 
-    for x in (288, 546, 804):
+    for x in (373, 706):
         p.append(flecha(x - 26, 276, x - 6, 276, SUAVE, 2))
 
     p.append(texto(ancho / 2, 512, "Paso 0, una sola vez en el semestre: el fork en el navegador, y después git remote rename origin upstream + git remote add origin.", SUAVE, 13))
-    p.append(texto(ancho / 2, 540, "Los dos git status del bloque C no son adorno. Y sin el bloque D, la semana que viene empiezas parado en la branch equivocada.", TEXTO, 13.5, peso="600"))
+    p.append(texto(ancho / 2, 540, "No hay cuarto bloque: el A ya te devuelve a main, y la branch vieja la borra el botón Delete branch del propio pull request.", TEXTO, 13.5, peso="600"))
     p.append(cierre())
     return "".join(p)
 

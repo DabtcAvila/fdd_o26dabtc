@@ -46,7 +46,7 @@ content:
     izquierda tiene que decir raya-lucaria diagonal fdd o26 y main. Si dice tu
     propio usuario, el pull request se crea, se ve bien, y no me llega. Revisa
     esa barra antes de darle crear.
-    El flujo completo, en cuatro bloques, está en la página El ritual.
+    El flujo completo, en tres bloques, está en la página El ritual.
     Vale la pena que lo hagas hasta que salga sin pensar, porque se pregunta de
     memoria en el examen y porque todas las tareas de aquí a diciembre se
     entregan así.
@@ -61,7 +61,7 @@ content:
       note: "Esta misma entrega, guiada paso a paso de principio a fin."
     - title: "Unidad — El ritual"
       url: "https://rayalucaria.org/fdd_o26/git-y-github/github/el-ritual/"
-      note: "Los cuatro bloques con sus comandos exactos, y la barra del pull request."
+      note: "Los tres bloques con sus comandos exactos, y la barra del pull request."
     - title: "Unidad — El fork y tus dos remotes"
       url: "https://rayalucaria.org/fdd_o26/git-y-github/github/el-fork/"
       note: "El fork, tu login exacto y cómo arreglar los remotes."

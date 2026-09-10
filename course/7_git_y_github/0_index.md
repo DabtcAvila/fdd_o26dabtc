@@ -55,7 +55,7 @@ En la sección de GitHub aparece todo eso de golpe, y con ello la parte que se u
 | 2 | [[el-fork|El fork y tus dos remotes]] | Cómo se hace el fork, `upstream` y `origin`, tu login y tu carpeta | 25 min |
 | 3 | [[branches-en-serio|Branches, en serio]] | Qué le hace `switch` a tu disco, resolver un conflicto, la branch atrasada | 35 min |
 | 4 | [[el-flujo-del-curso|La zona roja y tu espejo]] | Dónde va cada archivo, por qué, y qué revisa la revisión automática | 20 min |
-| 5 | [[el-ritual-del-curso|El ritual]] | Los cuatro bloques, y qué hace cada comando del flujo | 25 min |
+| 5 | [[el-ritual-del-curso|El ritual]] | Los tres bloques, y qué hace cada comando del flujo | 25 min |
 | 6 | [[tu-primer-pull-request|Tu primer pull request]] | La entrega de verdad, de principio a fin | 15 min |
 
 El trabajo previo a clase —cuenta, llave SSH y clonado— vive en el apéndice: [[cuenta-y-llave|Cuenta y llave]] y [[clonar-y-actualizar|Clonar y mantener al día]], 45 minutos que ya hiciste antes de la sesión. Las dos secciones son 252 minutos; con el apéndice y el [[cheatsheet-git|cheatsheet]], la unidad completa son 302.

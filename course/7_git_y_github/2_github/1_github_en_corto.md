@@ -76,7 +76,7 @@ Y el matiz que más confunde: **Git sí sabe clonar.** Lo que agrega GitHub es h
   2. El fork            → tu copia y tus dos remotes
   3. Branches           → practicarlas hasta que no den miedo
   4. Tu espejo          → dónde va cada archivo, y por qué
-  5. El ritual          → los cuatro bloques del flujo
+  5. El ritual          → los tres bloques del flujo
   6. El pull request    → la entrega de verdad
 ```
 

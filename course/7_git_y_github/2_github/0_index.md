@@ -30,7 +30,7 @@ Meta: dos remotes configurados, branches practicadas, y un pull request abierto.
 | 2 | [[el-fork|El fork y tus dos remotes]] | Cómo se hace el fork, `upstream` y `origin`, tu login y tu carpeta | 25 min |
 | 3 | [[branches-en-serio|Branches, en serio]] | Qué le hace `switch` a tu disco, resolver un conflicto, la branch atrasada | 35 min |
 | 4 | [[el-flujo-del-curso|La zona roja y tu espejo]] | Dónde va cada archivo, por qué, y qué revisa la revisión automática | 20 min |
-| 5 | [[el-ritual-del-curso|El ritual]] | Los cuatro bloques, y qué hace cada comando del flujo | 25 min |
+| 5 | [[el-ritual-del-curso|El ritual]] | Los tres bloques, y qué hace cada comando del flujo | 25 min |
 | 6 | [[tu-primer-pull-request|Tu primer pull request]] | La entrega de verdad, de principio a fin | 15 min |
 
 ## Antes de empezar
