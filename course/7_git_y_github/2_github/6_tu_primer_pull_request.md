@@ -26,9 +26,9 @@ Meta: terminar la unidad con un pull request abierto y en verde.
 
 ```bash
 cd ~/fdd/fdd_o26
-# define $GHUSER si falta, y compruébala
-[ -n "$GHUSER" ] || GHUSER=$(gh api user --jq .login)
 echo "$GHUSER"                   # tiene que salir tu login
+# ¿vacío? te falta la línea del perfil, en la página 2.
+# Para salir del paso ahora:  GHUSER=tu-login
 
 # ¿tienes los dos remotes? si imprime FALTA, para aquí
 git remote -v | grep -q upstream \

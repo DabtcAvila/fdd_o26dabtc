@@ -962,6 +962,53 @@ def git_branch_atrasada():
     return "".join(p)
 
 
+def git_contribucion():
+    """El ciclo de contribucion de codigo abierto, que es el ritual del curso."""
+    ancho, alto = 1080, 560
+    aria = (
+        "El ciclo con el que se contribuye a cualquier proyecto de codigo "
+        "abierto. Arriba, el repositorio del proyecto, donde no tienes permiso "
+        "de escritura. Un fork lo copia a tu cuenta; un clone lo baja a tu "
+        "maquina; ahi creas una branch y commiteas; el push sube esa branch a "
+        "tu fork; y el pull request propone tus commits de vuelta al proyecto, "
+        "cerrando el ciclo. Debajo, los mismos cinco pasos con los nombres que "
+        "usa este curso"
+    )
+    p = [marco(ancho, alto, aria)]
+    p.append(texto(ancho / 2, 40, "Así se contribuye a cualquier proyecto de código abierto", TEXTO, 21, peso="600"))
+    p.append(texto(ancho / 2, 66, "y por eso así se entrega en este curso", SUAVE, 14))
+
+    cajas = [
+        (60, 110, 300, 74, ROJO, "EL PROYECTO", "no puedes escribir en él"),
+        (720, 110, 300, 74, AMBAR, "TU FORK", "una copia, en tu cuenta"),
+        (720, 300, 300, 74, CIAN, "TU MÁQUINA", "aquí trabajas, en una branch"),
+    ]
+    for x, y, w, h, color, titulo, glosa in cajas:
+        p.append(caja(x, y, w, h, PANEL, color))
+        p.append(texto(x + w / 2, y + 30, titulo, color, 16, peso="600"))
+        p.append(texto(x + w / 2, y + 54, glosa, SUAVE, 12.5))
+
+    p.append(flecha(366, 136, 714, 136, AMBAR, 2.5))
+    p.append(chip(540, 122, "1 · fork", AMBAR, tam=13))
+    p.append(flecha(870, 190, 870, 294, CIAN, 2.5))
+    p.append(chip(870, 242, "2 · clone", CIAN, tam=13))
+    p.append(texto(870, 404, "3 · branch  +  commits", CIAN, 14, peso="600"))
+    p.append(flecha(714, 337, 366, 337, ACENTO, 2.5))
+    p.append(chip(540, 323, "4 · push a tu fork", ACENTO, tam=13))
+
+    p.append(caja(60, 300, 300, 74, PANEL, ACENTO))
+    p.append(texto(210, 330, "TU BRANCH, YA SUBIDA", ACENTO, 15, peso="600"))
+    p.append(texto(210, 354, "visible en tu fork", SUAVE, 12.5))
+    p.append(flecha(210, 296, 210, 190, VIOLETA, 2.5))
+    p.append(chip(210, 243, "5 · pull request", VIOLETA, tam=13))
+
+    p.append(texto(ancho / 2, 452, "Nadie escribe en el proyecto: se propone, y alguien con permiso decide. Linux, Python y GitHub mismo funcionan así.", TEXTO, 14, peso="600"))
+    p.append(texto(ancho / 2, 480, "En este curso el proyecto es el repositorio de la materia, y lo que propones vive sólo dentro de tu carpeta.", SUAVE, 13.5))
+    p.append(texto(ancho / 2, 516, "Los pasos 1 y 2 son el paso 0 del ritual, una vez en el semestre. Los pasos 3, 4 y 5 son los bloques B y C, en cada entrega.", SUAVE, 13))
+    p.append(cierre())
+    return "".join(p)
+
+
 DIAGRAMAS = {
     "git-llaves": git_llaves,
     "git-flujo": git_flujo,
@@ -975,6 +1022,7 @@ DIAGRAMAS = {
     "git-branch-atrasada": git_branch_atrasada,
     "git-conflicto": git_conflicto,
     "git-tres-repos": git_tres_repos,
+    "git-contribucion": git_contribucion,
     "git-race": git_race,
     "git-el-mirror": git_el_mirror,
     "git-el-ritual": git_el_ritual,

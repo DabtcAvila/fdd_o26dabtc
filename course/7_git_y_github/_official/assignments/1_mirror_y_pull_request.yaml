@@ -14,8 +14,9 @@ content:
     dicen raya-lucaria, todavía no arreglaste los remotes y nada de lo que
     sigue va a funcionar. Está en la página El fork y tus dos remotes.
     Lo que hay que entregar son cuatro cosas. Una, tu carpeta en estudiantes,
-    con un nombre idéntico a tu usuario de GitHub. Ese nombre lo obtienes con
-    un comando y no lo escribes a mano: gh api user seguido de jq punto login.
+    con un nombre idéntico a tu usuario de GitHub. Ese nombre sale de la URL de tu
+    propio fork y lo dejas guardado en la variable GHUSER, en el perfil de tu
+    shell, para no teclearlo cada vez.
     Dos, dentro de ella la carpeta 07 guion bajo git, con el contenido copiado
     de la carpeta codigo del mismo nombre, respetando la regla del mirror.
     Tres, el archivo bitacora punto md lleno: tus datos, la salida de los dos

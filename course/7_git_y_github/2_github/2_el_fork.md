@@ -104,8 +104,8 @@ Con el fork ya hecho, lo demás es terminal. Todo lo que falta de esta página c
 # El fork del paso 1 tiene que estar hecho ANTES de esto.
 cd ~/fdd/fdd_o26
 
-# tu login EXACTO. No lo teclees
-GHUSER=$(gh api user --jq .login) && echo "$GHUSER"
+# tu login, guardado una vez en el perfil (paso 2, abajo)
+echo "$GHUSER"                    # tiene que salir tu login
 
 git remote -v                     # ahora: 2 líneas del curso
 git remote rename origin upstream # el del curso: aquí BAJAS
@@ -162,6 +162,9 @@ echo "$GHUSER"   # tu login, no una línea vacía
 ```
 
 Si lo tecleas mal no se queda callado: `git push` responde `Repository not found` al primer intento, y si tu carpeta queda con otro nombre la revisión automática te dice el nombre exacto que esperaba.
+
+> [!NOTE]
+> Si además tienes `gh`, el programa de GitHub para la terminal, `gh api user --jq .login` te lo imprime sin buscarlo. **No hace falta y no se instala en este curso**: todo se hace con `git` y un navegador.
 
 
 ### `git remote rename` y `git remote add`

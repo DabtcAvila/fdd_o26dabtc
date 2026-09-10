@@ -30,8 +30,12 @@ cd ~/fdd/fdd_o26                 # el paso 0 va aquí dentro
 # ¿ya lo hice?  si imprime SALTA, brinca al bloque A
 git remote -v | grep -q upstream && echo SALTA
 
-GHUSER=$(gh api user --jq .login)     # tu login EXACTO
-echo "$GHUSER"                        # NO lo teclees a mano
+# tu login, una vez en la vida, en el perfil de tu shell.
+# Sale de la URL de tu fork. ~/.bashrc si usas bash.
+echo 'export GHUSER=tu-login' >> ~/.zshrc
+exec $SHELL                      # recarga el perfil
+echo "$GHUSER"                   # tiene que salir tu login
+
 git remote rename origin upstream   # el curso: aquí BAJAS
 git remote add origin \
   git@github.com:$GHUSER/fdd_o26_$GHUSER.git
@@ -149,7 +153,7 @@ Para resolver un conflicto: edita el archivo hasta que no queden marcadores, `gi
 
 | Quiero | Comando | Dónde |
 |---|---|---|
-| Saber mi login exacto | `gh api user --jq .login` | [[el-fork|GitHub · 2]] |
+| Saber mi login exacto | está en la URL de tu fork | [[el-fork|GitHub · 2]] |
 | Bajar lo nuevo del curso | `git fetch upstream` | [[el-fork|GitHub · 2]] |
 | Juntarlo con mi branch | `git merge upstream/main` | [[el-fork|GitHub · 2]] |
 | Subir a mi fork | `git push origin main` | [[el-fork|GitHub · 2]] |

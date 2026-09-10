@@ -35,8 +35,12 @@ cd ~/fdd/fdd_o26                 # el paso 0 va aquí dentro
 # ¿ya lo hice?  si imprime SALTA, brinca al bloque A
 git remote -v | grep -q upstream && echo SALTA
 
-GHUSER=$(gh api user --jq .login)     # tu login EXACTO
-echo "$GHUSER"                        # NO lo teclees a mano
+# tu login, una vez en la vida, en el perfil de tu shell.
+# Sale de la URL de tu fork. ~/.bashrc si usas bash.
+echo 'export GHUSER=tu-login' >> ~/.zshrc
+exec $SHELL                      # recarga el perfil
+echo "$GHUSER"                   # tiene que salir tu login
+
 git remote rename origin upstream   # el curso: aquí BAJAS
 git remote add origin \
   git@github.com:$GHUSER/fdd_o26_$GHUSER.git
@@ -98,6 +102,18 @@ git remote -v | grep -q upstream && echo SALTA
 
 En palabras: *lista mis remotes, busca en esa lista la palabra `upstream`, y si la encuentras imprime `SALTA`.* Si no imprime nada, te falta el paso 0.
 
+## Los tres bloques no son del curso
+
+Vale la pena repetir lo de la página 1, ahora que ya viste los comandos: **A, B y C son el ciclo de contribución de código abierto**, con otros nombres.
+
+| Bloque | En cualquier proyecto se llama |
+|---|---|
+| **A. Ponte al día** | *sync your fork* — ponerte al corriente con el proyecto antes de proponer nada |
+| **B. Abre tu espacio** | *create a feature branch* — un nombre para el cambio que vas a proponer |
+| **C. Entrega** | *push and open a pull request* — subir tu branch y proponerla |
+
+Lo único que este curso agrega es **dónde** van tus archivos, que es la regla del espejo. Todo lo demás lo vas a volver a hacer, igual, el día que contribuyas a algo que no es tuyo.
+
 ## Qué hace cada bloque, y por qué existe
 
 ::: table {#git-ritual-resumen title="Los tres bloques"}
@@ -123,7 +139,7 @@ La tabla de arriba dice qué hace cada **bloque**. Ésta dice qué hace cada **c
 | `git remote -v` | Lista los repositorios remotos que tu copia conoce, con el apodo y la URL de cada uno | [[el-fork|GitHub · 2]] |
 | `git remote rename <viejo> <nuevo>` | Le cambia el apodo a un remote. No mueve nada, sólo lo renombra | [[el-fork|GitHub · 2]] |
 | `git remote add <apodo> <url>` | Agrega un remote nuevo con ese apodo | [[el-fork|GitHub · 2]] |
-| `gh api user --jq .login` | Le pregunta a GitHub cuál es tu login exacto | [[el-fork|GitHub · 2]] |
+| `$GHUSER` | Tu login. Sale de la URL de tu fork y vive en el perfil de tu shell | [[el-fork|GitHub · 2]] |
 | `echo "$GHUSER"` | Imprime lo que guardaste en `$GHUSER`, para comprobar que no está vacío | [[el-fork|GitHub · 2]] |
 | `git switch <branch>` | Te mueve a esa branch **y reescribe los archivos de tu carpeta** | [[branches-en-serio|GitHub · 3]] |
 | `git switch -c <branch>` | La crea desde donde estás parado y te mueve a ella | [[branches-en-serio|GitHub · 3]] |
