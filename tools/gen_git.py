@@ -1009,6 +1009,63 @@ def git_contribucion():
     return "".join(p)
 
 
+def git_dos_syncs():
+    """Los dos caminos para sincronizar: quien recibe primero y quien es puente."""
+    ancho, alto = 1080, 520
+    aria = (
+        "Los dos caminos para poner al dia tu copia, lado a lado. Hay tres "
+        "copias de main: la del curso, la de tu fork en el servidor de GitHub y "
+        "la de tu maquina. Por la terminal, el curso baja primero a tu maquina "
+        "con fetch y merge, y de ahi sube a tu fork con push: tu maquina es el "
+        "puente. Por el navegador, el boton Sync fork actualiza primero tu fork "
+        "en el servidor, y de ahi baja a tu maquina con git pull: tu fork es el "
+        "puente. Las dos rutas terminan con las tres copias iguales"
+    )
+    p = [marco(ancho, alto, aria)]
+    p.append(texto(ancho / 2, 38, "Hay tres copias de main. Sincronizar es hacer que las tres coincidan", TEXTO, 20, peso="600"))
+    p.append(texto(ancho / 2, 62, "los dos caminos cambian quién recibe primero, y quién hace de puente", SUAVE, 13.5))
+
+    paneles = [
+        (30, ACENTO, "Por la terminal  ·  el bloque A",
+         "tu máquina es el puente", True),
+        (570, VIOLETA, "Por el navegador  ·  el botón",
+         "tu fork es el puente", False),
+    ]
+    for x0, color, titulo, pie, por_terminal in paneles:
+        p.append(caja(x0, 86, 480, 300, PANEL, color))
+        p.append(texto(x0 + 240, 116, titulo, color, 16, peso="600"))
+
+        p.append(caja(x0 + 140, 138, 200, 52, FONDO, ROJO, radio=8, grosor=1.6))
+        p.append(texto(x0 + 240, 160, "EL CURSO", ROJO, 13.5, peso="600"))
+        p.append(texto(x0 + 240, 178, "upstream", SUAVE, 11.5))
+
+        p.append(caja(x0 + 26, 276, 170, 52, FONDO, AMBAR, radio=8, grosor=1.6))
+        p.append(texto(x0 + 111, 298, "TU FORK", AMBAR, 13.5, peso="600"))
+        p.append(texto(x0 + 111, 316, "en GitHub", SUAVE, 11.5))
+
+        p.append(caja(x0 + 284, 276, 170, 52, FONDO, CIAN, radio=8, grosor=1.6))
+        p.append(texto(x0 + 369, 298, "TU MÁQUINA", CIAN, 13.5, peso="600"))
+        p.append(texto(x0 + 369, 316, "el disco", SUAVE, 11.5))
+
+        if por_terminal:
+            p.append(flecha(x0 + 296, 194, x0 + 356, 270, color, 2.2))
+            p.append(chip(x0 + 372, 228, "1 · fetch + merge", color, tam=11))
+            p.append(flecha(x0 + 278, 350, x0 + 202, 350, color, 2.2))
+            p.append(chip(x0 + 240, 368, "2 · push origin main", color, tam=11))
+        else:
+            p.append(flecha(x0 + 184, 194, x0 + 124, 270, color, 2.2))
+            p.append(chip(x0 + 116, 228, "1 · botón Sync fork", color, tam=11))
+            p.append(flecha(x0 + 202, 350, x0 + 278, 350, color, 2.2))
+            p.append(chip(x0 + 240, 368, "2 · pull origin main", color, tam=11))
+
+    p.append(texto(285, 412, "Úsalo siempre. Es el bloque A.", ACENTO, 13, peso="600"))
+    p.append(texto(810, 412, "Sólo si aún no clonaste, o tu copia está rota.", VIOLETA, 13, peso="600"))
+    p.append(texto(ancho / 2, 456, "No los mezcles: si aprietas el botón teniendo commits propios en tu main local, el git pull te crea un merge y tu main empieza a divergir.", TEXTO, 13.5, peso="600"))
+    p.append(texto(ancho / 2, 484, "Las dos rutas acaban igual: las tres copias de main, idénticas.", SUAVE, 13))
+    p.append(cierre())
+    return "".join(p)
+
+
 DIAGRAMAS = {
     "git-llaves": git_llaves,
     "git-flujo": git_flujo,
@@ -1023,6 +1080,7 @@ DIAGRAMAS = {
     "git-conflicto": git_conflicto,
     "git-tres-repos": git_tres_repos,
     "git-contribucion": git_contribucion,
+    "git-dos-syncs": git_dos_syncs,
     "git-race": git_race,
     "git-el-mirror": git_el_mirror,
     "git-el-ritual": git_el_ritual,

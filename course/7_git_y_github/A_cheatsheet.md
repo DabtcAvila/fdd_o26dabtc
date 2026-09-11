@@ -159,6 +159,8 @@ Para resolver un conflicto: edita el archivo hasta que no queden marcadores, `gi
 | Subir a mi fork | `git push origin main` | [[el-fork|GitHub · 2]] |
 | Subir una branch por primera vez | `git push -u origin <nombre>` | [[el-ritual-del-curso|GitHub · 5]] |
 | Bajar y juntar de un jalón | `git pull` | [[el-fork|GitHub · 2]] |
+| Poner mi fork al día desde el navegador | botón **Sync fork** | [[el-fork|GitHub · 2]] |
+| …y después bajarlo a mi máquina | `git pull origin main` | [[el-fork|GitHub · 2]] |
 
 :::
 
