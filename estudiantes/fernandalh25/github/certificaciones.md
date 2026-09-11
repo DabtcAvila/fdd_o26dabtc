@@ -10,7 +10,7 @@ Llena este archivo en **tu copia**, dentro de `estudiantes/<tu-login>/github/`.
 
 ## Introduction to Git
 
-Fecha en que lo terminaste: 20 septiembre 2025
+Fecha en que lo terminaste: 10 septiembre 2026
 
 ![Captura del curso Introduction to Git terminado](./introduction_a_git.png)
 
