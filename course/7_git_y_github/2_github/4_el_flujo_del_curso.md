@@ -147,7 +147,7 @@ Cada pull request dispara una revisión antes de que yo lo vea. Está para que u
 |---|---|
 | **Ubicación** | Tocaste algo fuera de `estudiantes/tu-login/` |
 | **Nombre** | Tu carpeta no se llama exactamente como tu login |
-| **Una carpeta** | Tu pull request toca más de una carpeta dentro de la tuya |
+| **Una carpeta** | Tu pull request toca más de una carpeta, o toca una que no es la de tu tarea |
 | **Basura** | Agregaste `.DS_Store`, `Thumbs.db`, `__pycache__/`, `node_modules/`, `.venv/`, `*.pyc`, o algo que empiece con `.env` |
 | **Branch** | El pull request viene de la branch default de tu fork |
 | **Nombre de la branch** | Tu branch no tiene la forma `tarea-NN-nombre` |
@@ -155,6 +155,8 @@ Cada pull request dispara una revisión antes de que yo lo vea. Está para que u
 :::
 
 El mensaje siempre dice **qué archivo y qué hacer**. Borrar basura no cuenta como agregarla, y tampoco cuenta un borrado puro para la regla de la carpeta: quitar un archivo de sobra es lo correcto, no una segunda entrega, así que la revisión los ignora a propósito. Un *rename* entre dos carpetas sí cuenta, porque toca las dos a la vez.
+
+La regla de la carpeta tiene dos mitades. La primera es la de la tabla: no mezcles dos tareas en el mismo pull request. La segunda es más fina: cada tarea nombra su branch **y** la carpeta donde se entrega, y la revisión comprueba que correspondan. Si tu branch es de una tarea con carpeta asignada y entregas en otra, te rechaza aunque hayas tocado una sola carpeta.
 
 La regla del nombre de la branch no tiene ningún periodo de gracia: bloquea desde ya, y el mensaje lista los nombres válidos, que salen de la tarea. Se salta sola cuando el pull request ya viene de tu branch default, porque ahí la revisión de arriba —la de **Branch**— ya te lo dijo, y dos mensajes para el mismo error confunden más de lo que ayudan.
 
