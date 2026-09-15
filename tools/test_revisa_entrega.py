@@ -196,6 +196,59 @@ def test_desde_main_no_reporta_dos_veces_la_branch(mod, monkeypatch, capsys):
     assert salida.count("BRANCH:") == 1
 
 
+# --- regla 6: una entrega, una carpeta --------------------------------------
+
+def test_dos_carpetas_en_un_pull_request_falla(mod, monkeypatch):
+    """Las dos entregas del 22 en una sola branch salen hoy en verde."""
+    archivos = [_f("estudiantes/ana/docker/certificaciones.md"),
+                _f("estudiantes/ana/08_contenedores/bitacora.md")]
+    assert _correr(mod, monkeypatch, archivos,
+                   rama="tarea-08-imagen", tareas=MAPA) == 1
+
+
+def test_una_sola_carpeta_pasa(mod, monkeypatch):
+    archivos = [_f("estudiantes/ana/08_contenedores/bitacora.md"),
+                _f("estudiantes/ana/08_contenedores/roto/Dockerfile")]
+    assert _correr(mod, monkeypatch, archivos,
+                   rama="tarea-08-imagen", tareas=MAPA) == 0
+
+
+def test_archivo_suelto_en_la_raiz_no_cuenta_como_carpeta(mod, monkeypatch):
+    """El .gitkeep de la primera entrega no debe invalidar nada."""
+    archivos = [_f("estudiantes/ana/.gitkeep"),
+                _f("estudiantes/ana/docker/certificaciones.md")]
+    assert _correr(mod, monkeypatch, archivos,
+                   rama="tarea-08-datacamp-intro", tareas=MAPA) == 0
+
+
+def test_la_carpeta_no_corresponde_a_la_branch_falla(mod, monkeypatch):
+    """Branch de la imagen tocando la carpeta de DataCamp."""
+    archivos = [_f("estudiantes/ana/docker/certificaciones.md")]
+    assert _correr(mod, monkeypatch, archivos,
+                   rama="tarea-08-imagen", tareas=MAPA) == 1
+
+
+def test_el_mensaje_dice_que_carpeta_esperaba(mod, monkeypatch, capsys):
+    archivos = [_f("estudiantes/ana/docker/certificaciones.md")]
+    _correr(mod, monkeypatch, archivos, rama="tarea-08-imagen", tareas=MAPA)
+    salida = capsys.readouterr().out
+    assert "08_contenedores" in salida
+
+
+def test_sin_mapa_basta_con_una_carpeta(mod, monkeypatch):
+    """Una branch que el mapa no conoce solo tiene que tocar una carpeta."""
+    archivos = [_f("estudiantes/ana/07_git/bitacora.md")]
+    assert _correr(mod, monkeypatch, archivos, rama="tarea-07-git") == 0
+
+
+def test_un_rename_entre_carpetas_falla(mod, monkeypatch):
+    """Mover de una entrega a otra toca dos carpetas y cuenta como dos."""
+    archivos = [_f("estudiantes/ana/08_contenedores/notas.md",
+                   status="renamed", previa="estudiantes/ana/docker/notas.md")]
+    assert _correr(mod, monkeypatch, archivos,
+                   rama="tarea-08-imagen", tareas=MAPA) == 1
+
+
 # --- hallazgos de la revision adversarial ------------------------------------
 
 def test_rename_que_saca_un_archivo_de_la_zona_roja_falla(mod, monkeypatch):

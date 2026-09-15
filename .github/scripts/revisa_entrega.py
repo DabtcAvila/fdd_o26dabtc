@@ -1,9 +1,18 @@
 #!/usr/bin/env python3
 """Revision automatica de las entregas del curso.
 
-Cuatro reglas, todas bloqueantes. El mensaje de cada fallo dice que archivo y
+Seis reglas, todas bloqueantes. El mensaje de cada fallo dice que archivo y
 que hacer, porque el punto es que el estudiante se corrija solo en treinta
 segundos y no que adivine.
+
+1. La branch: un pull request no puede salir de la rama default del fork.
+2. Ubicacion: solo se puede escribir dentro de la carpeta propia.
+3. Nombre de la carpeta: tiene que coincidir con el login exacto, mayusculas
+   incluidas.
+4. Basura: nada de archivos que nunca se suben (.env, __pycache__, llaves).
+5. El nombre de la branch tiene que ser tarea-NN-nombre.
+6. Una entrega, una carpeta: un pull request no puede tocar mas de una
+   carpeta de entrega, ni una que no corresponda a su branch.
 
 Las cuentas listadas en MANTENEDORES quedan exentas: son quienes publican
 material en la zona roja.
@@ -86,6 +95,18 @@ def es_basura(ruta):
         or nombre.startswith(BASURA_PREFIJOS)
         or any(p in BASURA for p in partes)
     )
+
+
+def subcarpeta(ruta, mio):
+    """La carpeta de la entrega dentro de la del estudiante.
+
+    `estudiantes/ana/docker/certificaciones.md` -> `docker`.
+    Un archivo suelto en `estudiantes/ana/` devuelve "" y no cuenta: el
+    .gitkeep de la primera entrega no puede invalidar la segunda.
+    """
+    resto = ruta[len(mio):]
+    partes = resto.split("/")
+    return partes[0] if len(partes) > 1 else ""
 
 
 def _estricto_en_branch():
@@ -181,7 +202,7 @@ def main():
             "  commitear ahi, haz push y abre el pull request desde esa branch."
         )
 
-    fuera, mal_nombre, basura = [], [], []
+    fuera, mal_nombre, basura, mias = [], [], [], []
     for a in archivos:
         estado = a["status"]
         # En un rename hay que juzgar las DOS rutas: de donde salio y a donde
@@ -200,6 +221,8 @@ def main():
                     mal_nombre.append((ruta, duenio))
                 else:
                     fuera.append(ruta)
+            else:
+                mias.append(ruta)
 
         # 4. Basura. Los borrados no cuentan: borrar un .DS_Store es lo correcto.
         if estado != "removed" and es_basura(a["path"]):
@@ -237,6 +260,29 @@ def main():
             + "  Arreglo: git rm --cached <archivo>, agregalo a .gitignore,\n"
             "  commit y push. Si es una credencial, cambiala: este repositorio\n"
             "  es publico y ya quedo en la historia."
+        )
+
+    # 6. Una entrega, una carpeta. Cierra tres cosas de un golpe: dos entregas
+    # metidas en el mismo pull request, el conflicto add/add cuando las dos
+    # agregan el mismo archivo, y el alumno que llena el certificaciones.md de
+    # la unidad pasada.
+    carpetas = {subcarpeta(r, mio) for r in mias}
+    carpetas.discard("")
+    esperada = mapa.get(rama)
+    if esperada and carpetas and carpetas != {esperada}:
+        fallos.append(
+            f"CARPETA: la branch '{rama}' entrega en {mio}{esperada}/\n"
+            f"  y este pull request toca: {', '.join(sorted(carpetas))}\n"
+            "  Cada entrega vive en una sola carpeta. Si juntaste dos tareas,\n"
+            "  separalas: una branch y un pull request por cada una, las dos\n"
+            "  nacidas de main y no una de la otra."
+        )
+    elif len(carpetas) > 1:
+        fallos.append(
+            "CARPETA: este pull request toca mas de una carpeta de entrega.\n"
+            f"  Encontre: {', '.join(sorted(carpetas))}\n"
+            "  Cada entrega vive en una sola carpeta. Separalas en dos branches\n"
+            "  y dos pull requests, las dos nacidas de main."
         )
 
     for a in avisos:
