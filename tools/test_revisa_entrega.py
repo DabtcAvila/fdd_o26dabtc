@@ -249,6 +249,17 @@ def test_un_rename_entre_carpetas_falla(mod, monkeypatch):
                    rama="tarea-08-imagen", tareas=MAPA) == 1
 
 
+def test_borrar_en_dos_carpetas_pasa(mod, monkeypatch):
+    """Borrar es lo correcto: la regla de basura ya trata los borrados asi
+    (ver test_borrar_basura_no_falla), y la de carpeta no debe penalizar a
+    quien limpia sobras en docker/ y en 08_contenedores/ en el mismo pull
+    request."""
+    archivos = [_f("estudiantes/ana/docker/sobra.md", status="removed"),
+                _f("estudiantes/ana/08_contenedores/vieja.md", status="removed")]
+    assert _correr(mod, monkeypatch, archivos,
+                   rama="tarea-08-imagen", tareas=MAPA) == 0
+
+
 # --- hallazgos de la revision adversarial ------------------------------------
 
 def test_rename_que_saca_un_archivo_de_la_zona_roja_falla(mod, monkeypatch):

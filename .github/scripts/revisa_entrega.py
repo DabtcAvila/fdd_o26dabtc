@@ -221,7 +221,11 @@ def main():
                     mal_nombre.append((ruta, duenio))
                 else:
                     fuera.append(ruta)
-            else:
+            elif estado != "removed":
+                # Un borrado puro no cuenta para la regla 6: borrar es lo
+                # correcto, igual que en la regla de basura. La ruta previa de
+                # un rename si cuenta, porque su estado es "renamed", no
+                # "removed", asi que sigue entrando aqui sin excepcion.
                 mias.append(ruta)
 
         # 4. Basura. Los borrados no cuentan: borrar un .DS_Store es lo correcto.
