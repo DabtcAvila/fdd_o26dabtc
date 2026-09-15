@@ -141,18 +141,27 @@ Nadie toca las líneas de nadie. Todos los casos se vuelven el primer escenario 
 
 Cada pull request dispara una revisión antes de que yo lo vea. Está para que un error se detecte en treinta segundos y no en una semana. La única excepción es tu **primer** pull request del semestre: ése lo tengo que autorizar yo antes de que corra.
 
-::: table {#git-robot title="Las cuatro revisiones, todas bloqueantes"}
+::: table {#git-robot title="Las seis revisiones, todas bloqueantes"}
 
 | Revisa | Rechaza si |
 |---|---|
 | **Ubicación** | Tocaste algo fuera de `estudiantes/tu-login/` |
 | **Nombre** | Tu carpeta no se llama exactamente como tu login |
+| **Una carpeta** | Tu pull request toca más de una carpeta, o toca una que no es la de tu tarea |
 | **Basura** | Agregaste `.DS_Store`, `Thumbs.db`, `__pycache__/`, `node_modules/`, `.venv/`, `*.pyc`, o algo que empiece con `.env` |
 | **Branch** | El pull request viene de la branch default de tu fork |
+| **Nombre de la branch** | Tu branch no tiene la forma `tarea-NN-nombre`, siempre en minúsculas y con guiones, nunca guiones bajos |
 
 :::
 
-El mensaje siempre dice **qué archivo y qué hacer**. Borrar basura no cuenta como agregarla: la revisión ignora los borrados a propósito.
+El mensaje siempre dice **qué archivo y qué hacer**. Borrar basura no cuenta como agregarla, y tampoco cuenta un borrado puro para la regla de la carpeta: quitar un archivo de sobra es lo correcto, no una segunda entrega, así que la revisión los ignora a propósito. Un *rename* entre dos carpetas sí cuenta, porque toca las dos a la vez — y si lo que hiciste fue mover un archivo de una carpeta a otra, la salida de ese aviso te dice que lo hagas en dos pull requests: uno que lo borre y otro que lo cree.
+
+La regla de la carpeta tiene dos mitades. La primera es la de la tabla: no mezcles dos tareas en el mismo pull request. La segunda es más fina, y también más limitada de lo que suena: cuando tu branch está en el mapa de tareas del curso, la revisión también comprueba que la carpeta de **primer nivel** que tocaste sea la que esa tarea tiene asignada — por ejemplo, `docker/` y no `08_contenedores/`. Si tu branch es de una tarea con carpeta asignada y entregas en otra, te rechaza aunque hayas tocado una sola carpeta. Lo que esa comprobación **no** mira es el resto del espejo: que la subcarpeta más profunda se llame igual que en `codigo/`, o que el contenido sea el que la tarea pide. Eso sigue siendo manual — ver la nota de abajo.
+
+La regla del nombre de la branch tiene el mismo tipo de periodo de gracia que la de **Branch**, pero con su propia fecha: hasta el 22 de septiembre —el día de la primera entrega de la unidad 8— sólo avisa; después rechaza. Antes de esa fecha nadie tenía un nombre que cumplir, así que exigirlo de inmediato habría rechazado entregas que no hicieron nada mal. El mensaje separa dos cosas: la **forma**, que siempre es `tarea-NN-nombre`, y el **catálogo**, la lista de nombres que una tarea ya asignó de verdad — hoy sólo `tarea-07-git`. Si tu tarea todavía no tiene nombre asignado, usa `tarea-NN-<algo-corto>` con el número de tu unidad; no tomes prestado el nombre de otra tarea sólo porque aparece en la lista. Se salta sola cuando el pull request ya viene de tu branch default, porque ahí la revisión de arriba —la de **Branch**— ya te lo dijo, y dos mensajes para el mismo error confunden más de lo que ayudan.
+
+> [!NOTE]
+> El check verde significa «no rompiste las reglas del repositorio», no «tu tarea está completa». El robot sólo mira la carpeta de primer nivel, y sólo cuando tu branch está en el mapa. Que la subcarpeta más profunda se llame como en `codigo/`, y que el contenido sea el que la tarea pide, lo reviso yo.
 
 > [!NOTE]
 > **Un pull request rechazado se corrige haciendo `push` a la misma branch.** No abras otro. El pull request se actualiza solo y la revisión se vuelve a correr.
