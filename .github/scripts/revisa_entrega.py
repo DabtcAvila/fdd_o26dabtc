@@ -16,6 +16,7 @@ juzga viene de la API.
 import datetime
 import json
 import os
+import re
 import subprocess
 import sys
 
@@ -28,6 +29,23 @@ BASURA = (
 # repositorio publico, es mas probable que un .env a secas.
 BASURA_PREFIJOS = (".env",)
 BASURA_SUFIJOS = (".pyc", ".pyo", ".pem")
+
+# Las branches de entrega se llaman tarea-NN-nombre. El nombre exacto de cada
+# una esta escrito en su tarea; aqui solo se comprueba la forma y, si el mapa
+# esta disponible, que la carpeta corresponda.
+PATRON_RAMA = re.compile(r"^tarea-\d{2}-[a-z0-9-]+$")
+
+
+def _mapa_tareas():
+    """branch -> subcarpeta esperada, tal como lo declara el workflow."""
+    mapa = {}
+    for par in os.environ.get("TAREAS", "").split(","):
+        par = par.strip()
+        if "=" in par:
+            rama, carpeta = par.split("=", 1)
+            mapa[rama.strip()] = carpeta.strip().strip("/")
+    return mapa
+
 
 RAIZ_ESTUDIANTES = "estudiantes/"
 TOPE_LISTA = 20
@@ -102,6 +120,7 @@ def main():
     pr = os.environ["PR"]
     archivos = archivos_del_pr(pr)
     mio = f"{RAIZ_ESTUDIANTES}{autor}/"
+    mapa = _mapa_tareas()
     fallos, avisos = [], []
 
     # 0. Un pull request sin archivos no es una entrega.
@@ -148,6 +167,19 @@ def main():
                 f"  POR AHORA ESTO SOLO ES UN AVISO. A partir del "
                 f"{os.environ.get('BRANCH_ESTRICTA_DESDE')} rechaza la entrega."
             )
+
+    # 5. El nombre de la branch. Se salta si el pull request sale de la rama
+    # default, porque la regla 1 ya lo reporto y dos mensajes confunden.
+    if rama != rama_default and not PATRON_RAMA.match(rama):
+        nombres = ", ".join(sorted(mapa)) or "tarea-NN-nombre"
+        fallos.append(
+            f"BRANCH: '{rama}' no es el nombre de una entrega.\n"
+            "  Cada tarea se entrega desde su propia branch, y el nombre exacto\n"
+            "  esta escrito en la tarea. Los validos ahora mismo son:\n"
+            f"    {nombres}\n"
+            "  Arreglo: git switch -c <el nombre de tu tarea>, vuelve a\n"
+            "  commitear ahi, haz push y abre el pull request desde esa branch."
+        )
 
     fuera, mal_nombre, basura = [], [], []
     for a in archivos:

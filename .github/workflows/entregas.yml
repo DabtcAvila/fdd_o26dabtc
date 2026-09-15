@@ -44,6 +44,15 @@ jobs:
           RAMA: ${{ github.event.pull_request.head.ref }}
           RAMA_DEFAULT: ${{ github.event.pull_request.head.repo.default_branch }}
           MANTENEDORES: uumami
+          # Mapa branch -> carpeta de cada entrega. El script lo lee de aqui y
+          # nunca del arbol de trabajo: con pull_request_target, leer el repo
+          # seria darle al pull request una via para reescribir sus propias
+          # reglas. Cada unidad agrega sus lineas.
+          TAREAS: >-
+            tarea-08-datacamp-intro=docker,
+            tarea-08-imagen=08_contenedores,
+            tarea-08-datacamp-inter-1=docker,
+            tarea-08-datacamp-inter-2=docker
           # La regla de la branch solo AVISA hasta esta fecha, y a partir de
           # ella rechaza. Existe porque el grupo ya tenia pull requests
           # abiertos desde main cuando la regla entro. Cubre la entrega del

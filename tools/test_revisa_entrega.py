@@ -45,13 +45,14 @@ def _f(path, status="added", previa=""):
 
 def _correr(mod, monkeypatch, archivos, autor="ana", rama="tarea-07-git",
             mantenedores="uumami", rama_default="main", declarado=None,
-            estricta_desde=""):
+            estricta_desde="", tareas=""):
     monkeypatch.setenv("AUTOR", autor)
     monkeypatch.setenv("RAMA", rama)
     monkeypatch.setenv("RAMA_DEFAULT", rama_default)
     monkeypatch.setenv("PR", "1")
     monkeypatch.setenv("MANTENEDORES", mantenedores)
     monkeypatch.setenv("BRANCH_ESTRICTA_DESDE", estricta_desde)
+    monkeypatch.setenv("TAREAS", tareas)
     monkeypatch.setenv("GITHUB_REPOSITORY", "raya-lucaria/fdd_o26")
     monkeypatch.setattr(mod, "archivos_del_pr", lambda pr: archivos)
     n = len(archivos) if declarado is None else declarado
@@ -154,6 +155,47 @@ def test_un_archivo_llamado_env_no_es_dotenv(mod, monkeypatch):
         assert _correr(mod, monkeypatch, [_f(ok)]) == 0, ok
 
 
+# --- regla 5: el nombre de la branch ----------------------------------------
+
+MAPA = ("tarea-08-datacamp-intro=docker,"
+        "tarea-08-imagen=08_contenedores,"
+        "tarea-08-datacamp-inter-1=docker,"
+        "tarea-08-datacamp-inter-2=docker")
+
+
+def test_branch_sin_nombre_de_tarea_falla(mod, monkeypatch):
+    """Hoy una branch llamada 'x' pasa en verde: nadie mira el nombre."""
+    archivos = [_f("estudiantes/ana/08_contenedores/bitacora.md")]
+    assert _correr(mod, monkeypatch, archivos, rama="x", tareas=MAPA) == 1
+
+
+def test_branch_con_nombre_de_tarea_pasa(mod, monkeypatch):
+    archivos = [_f("estudiantes/ana/08_contenedores/bitacora.md")]
+    assert _correr(mod, monkeypatch, archivos,
+                   rama="tarea-08-imagen", tareas=MAPA) == 0
+
+
+def test_el_mensaje_de_branch_lista_los_nombres_validos(mod, monkeypatch, capsys):
+    archivos = [_f("estudiantes/ana/08_contenedores/bitacora.md")]
+    _correr(mod, monkeypatch, archivos, rama="mi-branch", tareas=MAPA)
+    salida = capsys.readouterr().out
+    assert "tarea-08-imagen" in salida
+
+
+def test_la_branch_de_la_unidad_7_sigue_pasando(mod, monkeypatch):
+    """No romper hacia atras: tarea-07-git casa con el patron."""
+    archivos = [_f("estudiantes/ana/07_git/bitacora.md")]
+    assert _correr(mod, monkeypatch, archivos, rama="tarea-07-git") == 0
+
+
+def test_desde_main_no_reporta_dos_veces_la_branch(mod, monkeypatch, capsys):
+    """La regla 1 ya cubre main; la 5 no debe duplicar el fallo."""
+    archivos = [_f("estudiantes/ana/08_contenedores/bitacora.md")]
+    _correr(mod, monkeypatch, archivos, rama="main", tareas=MAPA)
+    salida = capsys.readouterr().out
+    assert salida.count("BRANCH:") == 1
+
+
 # --- hallazgos de la revision adversarial ------------------------------------
 
 def test_rename_que_saca_un_archivo_de_la_zona_roja_falla(mod, monkeypatch):
@@ -253,7 +295,8 @@ def test_permisos_de_solo_lectura(wf):
 
 def test_el_workflow_exporta_lo_que_el_script_lee(wf, mod):
     env = wf["jobs"]["revision"]["steps"][-1]["env"]
-    for clave in ("GH_TOKEN", "PR", "AUTOR", "RAMA", "RAMA_DEFAULT", "MANTENEDORES"):
+    for clave in ("GH_TOKEN", "PR", "AUTOR", "RAMA", "RAMA_DEFAULT", "MANTENEDORES",
+                  "TAREAS"):
         assert clave in env, f"el workflow no exporta {clave}"
 
 
