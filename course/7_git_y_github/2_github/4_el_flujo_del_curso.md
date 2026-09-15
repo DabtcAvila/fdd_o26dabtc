@@ -141,18 +141,25 @@ Nadie toca las líneas de nadie. Todos los casos se vuelven el primer escenario 
 
 Cada pull request dispara una revisión antes de que yo lo vea. Está para que un error se detecte en treinta segundos y no en una semana. La única excepción es tu **primer** pull request del semestre: ése lo tengo que autorizar yo antes de que corra.
 
-::: table {#git-robot title="Las cuatro revisiones, todas bloqueantes"}
+::: table {#git-robot title="Las seis revisiones, todas bloqueantes"}
 
 | Revisa | Rechaza si |
 |---|---|
 | **Ubicación** | Tocaste algo fuera de `estudiantes/tu-login/` |
 | **Nombre** | Tu carpeta no se llama exactamente como tu login |
+| **Una carpeta** | Tu pull request toca más de una carpeta dentro de la tuya |
 | **Basura** | Agregaste `.DS_Store`, `Thumbs.db`, `__pycache__/`, `node_modules/`, `.venv/`, `*.pyc`, o algo que empiece con `.env` |
 | **Branch** | El pull request viene de la branch default de tu fork |
+| **Nombre de la branch** | Tu branch no tiene la forma `tarea-NN-nombre` |
 
 :::
 
-El mensaje siempre dice **qué archivo y qué hacer**. Borrar basura no cuenta como agregarla: la revisión ignora los borrados a propósito.
+El mensaje siempre dice **qué archivo y qué hacer**. Borrar basura no cuenta como agregarla, y tampoco cuenta un borrado puro para la regla de la carpeta: quitar un archivo de sobra es lo correcto, no una segunda entrega, así que la revisión los ignora a propósito. Un *rename* entre dos carpetas sí cuenta, porque toca las dos a la vez.
+
+La regla del nombre de la branch no tiene ningún periodo de gracia: bloquea desde ya, y el mensaje lista los nombres válidos, que salen de la tarea. Se salta sola cuando el pull request ya viene de tu branch default, porque ahí la revisión de arriba —la de **Branch**— ya te lo dijo, y dos mensajes para el mismo error confunden más de lo que ayudan.
+
+> [!NOTE]
+> El check verde significa «no rompiste las reglas del repositorio», no «tu tarea está completa». Que los archivos sean los que la tarea pide, y que la subcarpeta se llame como su espejo, lo reviso yo.
 
 > [!NOTE]
 > **Un pull request rechazado se corrige haciendo `push` a la misma branch.** No abras otro. El pull request se actualiza solo y la revisión se vuelve a correr.
