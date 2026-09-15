@@ -14,6 +14,11 @@ segundos y no que adivine.
 6. Una entrega, una carpeta: un pull request no puede tocar mas de una
    carpeta de entrega, ni una que no corresponda a su branch.
 
+Las reglas 1 y 5 tienen cada una su propio periodo de gracia, con su propia
+fecha de corte (BRANCH_ESTRICTA_DESDE y BRANCH_NOMBRE_ESTRICTO_DESDE): antes
+de la fecha avisan, no rechazan. Las reglas 2, 3, 4 y 6 son estrictas desde
+siempre.
+
 Las cuentas listadas en MANTENEDORES quedan exentas: son quienes publican
 material en la zona roja.
 
@@ -39,20 +44,29 @@ BASURA = (
 BASURA_PREFIJOS = (".env",)
 BASURA_SUFIJOS = (".pyc", ".pyo", ".pem")
 
-# Las branches de entrega se llaman tarea-NN-nombre. El nombre exacto de cada
-# una esta escrito en su tarea; aqui solo se comprueba la forma y, si el mapa
-# esta disponible, que la carpeta corresponda.
+# Las branches de entrega tienen la forma tarea-NN-nombre: en minusculas y
+# con guiones, nunca guiones bajos. Algunas tareas ya le asignaron un nombre
+# exacto (el catalogo, abajo); las que todavia no existen no tienen uno, asi
+# que aqui solo se comprueba la forma y, si el mapa esta disponible, que la
+# carpeta corresponda.
 PATRON_RAMA = re.compile(r"^tarea-\d{2}-[a-z0-9-]+$")
 
 
 def _mapa_tareas():
-    """branch -> subcarpeta esperada, tal como lo declara el workflow."""
+    """branch -> subcarpeta esperada, tal como lo declara el workflow.
+
+    El valor se normaliza a su primer segmento: subcarpeta() nunca devuelve
+    mas de uno, asi que un valor como "09_sql/ejercicios" en el mapa haria
+    que la comparacion no cerrara nunca y la tarea completa saliera
+    rechazada.
+    """
     mapa = {}
     for par in os.environ.get("TAREAS", "").split(","):
         par = par.strip()
         if "=" in par:
             rama, carpeta = par.split("=", 1)
-            mapa[rama.strip()] = carpeta.strip().strip("/")
+            carpeta = carpeta.strip().strip("/")
+            mapa[rama.strip()] = carpeta.split("/")[0]
     return mapa
 
 
@@ -109,12 +123,31 @@ def subcarpeta(ruta, mio):
     return partes[0] if len(partes) > 1 else ""
 
 
-def _estricto_en_branch():
-    """La regla de la branch rechaza a partir de la fecha de corte."""
-    desde = os.environ.get("BRANCH_ESTRICTA_DESDE", "").strip()
+def _paso_la_fecha(variable_de_entorno):
+    """True si hoy ya paso la fecha de corte guardada en esa variable.
+
+    Sin la variable, estricto desde siempre: borrar la fecha endurece la
+    regla, nunca la apaga. Las reglas 1 y 5 comparten este mecanismo pero
+    cada una con su propia variable, para poder moverlas por separado.
+    """
+    desde = os.environ.get(variable_de_entorno, "").strip()
     if not desde:
         return True
     return datetime.date.today() >= datetime.date.fromisoformat(desde)
+
+
+def _estricto_en_branch():
+    """La regla 1 (no entregar desde main) rechaza a partir de su fecha."""
+    return _paso_la_fecha("BRANCH_ESTRICTA_DESDE")
+
+
+def _estricto_en_nombre():
+    """La regla 5 (nombre de la branch) rechaza a partir de su propia fecha.
+
+    Es una variable distinta de BRANCH_ESTRICTA_DESDE a proposito: esa
+    gobierna la regla 1, que ya estaba vigente y que nadie pidio relajar.
+    """
+    return _paso_la_fecha("BRANCH_NOMBRE_ESTRICTO_DESDE")
 
 
 def _lista(rutas):
@@ -191,16 +224,33 @@ def main():
 
     # 5. El nombre de la branch. Se salta si el pull request sale de la rama
     # default, porque la regla 1 ya lo reporto y dos mensajes confunden.
+    #
+    # Igual que la regla 1, esto solo avisa antes de su fecha de corte: a las
+    # tareas de la unidad 7 nunca se les pidio un nombre de branch, asi que
+    # quien entrego con uno inventado no hizo nada mal. La fecha vive en
+    # BRANCH_NOMBRE_ESTRICTO_DESDE, su propia variable, distinta de
+    # BRANCH_ESTRICTA_DESDE: mover una no mueve la otra.
     if rama != rama_default and not PATRON_RAMA.match(rama):
-        nombres = ", ".join(sorted(mapa)) or "tarea-NN-nombre"
-        fallos.append(
+        asignados = ", ".join(sorted(mapa)) or "tarea-NN-nombre"
+        texto = (
             f"BRANCH: '{rama}' no es el nombre de una entrega.\n"
-            "  Cada tarea se entrega desde su propia branch, y el nombre exacto\n"
-            "  esta escrito en la tarea. Los validos ahora mismo son:\n"
-            f"    {nombres}\n"
-            "  Arreglo: git switch -c <el nombre de tu tarea>, vuelve a\n"
-            "  commitear ahi, haz push y abre el pull request desde esa branch."
+            "  Una branch de entrega se llama tarea-NN-nombre, en minusculas y\n"
+            "  con guiones, nunca guiones bajos.\n"
+            "  Si tu tarea ya trae nombre asignado, usalo tal cual. Los\n"
+            f"  asignados ahora mismo son: {asignados}.\n"
+            "  Si la tuya no esta en esa lista, usa tarea-NN-<algo-corto> con\n"
+            "  el numero de tu unidad.\n"
+            "  Arreglo: git switch -c <el nombre>, vuelve a commitear ahi, haz\n"
+            "  push y abre el pull request desde esa branch."
         )
+        if _estricto_en_nombre():
+            fallos.append(texto)
+        else:
+            avisos.append(
+                texto + "\n"
+                f"  POR AHORA ESTO SOLO ES UN AVISO. A partir del "
+                f"{os.environ.get('BRANCH_NOMBRE_ESTRICTO_DESDE')} rechaza la entrega."
+            )
 
     fuera, mal_nombre, basura, mias = [], [], [], []
     for a in archivos:
@@ -279,14 +329,18 @@ def main():
             f"  y este pull request toca: {', '.join(sorted(carpetas))}\n"
             "  Cada entrega vive en una sola carpeta. Si juntaste dos tareas,\n"
             "  separalas: una branch y un pull request por cada una, las dos\n"
-            "  nacidas de main y no una de la otra."
+            "  nacidas de main y no una de la otra.\n"
+            "  Si lo que hiciste fue mover un archivo de una carpeta a otra,\n"
+            "  hazlo en dos pull requests: uno que lo borre y otro que lo cree."
         )
     elif len(carpetas) > 1:
         fallos.append(
             "CARPETA: este pull request toca mas de una carpeta de entrega.\n"
             f"  Encontre: {', '.join(sorted(carpetas))}\n"
             "  Cada entrega vive en una sola carpeta. Separalas en dos branches\n"
-            "  y dos pull requests, las dos nacidas de main."
+            "  y dos pull requests, las dos nacidas de main.\n"
+            "  Si lo que hiciste fue mover un archivo de una carpeta a otra,\n"
+            "  hazlo en dos pull requests: uno que lo borre y otro que lo cree."
         )
 
     for a in avisos:

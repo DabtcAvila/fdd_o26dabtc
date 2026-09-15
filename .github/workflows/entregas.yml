@@ -53,10 +53,20 @@ jobs:
             tarea-08-imagen=08_contenedores,
             tarea-08-datacamp-inter-1=docker,
             tarea-08-datacamp-inter-2=docker
-          # La regla de la branch solo AVISA hasta esta fecha, y a partir de
-          # ella rechaza. Existe porque el grupo ya tenia pull requests
-          # abiertos desde main cuando la regla entro. Cubre la entrega del
-          # 10 de septiembre y la de DataCamp del 17. Para endurecerla ya,
-          # borra esta linea.
+          # La regla de la branch (no entregar desde main) solo AVISA hasta
+          # esta fecha, y a partir de ella rechaza. Existe porque el grupo ya
+          # tenia pull requests abiertos desde main cuando la regla entro.
+          # Cubre la entrega del 10 de septiembre y la de DataCamp del 17.
+          # Para endurecerla ya, borra esta linea. NO es la misma fecha que
+          # BRANCH_NOMBRE_ESTRICTO_DESDE: esta politica ya estaba vigente y
+          # nadie pidio relajarla, asi que su fecha no se mueve.
           BRANCH_ESTRICTA_DESDE: "2026-09-18"
+          # La regla del nombre de la branch (tarea-NN-nombre) solo AVISA
+          # hasta esta fecha, y a partir de ella rechaza. Es una variable
+          # propia, distinta de BRANCH_ESTRICTA_DESDE de arriba: a las tareas
+          # de la unidad 7 nunca se les pidio un nombre de branch, asi que
+          # nadie hizo nada mal al inventarse uno. El 22 de septiembre es la
+          # primera entrega de la unidad 8, cuando ya existiran tareas que si
+          # nombran su branch. Para endurecerla ya, borra esta linea.
+          BRANCH_NOMBRE_ESTRICTO_DESDE: "2026-09-22"
         run: python3 .github/scripts/revisa_entrega.py
