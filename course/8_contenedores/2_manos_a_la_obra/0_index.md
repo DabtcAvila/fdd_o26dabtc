@@ -21,7 +21,7 @@ Lo que sí se entrega vive en `estudiantes/<tu-login>/08_contenedores/`, dentro 
 
 ## Léelas antes del martes
 
-Las tres primeras páginas de la tabla son **lectura previa**, no de clase, y por eso van primero: sus entregas vencen el mismo martes 22, antes de que empiece la sesión. Leerlas en el orden en que se usan en clase, en vez del orden de la tabla, significa llegar tarde a tu propia entrega.
+Las tres primeras páginas de la tabla son **lectura previa**, no de clase, y por eso van primero: hay que leerlas **antes del martes**, porque sus entregas vencen ese mismo día, antes de que empiece la sesión.
 
 ## Las trece páginas
 
@@ -50,4 +50,3 @@ Necesitas haber resuelto la instalación (página 1) antes del martes: Docker o 
 - Docker y Podman corriendo en tu máquina, sin `sudo`.
 - Una imagen propia, publicada en un registro público.
 - Un modelo de dónde vive cada byte que escribe un contenedor, y por qué eso decide si sobrevive a un `docker rm`.
-</content>

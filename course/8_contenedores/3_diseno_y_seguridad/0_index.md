@@ -34,4 +34,3 @@ Meta: pasar de correr contenedores a diseñar con ellos, y entender que la mayor
 - Saber partir un sistema en servicios con un contrato explícito, y cuándo **no** conviene partirlo.
 - Un vocabulario preciso de por dónde se rompe el aislamiento de un contenedor, sin exploits inventados.
 - Un mapa de qué hay entre "proceso normal" y "máquina virtual completa", y cuándo cada punto de ese mapa es la respuesta correcta.
-</content>

@@ -42,4 +42,3 @@ Nada que instalar. Esta sección corre entera sin terminal: instalar Docker y Po
 - Un modelo mental de qué es un contenedor, no una definición de memoria.
 - La cadena completa de lo que pasa al escribir `docker run`, y qué queda vivo cuando matas cada pieza.
 - Números propios de cuánto cuesta arrancar y correr dentro de un contenedor.
-</content>

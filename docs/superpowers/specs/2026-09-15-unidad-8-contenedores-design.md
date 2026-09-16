@@ -42,8 +42,9 @@ muchas de lectura**, y el reparto está calculado sobre el trabajo real:
 | 2 | 4 | 52 min | ~35 min | ~87 | 90 |
 | 3 | 5 | 69 min | ~20 min | ~89 | 90 |
 
-Fuera de clase: ≈ 300 min de lectura **más 8 h 27 de DataCamp**, o sea unas
-**13 horas en doce días**. Ese número va escrito en `0_index.md` de la unidad,
+Fuera de clase: ≈ 236 min de lectura —las páginas de lectura y previa, más los
+cinco anexos de referencia— **más 8 h 27 de DataCamp**, o sea unas **12 horas y
+media en doce días**. Ese número va escrito en `0_index.md` de la unidad,
 porque es donde un alumno decide cómo reparte su semana.
 
 ## Idea que sostiene toda la unidad

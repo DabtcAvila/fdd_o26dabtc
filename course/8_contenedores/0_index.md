@@ -31,7 +31,7 @@ La primera sesión es **corta y sin computadora**: 60 minutos, no 90. Las págin
 
 ## Cuánto trabajo hay fuera de clase
 
-Además de las tres clases, la unidad pide ≈ 300 minutos de lectura —las páginas marcadas «lectura» o «previa» dentro de cada sección— más **8 h 27 de DataCamp**, repartidas entre *Introduction to Docker* e *Intermediate Docker*. En total son **unas 13 horas en doce días**. Es el número con el que decides, desde el jueves 17, cómo repartes el resto de tu semana.
+Además de las tres clases, la unidad pide ≈ 236 minutos de lectura —las páginas marcadas «lectura» o «previa» dentro de cada sección, más los cinco anexos de referencia— más **8 h 27 de DataCamp**, repartidas entre *Introduction to Docker* e *Intermediate Docker*. En total son **unas 12 horas y media en doce días**. Es el número con el que decides, desde el jueves 17, cómo repartes el resto de tu semana.
 
 ## Los benchmarks de la unidad
 
@@ -40,4 +40,3 @@ Los cinco scripts que miden lo que de verdad cuesta un contenedor —arranque, e
 ## Antes de empezar
 
 Necesitas Git y GitHub: la primera entrega de esta unidad ya se hace por pull request, igual que el resto del curso desde la unidad anterior. Nada más hace falta todavía — instalar Docker y Podman es la primera página de la segunda sección.
-</content>
