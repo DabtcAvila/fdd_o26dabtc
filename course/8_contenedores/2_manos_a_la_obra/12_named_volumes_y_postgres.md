@@ -64,13 +64,13 @@ Dos razones, y ninguna es de gusto.
 docker volume create pgdata
 docker run -d --name pg -e POSTGRES_PASSWORD=fdd \
   -v pgdata:/var/lib/postgresql/data postgres:16
-until docker exec pg pg_isready -q; do sleep 1; done
+sleep 5; until docker exec pg pg_isready -q; do sleep 1; done
 docker exec pg psql -U postgres -c 'CREATE TABLE notas (id serial PRIMARY KEY, nombre text);'
 docker exec pg psql -U postgres -c "INSERT INTO notas (nombre) VALUES ('ada');"
 docker exec pg psql -U postgres -c 'SELECT * FROM notas;'
 ```
 
-**Deberías ver:** `CREATE TABLE`, después `INSERT 0 1`, y por último la tabla con su única fila, `1 | ada`.
+**Deberías ver:** `CREATE TABLE`, después `INSERT 0 1`, y por último la tabla con su única fila, `1 | ada`. El `sleep 5` no es superstición: la primera vez la imagen inicializa el directorio de datos antes de aceptar conexiones, y durante ese rato `pg_isready` contesta que sí a un servidor temporal que todavía no es el bueno.
 
 **Aquí no publicamos ningún puerto.** No hay `-p` en ese `docker run`, y sin embargo entraste: por `docker exec`, que es la puerta que ya existía. Publicar un puerto habría puesto esta base en tu red local sin que nadie lo necesitara. Que eso sea una decisión y no un atajo se explica en [[la-red-y-el-nombre]].
 
@@ -83,7 +83,7 @@ docker rm -f pg
 docker volume ls | grep pgdata
 docker run -d --name pg2 -e POSTGRES_PASSWORD=fdd \
   -v pgdata:/var/lib/postgresql/data postgres:16
-until docker exec pg2 pg_isready -q; do sleep 1; done
+sleep 5; until docker exec pg2 pg_isready -q; do sleep 1; done
 docker exec pg2 psql -U postgres -c 'SELECT * FROM notas;'
 ```
 
@@ -100,7 +100,7 @@ docker rm -f pg2
 docker volume rm pgdata
 docker run -d --name pg3 -e POSTGRES_PASSWORD=fdd \
   -v pgdata:/var/lib/postgresql/data postgres:16
-until docker exec pg3 pg_isready -q; do sleep 1; done
+sleep 5; until docker exec pg3 pg_isready -q; do sleep 1; done
 docker exec pg3 psql -U postgres -c 'SELECT * FROM notas;'
 ```
 
@@ -115,7 +115,7 @@ Tienes un volumen inicializado por `postgres:16` y quieres actualizar: mismo vol
 docker volume create pg16data
 docker run -d --name v16 -e POSTGRES_PASSWORD=fdd \
   -v pg16data:/var/lib/postgresql/data postgres:16
-until docker exec v16 pg_isready -q; do sleep 1; done
+sleep 5; until docker exec v16 pg_isready -q; do sleep 1; done
 docker rm -f v16
 docker run -d --name v17 -e POSTGRES_PASSWORD=fdd \
   -v pg16data:/var/lib/postgresql/data postgres:17
