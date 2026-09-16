@@ -91,6 +91,42 @@ def elipse(cx, cy, rx, ry, color, borde=LINEA, grosor=2):
     )
 
 
+def tachado(x1, y, x2, color=ROJO, grosor=2):
+    """Raya encima de algo: lo que se escribe para decir que NO va."""
+    return linea(x1, y, x2, y, color, grosor)
+
+
+def cruz(cx, cy, r=9, color=ROJO, grosor=2.5):
+    """Marca de no: dos trazos cruzados, sin texto que traducir."""
+    return (linea(cx - r, cy - r, cx + r, cy + r, color, grosor)
+            + linea(cx - r, cy + r, cx + r, cy - r, color, grosor))
+
+
+def palomita(cx, cy, r=8, color=ACENTO, grosor=2.5):
+    """Marca de si, del mismo tamano que cruz()."""
+    return (linea(cx - r, cy, cx - r * 0.25, cy + r * 0.7, color, grosor)
+            + linea(cx - r * 0.25, cy + r * 0.7, cx + r, cy - r * 0.8, color,
+                    grosor))
+
+
+def pastilla(x, y, w, h, etiqueta, color, encendida=True, tam=12.5):
+    """Casilla chica que se prende o se apaga: alcance, cobertura, estado."""
+    relleno_caja = TINTE if encendida else FONDO
+    borde = color if encendida else LINEA
+    return (caja(x, y, w, h, relleno_caja, borde, radio=7,
+                 grosor=2 if encendida else 1.2)
+            + teclado(x + w / 2, y + h / 2 + 4.5, etiqueta,
+                      color if encendida else SUAVE, tam,
+                      peso="600" if encendida else "normal"))
+
+
+def parrafo(x, y, renglones, color=SUAVE, tam=12.5, paso=18,
+            anclaje="start", peso="normal"):
+    """Varias lineas de texto con el mismo tabulado."""
+    return "".join(texto(x, y + i * paso, r, color, tam, anclaje, peso)
+                   for i, r in enumerate(renglones))
+
+
 def bloque(x, y, w, h, titulo, glosa, color, relleno_caja=PANEL,
            tam_titulo=15, mono=True, grosor=2):
     """Caja de cadena: un nombre arriba y su papel en una linea chica."""
@@ -887,6 +923,1792 @@ def cont_capas_cache():
     return "".join(p)
 
 
+# --------------------------------------------------------------------------
+# 2/1 · Las ocho formas de creer que corres sin sudo
+# --------------------------------------------------------------------------
+
+def _trampa(x, y, w, h, titulo, delator, tachada=False):
+    """Tarjeta de trampa: como se llama arriba, que la delata abajo."""
+    p = [caja(x, y, w, h, PANEL, ROJO, radio=8, grosor=1.8)]
+    for i, renglon in enumerate(titulo):
+        p.append(texto(x + w / 2, y + 26 + i * 18, renglon, TEXTO, 12.5,
+                       peso="600"))
+    if tachada:
+        p.append(tachado(x + 18, y + 22, x + w - 18, ROJO, 2.5))
+    p.append(linea(x + 14, y + 56, x + w - 14, y + 56, LINEA, 1))
+    for i, renglon in enumerate(delator):
+        p.append(texto(x + w / 2, y + 76 + i * 16, renglon, SUAVE, 11))
+    return "".join(p)
+
+
+def cont_sin_sudo():
+    """La cadena de comprobacion, y las ocho trampas colgadas de su delator."""
+    ancho, alto = 1360, 700
+    aria = (
+        "Arbol de comprobacion de que de verdad corres sin sudo. Arriba, seis "
+        "comandos en fila con lo que cada uno debe imprimir: whoami, id -u, "
+        "type -a docker, docker context ls, docker version y docker run --rm "
+        "hello-world. Abajo, las ocho formas de creer que corres sin sudo sin "
+        "correr sin sudo, cada tarjeta colgada del comando que la delata: el "
+        "alias con sudo adentro y la funcion de shell bajo type, ser root en "
+        "WSL2 bajo whoami, el sudo -i olvidado bajo id -u, el DOCKER_HOST "
+        "remoto bajo docker context ls, Podman diciendose Docker bajo docker "
+        "version, y bajo la prueba final el newgrp de una sola ventana y el "
+        "chmod 666 del socket, tachado en rojo. Al pie, la advertencia que se "
+        "cobra en la seccion 3: estar en el grupo docker es ser root"
+    )
+    comandos = (
+        (("whoami",), ("debe decir tu usuario,", "nunca root")),
+        (("id -u",), ("debe decir un número", "distinto de 0")),
+        (("type -a docker",), ("debe decir un binario,", "no un alias ni una función")),
+        (("docker context ls",), ("el contexto activo debe", "ser default, y local")),
+        (("docker version",), ("debe traer Client y Server,", "y decir Docker Engine")),
+        (("docker run --rm", "hello-world"), ("la prueba de verdad:", "si esto corre, corres")),
+    )
+    trampas = {
+        0: [(("ser root en WSL2",), ("whoami dice root: ahí no",
+                                     "hay sudo que quitar,", "ya eres root."), False)],
+        1: [(("el sudo -i olvidado",), ("llevas media hora en una",
+                                        "shell de root y el prompt", "ya no te lo recuerda."), False)],
+        2: [(("un alias con sudo", "adentro"),
+             ("docker is aliased to", "'sudo docker'"), False),
+            (("una función de shell",),
+             ("docker is a function", "— y adentro dice sudo"), False)],
+        3: [(("un DOCKER_HOST a", "otra máquina"),
+             ("corres sin sudo, sí:", "pero en un servidor",
+              "que no es el tuyo."), False)],
+        4: [(("Podman diciendo", "que es Docker"),
+             ("docker version dice", "Podman Engine: es el",
+              "paquete podman-docker."), False)],
+        5: [(("el newgrp que sólo", "valía en esa ventana"),
+             ("funciona aquí y falla en", "la terminal nueva: falta",
+              "cerrar sesión y volver."), False),
+            (("chmod 666 del socket",),
+             ("funciona, y por eso es peor:", "se lo abriste a todos",
+              "los usuarios de la máquina."), True)],
+    }
+
+    p = [marco(ancho, alto, aria)]
+    p.append(texto(680, 42, "Correr sin sudo, y creer que corres sin sudo", TEXTO, 21, peso="600"))
+    p.append(texto(680, 68, "seis comandos que lo comprueban, y las ocho maneras de fallar la comprobación sin notarlo", SUAVE, 14))
+    p.append(texto(48, 112, "la cadena, en orden", ACENTO, 15, anclaje="start", peso="600"))
+    p.append(texto(1320, 112, "y abajo, las ocho trampas: cada una cuelga del comando que la delata", ROJO, 14, anclaje="end", peso="600"))
+
+    for i, (cmd, glosa) in enumerate(comandos):
+        x = 40 + i * 216
+        cx = x + 100
+        p.append(caja(x, 132, 200, 116, PANEL, CIAN))
+        for k, renglon in enumerate(cmd):
+            p.append(teclado(cx, 162 + k * 18, renglon, CIAN, 13))
+        p.append(linea(x + 14, 190, x + 186, 190, LINEA, 1))
+        for k, renglon in enumerate(glosa):
+            p.append(texto(cx, 212 + k * 18, renglon, SUAVE, 11))
+        if i:
+            p.append(flecha(x - 14, 190, x - 4, 190, SUAVE, 1.5))
+
+        for k, (titulo, delator, tachada) in enumerate(trampas[i]):
+            y = 300 + k * 136
+            p.append(flecha_punteada(cx, y - 20 if k else y - 48, cx, y - 6,
+                                     ROJO, 1.6))
+            p.append(_trampa(x, y, 200, 116, titulo, delator, tachada))
+
+    p.append(texto(680, 578, "Son ocho, no nueve: el chmod 666 del socket y «dejar el socket suelto» son la misma trampa con dos nombres.", SUAVE, 13))
+
+    p.append(caja(40, 596, 1280, 84, PANEL, ROJO))
+    p.append(texto(680, 626, "Y la que se cobra en la sección 3: estar en el grupo docker ES ser root.", ROJO, 15, peso="600"))
+    p.append(texto(680, 652, "Quien le puede hablar al socket puede montar / del host dentro de un contenedor. No hay privilegio que escalar: ya lo tiene.", SUAVE, 13))
+    p.append(cierre())
+    return "".join(p)
+
+
+# --------------------------------------------------------------------------
+# 2/2 · Planes B: sintoma, causa, arreglo
+# --------------------------------------------------------------------------
+
+def cont_planes_b():
+    """Las cinco trampas de instalacion, y el mito que no es una de ellas."""
+    ancho, alto = 1320, 730
+    aria = (
+        "Tabla de diagnostico de tres columnas —sintoma, causa y arreglo— con "
+        "las cinco trampas de instalacion: los bind mounts que fallan fuera de "
+        "tu carpeta personal porque el paquete de snap esta confinado, la "
+        "distro corriendo en WSL1 en vez de WSL2, la integracion por distro "
+        "apagada en Docker Desktop, la virtualizacion desactivada en el "
+        "firmware, y el disco lleno que delata df -h barra. Una sexta fila va "
+        "tachada y en gris: Secure Boot no tiene nada que ver con Docker y no "
+        "hay que apagarlo por esto. Al pie, la fecha de reporte anticipada: si "
+        "el sabado 19 no te funciona, dilo el sabado 19"
+    )
+    filas = (
+        (ROJO,
+         ("error while creating mount source path", "…/app: permission denied"),
+         ("instalaste Docker desde snap y el paquete", "está confinado: no ve fuera de tu home"),
+         ("desinstala el snap e instala desde el", "repositorio oficial de Docker")),
+        (ROJO,
+         ("System has not been booted with systemd", "y el servicio de docker no arranca"),
+         ("tu distro corre en WSL1, no en WSL2",),
+         ("wsl -l -v para verlo, y luego", "wsl --set-version <distro> 2")),
+        (ROJO,
+         ("docker existe en PowerShell", "y no existe en la terminal de Ubuntu"),
+         ("la integración por distro está apagada", "en Docker Desktop"),
+         ("Settings → Resources → WSL integration,", "y enciende tu distro")),
+        (ROJO,
+         ("WSL2 o Docker Desktop no levantan:", "la máquina virtual nunca arranca"),
+         ("la virtualización está desactivada", "en el firmware de la máquina"),
+         ("enciéndela en la BIOS/UEFI:", "VT-x, AMD-V o SVM Mode")),
+        (ROJO,
+         ("no space left on device", "a media descarga de la imagen"),
+         ("el disco está lleno:", "df -h / lo delata en una línea"),
+         ("docker system df y después prune:", "la página 13 dice qué se lleva cada uno")),
+        (SUAVE,
+         ("Secure Boot está encendido",),
+         ("ninguna: no es una causa",),
+         ("no tiene nada que ver con Docker;", "no lo apagues por esto")),
+    )
+    p = [marco(ancho, alto, aria)]
+    p.append(texto(660, 42, "Planes B: qué hacer cuando la instalación no salió", TEXTO, 21, peso="600"))
+    p.append(texto(660, 68, "las cinco trampas que se repiten, con el síntoma exacto que las delata", SUAVE, 14))
+
+    for x, etiqueta, color in ((66, "síntoma", ROJO), (446, "causa", AMBAR),
+                               (866, "arreglo", ACENTO)):
+        p.append(texto(x, 116, etiqueta, color, 14.5, anclaje="start", peso="600"))
+    p.append(linea(50, 128, 1270, 128, LINEA, 1.5))
+
+    for k, (color, sintoma, causa, arreglo) in enumerate(filas):
+        y = 140 + k * 86
+        mito = color is SUAVE
+        if mito:
+            p.append(caja_punteada(50, y, 1220, 78, SUAVE, radio=8))
+        else:
+            p.append(caja(50, y, 1220, 78, PANEL, LINEA, radio=8, grosor=1.5))
+        p.append(linea(430, y + 10, 430, y + 68, LINEA, 1))
+        p.append(linea(850, y + 10, 850, y + 68, LINEA, 1))
+        for i, renglon in enumerate(sintoma):
+            p.append(teclado(66, y + 34 + i * 22, renglon, color, 12,
+                             anclaje="start", peso="normal"))
+        if mito:
+            p.append(tachado(64, y + 30, 262, SUAVE, 2))
+        for i, renglon in enumerate(causa):
+            p.append(texto(446, y + 34 + i * 22, renglon,
+                           SUAVE if mito else TEXTO, 12.5, anclaje="start"))
+        for i, renglon in enumerate(arreglo):
+            p.append(texto(866, y + 34 + i * 22, renglon,
+                           SUAVE if mito else ACENTO, 12.5, anclaje="start"))
+
+    p.append(texto(660, 684, "La fecha de reporte va anticipada a propósito: si el sábado 19 no te funciona, dilo el sábado 19.", SUAVE, 13.5))
+    p.append(texto(660, 708, "No el martes 22 a las 19:00, con la sesión empezando y trece páginas por delante.", SUAVE, 13.5))
+    p.append(cierre())
+    return "".join(p)
+
+
+# --------------------------------------------------------------------------
+# 2/3 · El nombre de una imagen, y el viaje al registro
+# --------------------------------------------------------------------------
+
+def cont_registro():
+    """Las cuatro piezas del nombre, y login-tag-push-pull."""
+    ancho, alto = 1340, 790
+    aria = (
+        "A la izquierda, el nombre de una imagen desarmado en sus cuatro "
+        "piezas rotuladas registro, usuario, nombre y tag: lo que tecleas es "
+        "ubuntu y lo que Docker entiende es docker.io diagonal library "
+        "diagonal ubuntu dos puntos latest, con la aclaracion de que library "
+        "no es un usuario sino el namespace reservado de las imagenes "
+        "oficiales, donde no puedes hacer push, y el aviso de que los nombres "
+        "van en minusculas siempre. A la derecha, el viaje de tu propia "
+        "imagen: docker login, docker tag y docker push hacia el registro, y "
+        "docker pull de vuelta desde otra maquina, con el digest sha256 "
+        "colgando de la imagen como su nombre verdadero e inmutable, y el "
+        "aviso de que la URL publica de la imagen no es la de administracion"
+    )
+    piezas = (
+        (112, "docker.io", "registro", CIAN),
+        (94, "library", "usuario", VIOLETA),
+        (85, "ubuntu", "nombre", ACENTO),
+        (85, "latest", "tag", AMBAR),
+    )
+    p = [marco(ancho, alto, aria)]
+    p.append(texto(670, 42, "El nombre de una imagen es una dirección", TEXTO, 21, peso="600"))
+    p.append(texto(670, 68, "cuatro piezas, tres de ellas con valor por omisión — y el viaje de la tuya", SUAVE, 14))
+    p.append(linea(680, 96, 680, 700, LINEA, 1.5, "6 6"))
+
+    # -- izquierda: el nombre desarmado ------------------------------------
+    p.append(texto(60, 122, "el nombre, desarmado", CIAN, 16, anclaje="start", peso="600"))
+    p.append(texto(60, 156, "lo que tecleas", SUAVE, 12.5, anclaje="start"))
+    p.append(teclado(60, 192, "ubuntu", ACENTO, 26, anclaje="start"))
+    p.append(flecha(90, 208, 90, 246, SUAVE, 1.8))
+    p.append(texto(114, 232, "lo que Docker entiende", SUAVE, 12.5, anclaje="start"))
+
+    x = 60
+    separadores = ("/", "/", ":")
+    for i, (w, pieza, etiqueta, color) in enumerate(piezas):
+        if i:
+            p.append(teclado(x + 11, 292, separadores[i - 1], SUAVE, 19))
+            x += 22
+        p.append(caja(x, 258, w, 52, PANEL, color, radio=8))
+        p.append(teclado(x + w / 2, 291, pieza, color, 15))
+        p.append(texto(x + w / 2, 332, etiqueta, color, 12, peso="600"))
+        x += w
+
+    p.append(caja(60, 356, 580, 106, PANEL, VIOLETA))
+    p.append(texto(80, 386, "library no es un usuario", VIOLETA, 14.5, anclaje="start", peso="600"))
+    p.append(parrafo(80, 412, (
+        "Es el namespace reservado de las imágenes oficiales.",
+        "Ahí no puedes hacer push: la tuya va a tu-usuario/nombre.",
+    )))
+
+    p.append(caja(60, 480, 580, 88, PANEL, ROJO))
+    p.append(texto(80, 510, "los nombres van en minúsculas, siempre", ROJO, 14, anclaje="start", peso="600"))
+    p.append(teclado(80, 538, "docker.io/TuUsuario/Mi-Imagen", SUAVE, 12, anclaje="start", peso="normal"))
+    p.append(teclado(324, 538, "→  invalid reference format", ROJO, 12, anclaje="start", peso="normal"))
+
+    p.append(caja(60, 586, 580, 88, PANEL, AMBAR))
+    p.append(texto(80, 616, "latest tampoco es «la más nueva»", AMBAR, 14, anclaje="start", peso="600"))
+    p.append(parrafo(80, 642, (
+        "Es sólo el tag por omisión, y se mueve. Pinea un tag concreto.",
+    )))
+
+    # -- derecha: el viaje del artefacto -----------------------------------
+    p.append(texto(716, 122, "el viaje de tu propia imagen", ACENTO, 16, anclaje="start", peso="600"))
+    p.append(caja(716, 146, 260, 88, PANEL, ACENTO))
+    p.append(texto(846, 176, "tu máquina", TEXTO, 14, peso="600"))
+    p.append(teclado(846, 202, "mi-imagen:v1", ACENTO, 14))
+    p.append(texto(846, 222, "recién construida con docker build", SUAVE, 11))
+
+    p.append(flecha(846, 238, 846, 336, ACENTO, 2.5))
+    p.append(parrafo(880, 266, (
+        "docker login",
+        "docker tag mi-imagen tu-usuario/mi-imagen:v1",
+        "docker push tu-usuario/mi-imagen:v1",
+    ), CIAN, 12, 22))
+    p.append(texto(880, 332, "sube sólo las capas que al registro le falten", SUAVE, 11, anclaje="start"))
+
+    p.append(caja(716, 344, 584, 130, PANEL, VIOLETA))
+    p.append(texto(1008, 374, "el registro — Docker Hub", VIOLETA, 15, peso="600"))
+    p.append(teclado(1008, 406, "docker.io/tu-usuario/mi-imagen:v1", TEXTO, 14))
+    p.append(teclado(1008, 434, "sha256:9b2fa1c0e7…", AMBAR, 13))
+    p.append(texto(1008, 456, "el digest es su nombre verdadero: el tag se mueve, el digest no", SUAVE, 11))
+
+    p.append(flecha(846, 478, 846, 566, CIAN, 2.5))
+    p.append(teclado(880, 514, "docker pull tu-usuario/mi-imagen:v1", CIAN, 12, anclaje="start", peso="normal"))
+    p.append(texto(880, 534, "otra máquina, sin tu código y sin tus dependencias", SUAVE, 11, anclaje="start"))
+
+    p.append(caja(716, 574, 260, 88, PANEL, CIAN))
+    p.append(texto(846, 604, "la máquina de alguien más", TEXTO, 13, peso="600"))
+    p.append(texto(846, 628, "no construyó nada:", SUAVE, 12))
+    p.append(texto(846, 648, "sólo hizo pull", CIAN, 12, peso="600"))
+
+    p.append(caja(1010, 574, 290, 88, PANEL, AMBAR))
+    p.append(texto(1030, 602, "la URL pública no es la tuya", AMBAR, 13, anclaje="start", peso="600"))
+    p.append(teclado(1030, 626, "pública: hub.docker.com/r/tu-usuario/…", SUAVE, 10, anclaje="start", peso="normal"))
+    p.append(teclado(1030, 646, "admin: hub.docker.com/repository/docker/…", SUAVE, 10, anclaje="start", peso="normal"))
+
+    p.append(texto(670, 726, "Las tres piezas que no escribes tienen valor por omisión, y por eso ubuntu y docker.io/library/ubuntu:latest son la misma imagen.", SUAVE, 13.5))
+    p.append(texto(670, 750, "Publicar no es «subirla a internet»: es darle un nombre que otra máquina pueda resolver. El digest es el que no miente.", SUAVE, 13.5))
+    p.append(cierre())
+    return "".join(p)
+
+
+# --------------------------------------------------------------------------
+# 2/4 · El ciclo de vida de un contenedor
+# --------------------------------------------------------------------------
+
+def cont_ciclo_de_vida():
+    """Tres casillas, y que alcanza cada comando de las tres."""
+    ancho, alto = 1400, 700
+    aria = (
+        "Maquina de estados de tres casillas —created, running y exited— con "
+        "cada transicion etiquetada por lo que la provoca: docker run, que es "
+        "create mas start; docker start; la salida del proceso PID 1, que es "
+        "la unica razon por la que un contenedor se detiene; y docker rm, que "
+        "saca la casilla del dibujo junto con su capa de escritura. A la "
+        "derecha, que alcanza cada comando: docker ps solo ve running, docker "
+        "ps -a ve las tres, docker logs ve running y exited, y docker exec -it "
+        "entra a running y aparece tachado contra exited. Al pie, el caso del "
+        "exited con codigo 127, el comando que no existia"
+    )
+    p = [marco(ancho, alto, aria)]
+    p.append(texto(700, 42, "El ciclo de vida de un contenedor", TEXTO, 21, peso="600"))
+    p.append(texto(700, 68, "un contenedor vive exactamente lo que vive su proceso PID 1", SUAVE, 14))
+
+    # -- la maquina de estados ---------------------------------------------
+    p.append(linea(60, 164, 480, 164, CIAN, 1.5))
+    p.append(linea(60, 164, 60, 178, CIAN, 1.5))
+    p.append(linea(480, 164, 480, 178, CIAN, 1.5))
+    p.append(teclado(270, 152, "docker run  =  create + start", CIAN, 13.5))
+
+    estados = ((60, "created", "existe, y nunca corrió", SUAVE),
+               (300, "running", "su PID 1 está vivo", ACENTO),
+               (540, "exited", "su PID 1 ya salió", ROJO))
+    for x, nombre, glosa, color in estados:
+        p.append(caja(x, 220, 180, 96, PANEL, color, grosor=2.5))
+        p.append(teclado(x + 90, 262, nombre, color, 18))
+        p.append(texto(x + 90, 288, glosa, SUAVE, 11.5))
+
+    p.append(flecha(246, 268, 294, 268, ACENTO, 2.5))
+    p.append(chip(270, 196, "docker start", ACENTO, tam=12.5))
+    p.append(flecha(486, 268, 534, 268, ROJO, 2.5))
+    p.append(chip(510, 196, "el PID 1 sale", ROJO, tam=12.5))
+
+    p.append(arco(612, 320, 408, 320, 72, ACENTO, 2))
+    p.append(chip(510, 376, "docker start", ACENTO, tam=12.5))
+
+    p.append(flecha(660, 320, 660, 424, ROJO, 2.5))
+    p.append(teclado(676, 356, "docker rm", ROJO, 13, anclaje="start"))
+    p.append(caja_punteada(500, 428, 260, 76, SUAVE, radio=8))
+    p.append(texto(630, 456, "fuera del dibujo", SUAVE, 13, peso="600"))
+    p.append(texto(630, 480, "y con él, su capa de escritura", SUAVE, 11.5))
+
+    p.append(texto(60, 348, "Detenerse es siempre lo mismo:", TEXTO, 13, anclaje="start", peso="600"))
+    p.append(parrafo(60, 370, (
+        "que el PID 1 salga. docker stop se lo pide",
+        "con SIGTERM y espera 10 s; docker kill manda",
+        "SIGKILL. No hay una tercera manera.",
+    )))
+
+    p.append(caja(40, 528, 700, 110, PANEL, AMBAR))
+    p.append(texto(60, 558, "El caso que vas a ver: Exited (127)", AMBAR, 14.5, anclaje="start", peso="600"))
+    p.append(parrafo(60, 584, (
+        "127 es «command not found»: el contenedor arrancó, su PID 1 no existía",
+        "y salió de inmediato. docker ps no lo muestra; docker ps -a sí, y",
+        "docker logs trae la línea exacta del error.",
+    )))
+
+    # -- que alcanza cada comando ------------------------------------------
+    p.append(caja(780, 130, 580, 428, PANEL, LINEA))
+    p.append(texto(1070, 160, "qué alcanza cada comando", CIAN, 16, peso="600"))
+    alcances = (
+        ("docker ps", (False, True, False), "sólo lo que está corriendo", CIAN),
+        ("docker ps -a", (True, True, True), "las tres: created y exited también", CIAN),
+        ("docker logs", (False, True, True), "lo que escribió ese proceso, vivo o muerto", CIAN),
+        ("docker exec -it", (False, True, False), "sólo se entra a un proceso vivo", ACENTO),
+    )
+    for k, (cmd, prendidas, nota, color) in enumerate(alcances):
+        y = 186 + k * 90
+        p.append(teclado(802, y, cmd, color, 13.5, anclaje="start"))
+        for i, (etiqueta, prendida) in enumerate(zip(("created", "running", "exited"), prendidas)):
+            px = 1002 + i * 116
+            p.append(pastilla(px, y - 16, 104, 34, etiqueta,
+                              (ROJO if i == 2 else ACENTO) if prendida else SUAVE,
+                              prendida, tam=11.5))
+        p.append(texto(802, y + 44, nota, SUAVE, 11.5, anclaje="start"))
+        if k == 3:
+            p.append(flecha(1170, y + 46, 1170, y + 22, ACENTO, 2.5))
+            p.append(tachado(1242, y + 2, 1330, ROJO, 2.5))
+
+    p.append(texto(700, 668, "Nada de esto es una regla aparte: created es antes del primer arranque, exited es después de que su PID 1 salió, y docker rm borra la casilla entera.", SUAVE, 13.5))
+    p.append(cierre())
+    return "".join(p)
+
+
+# --------------------------------------------------------------------------
+# 2/5 · El contexto de build
+# --------------------------------------------------------------------------
+
+def cont_build_contexto():
+    """Que se lleva exactamente el punto final de docker build."""
+    ancho, alto = 1300, 830
+    aria = (
+        "Que se lleva exactamente el punto final de docker build -t mi-imagen "
+        "punto: el directorio entero, empaquetado y enviado al daemon como "
+        "contexto. A la izquierda, la carpeta en disco con app.py y "
+        "requirements.txt livianos y el .git, el entorno virtual y los datos "
+        "crudos pesando gigabytes; en medio, .dockerignore como un colador que "
+        "los recorta antes del envio; a la derecha, el contexto ya recortado "
+        "saliendo hacia el daemon. Abajo, tres notas: -f cambia que Dockerfile "
+        "se lee pero no cambia el contexto, --no-cache solo ignora las capas "
+        "previas y manda el contexto igual, y el error de escribir la ruta del "
+        "Dockerfile donde va el contexto"
+    )
+    p = [marco(ancho, alto, aria)]
+    p.append(texto(650, 42, "El punto final de docker build no es «aquí»", TEXTO, 21, peso="600"))
+    p.append(texto(650, 68, "es «empaqueta este directorio entero y mándalo»", SUAVE, 14))
+
+    p.append(teclado(472, 152, "docker build -t mi-imagen", TEXTO, 22, anclaje="start"))
+    p.append(caja(818, 128, 34, 34, TINTE, ROJO, radio=6, grosor=2.5))
+    p.append(teclado(835, 152, ".", ROJO, 22))
+    p.append(flecha(835, 166, 835, 196, ROJO, 2))
+    p.append(texto(858, 192, "esto es el CONTEXTO, no «aquí»", ROJO, 13.5, anclaje="start", peso="600"))
+
+    # La carpeta en disco.
+    p.append(caja(50, 224, 350, 286, PANEL, CIAN))
+    p.append(texto(225, 252, "tu carpeta, en disco", CIAN, 14, peso="600"))
+    p.append(teclado(225, 274, "~/fdd/docker-lab", SUAVE, 12, peso="normal"))
+    arbol = (
+        ("app.py", "4 KB", TEXTO, False),
+        ("requirements.txt", "1 KB", TEXTO, False),
+        ("Dockerfile", "1 KB", TEXTO, False),
+        (".git/", "182 MB", ROJO, True),
+        (".venv/", "310 MB", ROJO, True),
+        ("datos/crudos/", "1.2 GB", ROJO, True),
+    )
+    for i, (nombre, peso, color, pesado) in enumerate(arbol):
+        y = 306 + i * 28
+        p.append(teclado(74, y, nombre, color, 12.5, anclaje="start", peso="normal"))
+        p.append(teclado(376, y, peso, color, 12.5, anclaje="end", peso="600" if pesado else "normal"))
+    p.append(linea(74, 486, 376, 486, LINEA, 1))
+    p.append(teclado(376, 504, "1.5 GB en total", ROJO, 12.5, anclaje="end"))
+
+    # El colador.
+    p.append(flecha(404, 360, 436, 360, SUAVE, 2))
+    p.append(caja_punteada(442, 250, 86, 220, AMBAR, radio=10, grosor=2))
+    p.append(texto(485, 236, ".dockerignore", AMBAR, 12.5, peso="600"))
+    for i in range(6):
+        p.append(linea(452, 274 + i * 32, 518, 274 + i * 32, AMBAR, 1.5, "5 5"))
+    p.append(flecha(534, 360, 566, 360, ACENTO, 2))
+
+    # Lo que se cae del colador.
+    p.append(flecha_punteada(485, 474, 485, 502, ROJO, 1.6))
+    p.append(texto(452, 524, "lo que .dockerignore recorta antes del envío:", ROJO, 12, anclaje="start", peso="600"))
+    for i, recortado in enumerate((".git/  ·  182 MB", ".venv/  ·  310 MB",
+                                   "datos/crudos/  ·  1.2 GB")):
+        p.append(cruz(468, 548 + i * 24, 7, ROJO, 2))
+        p.append(teclado(488, 553 + i * 24, recortado, SUAVE, 11.5, anclaje="start", peso="normal"))
+
+    # El contexto y el daemon.
+    p.append(caja(572, 300, 250, 124, PANEL, ACENTO))
+    p.append(texto(697, 330, "el contexto", ACENTO, 15, peso="600"))
+    p.append(texto(697, 354, "el directorio, empaquetado", SUAVE, 11.5))
+    p.append(teclado(697, 388, "6 KB", ACENTO, 20))
+    p.append(texto(697, 410, "en vez de 1.5 GB", SUAVE, 11))
+
+    p.append(flecha(826, 362, 878, 362, ACENTO, 2.5))
+    p.append(caja(884, 300, 366, 124, PANEL, VIOLETA))
+    p.append(texto(1067, 330, "el daemon (BuildKit)", VIOLETA, 15, peso="600"))
+    p.append(parrafo(908, 356, (
+        "Recibe el contexto entero y lo abre ahí.",
+        "COPY y ADD sólo pueden traer de adentro",
+        "de ese bulto: nada de fuera existe.",
+    )))
+
+    p.append(caja(884, 448, 366, 124, PANEL, ROJO))
+    p.append(texto(1067, 478, "y por eso esto falla", ROJO, 14, peso="600"))
+    p.append(teclado(908, 506, "COPY ../secreto.env .", SUAVE, 12, anclaje="start", peso="normal"))
+    p.append(teclado(908, 530, "forbidden path outside the", ROJO, 11.5, anclaje="start", peso="normal"))
+    p.append(teclado(908, 550, "build context", ROJO, 11.5, anclaje="start", peso="normal"))
+
+    # Las tres notas del pie.
+    notas = (
+        (40, 400, AMBAR, "-f cambia el Dockerfile, no el contexto",
+         ("docker build -f otro/Dockerfile .",
+          "lee ese archivo y sigue mandando el «.» entero.",
+          "Son dos argumentos distintos y se confunden todo el tiempo.")),
+        (460, 380, CIAN, "--no-cache no toca el contexto",
+         ("Sólo ignora las capas ya construidas.",
+          "El directorio se empaqueta y se manda igual,",
+          "así que el build tarda lo mismo en arrancar.")),
+        (860, 400, ROJO, "el error más común",
+         ("docker build -t mi-imagen ./Dockerfile",
+          "unable to prepare context: path \"./Dockerfile\"",
+          "is not a directory  — ahí va el contexto, no el archivo.")),
+    )
+    for x, w, color, titulo, renglones in notas:
+        p.append(caja(x, 616, w, 136, PANEL, color))
+        p.append(texto(x + 20, 646, titulo, color, 14, anclaje="start", peso="600"))
+        for i, renglon in enumerate(renglones):
+            escribir = teclado if (i == 0 and color is not CIAN) else texto
+            p.append(escribir(x + 20, 676 + i * 22, renglon, SUAVE, 11.5,
+                              anclaje="start", peso="normal"))
+
+    p.append(texto(650, 790, "El contexto es lo que el daemon puede ver: si tu archivo no entró en el bulto, para el build no existe.", SUAVE, 13.5))
+    p.append(cierre())
+    return "".join(p)
+
+
+# --------------------------------------------------------------------------
+# 2/6 · Los tres defectos del Dockerfile de roto/
+# --------------------------------------------------------------------------
+
+def _insignia(cx, cy, numero, color=ROJO, r=13):
+    return (circulo(cx, cy, r, FONDO, color, 2)
+            + texto(cx, cy + 5, numero, color, 14, peso="600"))
+
+
+def cont_dockerfile_roto():
+    """Tres defectos, cada uno con su consecuencia medible y su arreglo."""
+    ancho, alto = 1340, 760
+    aria = (
+        "El Dockerfile de la carpeta roto con sus cinco lineas a la izquierda "
+        "y sus tres defectos senalados con insignias numeradas: FROM "
+        "python:latest sin pinear, el COPY punto punto antes del RUN pip "
+        "install, y la ausencia de una instruccion USER. A la derecha, una "
+        "tarjeta por defecto con su consecuencia, con la medicion que la hace "
+        "visible y con el arreglo concreto: FROM python:3.12-slim, partir el "
+        "COPY dejando requirements.txt primero, y RUN useradd mas USER. Abajo "
+        "a la izquierda, el mismo Dockerfile ya arreglado, entero, con las "
+        "ocho instrucciones en el orden correcto"
+    )
+    p = [marco(ancho, alto, aria)]
+    p.append(texto(670, 42, "Los tres defectos del Dockerfile de roto/", TEXTO, 21, peso="600"))
+    p.append(texto(670, 68, "cada uno con la medición que lo hace visible, no con una opinión", SUAVE, 14))
+
+    # El archivo roto.
+    p.append(caja(50, 104, 470, 258, PANEL, ROJO))
+    p.append(texto(285, 134, "roto/Dockerfile", ROJO, 15, peso="600"))
+    lineas_rotas = (
+        ("FROM python:latest", "1"),
+        ("WORKDIR /app", None),
+        ("COPY . .", "2"),
+        ("RUN pip install -r requirements.txt", None),
+        ("CMD [\"python\", \"app.py\"]", None),
+    )
+    for i, (instruccion, insignia) in enumerate(lineas_rotas):
+        y = 168 + i * 30
+        color = ROJO if insignia else TEXTO
+        p.append(teclado(74, y, instruccion, color, 12.5, anclaje="start", peso="normal"))
+        if insignia:
+            p.append(_insignia(496, y - 5, insignia))
+    p.append(caja_punteada(70, 302, 398, 40, ROJO, radio=6))
+    p.append(teclado(84, 328, "(aquí no hay ningún USER)", ROJO, 12.5, anclaje="start", peso="normal"))
+    p.append(_insignia(496, 322, "3"))
+
+    # El archivo arreglado.
+    p.append(caja(50, 392, 470, 306, PANEL, ACENTO))
+    p.append(texto(285, 422, "el mismo archivo, arreglado", ACENTO, 15, peso="600"))
+    arregladas = (
+        ("FROM python:3.12-slim", ACENTO),
+        ("WORKDIR /app", TEXTO),
+        ("COPY requirements.txt .", ACENTO),
+        ("RUN pip install -r requirements.txt", TEXTO),
+        ("COPY . .", ACENTO),
+        ("RUN useradd -m app && chown -R app /app", ACENTO),
+        ("USER app", ACENTO),
+        ("CMD [\"python\", \"app.py\"]", TEXTO),
+    )
+    for i, (instruccion, color) in enumerate(arregladas):
+        p.append(teclado(74, 456 + i * 30, instruccion, color, 12.5,
+                         anclaje="start", peso="normal"))
+
+    # Las tres tarjetas.
+    tarjetas = (
+        ("1", "FROM python:latest — sin pinear",
+         "la imagen de hoy no es la de mañana: latest se mueve",
+         "construye hoy y dentro de un mes: otro digest y otro Python",
+         ("FROM python:3.12-slim",)),
+        ("2", "COPY . .  antes del  RUN pip install",
+         "cada cambio de una línea de código tira el caché de instalación",
+         "cronometra el segundo build tras tocar app.py: 41 s contra 1.2 s",
+         ("COPY requirements.txt .", "RUN pip install -r requirements.txt",
+          "COPY . .")),
+        ("3", "no hay ninguna instrucción USER",
+         "el proceso corre como root, y lo que escribe en el bind mount queda de root",
+         "ls -l del archivo que escribió: owner root, y no lo puedes borrar",
+         ("RUN useradd -m app && chown -R app /app", "USER app")),
+    )
+    for k, (num, titulo, consecuencia, medicion, arreglo) in enumerate(tarjetas):
+        y = 104 + k * 200
+        p.append(caja(560, y, 740, 182, PANEL, ROJO))
+        p.append(_insignia(590, y + 30, num))
+        p.append(texto(616, y + 35, titulo, ROJO, 14.5, anclaje="start", peso="600"))
+        p.append(linea(580, y + 52, 1280, y + 52, LINEA, 1))
+        p.append(texto(580, y + 76, "consecuencia", SUAVE, 11, anclaje="start"))
+        p.append(texto(704, y + 76, consecuencia, TEXTO, 12.5, anclaje="start"))
+        p.append(texto(580, y + 102, "cómo se mide", SUAVE, 11, anclaje="start"))
+        p.append(texto(704, y + 102, medicion, AMBAR, 12.5, anclaje="start"))
+        p.append(texto(580, y + 130, "el arreglo", SUAVE, 11, anclaje="start"))
+        for i, renglon in enumerate(arreglo):
+            p.append(teclado(704, y + 130 + i * 20, renglon, ACENTO, 12,
+                             anclaje="start", peso="normal"))
+
+    p.append(texto(670, 730, "Ninguno de los tres es una cuestión de gusto: los tres se comprueban con un comando, y por eso se pueden corregir sin discutir.", SUAVE, 13.5))
+    p.append(cierre())
+    return "".join(p)
+
+
+# --------------------------------------------------------------------------
+# 2/7 · Donde vive cada byte
+# --------------------------------------------------------------------------
+
+def cont_overlay_volumen():
+    """Las cuatro capas donde puede vivir un byte, y cuando muere cada una."""
+    ancho, alto = 1300, 970
+    aria = (
+        "Corte de un contenedor por capas. Abajo del todo, las capas de solo "
+        "lectura de la imagen, que las escribe docker build y mueren con "
+        "docker rmi; encima, la capa de escritura, que la escribe el proceso "
+        "de adentro y muere con docker rm; entre las dos, la flecha de copy-up "
+        "que marca que la primera escritura sobre un archivo que venia de una "
+        "capa inferior lo copia entero hacia arriba. Entrando de lado, un bind "
+        "mount montado en barra app que sale al disco del host, lo escriben "
+        "los dos lados y no muere nunca porque es tu disco, y un named volume "
+        "montado en el directorio de datos de Postgres que vive en el area de "
+        "Docker, lo escribe el contenedor y muere con docker volume rm. Al "
+        "pie, la tabla de las cuatro: donde vive el byte, quien lo escribe, "
+        "que lo borra y si sobrevive a un docker rm"
+    )
+    p = [marco(ancho, alto, aria)]
+    p.append(texto(650, 42, "Dónde vive cada byte que escribe un contenedor", TEXTO, 21, peso="600"))
+    p.append(texto(650, 68, "cuatro lugares posibles, y cada uno muere con un comando distinto", SUAVE, 14))
+
+    # La vista del proceso.
+    p.append(caja(340, 108, 520, 512, "none", LINEA))
+    p.append(texto(600, 138, "lo que el proceso ve colgando de  /", TEXTO, 15, peso="600"))
+
+    p.append(texto(370, 172, "overlayfs", SUAVE, 12, anclaje="start"))
+    p.append(caja(370, 182, 460, 62, TINTE, ACENTO, grosor=2.5))
+    p.append(texto(600, 208, "la capa de escritura", ACENTO, 14.5, peso="600"))
+    p.append(texto(600, 230, "la escribe el proceso  ·  muere con docker rm", SUAVE, 11))
+
+    p.append(flecha(430, 306, 430, 250, AMBAR, 2.5))
+    p.append(texto(452, 274, "copy-up: la primera vez que escribes un", AMBAR, 11, anclaje="start"))
+    p.append(texto(452, 292, "archivo que venía de abajo, se copia entero", SUAVE, 11, anclaje="start"))
+
+    for i, etiqueta in enumerate(("COPY . .", "RUN pip install -r requirements.txt",
+                                  "FROM python:3.12-slim")):
+        y = 310 + i * 44
+        p.append(caja(370, y, 460, 38, PANEL, VIOLETA, radio=8, grosor=1.8))
+        p.append(teclado(600, y + 25, etiqueta, VIOLETA, 12, peso="normal"))
+    p.append(linea(356, 310, 356, 436, VIOLETA, 2.5))
+    p.append(linea(356, 310, 366, 310, VIOLETA, 2.5))
+    p.append(linea(356, 436, 366, 436, VIOLETA, 2.5))
+    p.append(texto(600, 456, "las capas de la imagen  ·  sólo lectura", VIOLETA, 12.5, peso="600"))
+    p.append(texto(600, 474, "las escribe docker build  ·  mueren con docker rmi", SUAVE, 11))
+
+    p.append(linea(360, 494, 840, 494, LINEA, 1, "6 6"))
+    p.append(texto(600, 514, "y colgando aparte, dos rutas montadas:", SUAVE, 12))
+
+    p.append(caja(370, 526, 460, 40, PANEL, CIAN, radio=8, grosor=1.8))
+    p.append(teclado(600, 552, "/app", CIAN, 14))
+    p.append(caja(370, 574, 460, 40, PANEL, AMBAR, radio=8, grosor=1.8))
+    p.append(teclado(600, 600, "/var/lib/postgresql/data", AMBAR, 13))
+
+    # El disco del host.
+    p.append(caja(40, 464, 276, 156, PANEL, CIAN))
+    p.append(texto(178, 494, "tu disco, el del host", CIAN, 14, peso="600"))
+    p.append(teclado(178, 518, "~/fdd/docker-lab/app", SUAVE, 11.5, peso="normal"))
+    p.append(texto(178, 544, "bind mount", CIAN, 15, peso="600"))
+    p.append(parrafo(58, 570, (
+        "lo escriben los dos lados",
+        "no muere nunca: es tu disco",
+        "docker rm no lo toca",
+    ), SUAVE, 11.5, 17))
+    p.append(flecha(320, 546, 366, 546, CIAN, 2.5))
+
+    # El area de Docker.
+    p.append(caja(884, 512, 296, 156, PANEL, AMBAR))
+    p.append(texto(1032, 542, "el área de Docker", AMBAR, 14, peso="600"))
+    p.append(teclado(1032, 566, "/var/lib/docker/volumes/", SUAVE, 11, peso="normal"))
+    p.append(texto(1032, 592, "named volume", AMBAR, 15, peso="600"))
+    p.append(parrafo(902, 618, (
+        "lo escribe el contenedor",
+        "sobrevive a docker rm",
+        "muere con docker volume rm",
+    ), SUAVE, 11.5, 17))
+    p.append(flecha(880, 594, 834, 594, AMBAR, 2.5))
+
+    # La tabla que ordena la clase.
+    p.append(texto(650, 700, "la tabla que ordena toda la clase", TEXTO, 16, peso="600"))
+    columnas = ((70, "dónde vive el byte"), (420, "quién lo escribe"),
+                (740, "qué lo borra"), (1040, "¿sobrevive a docker rm?"))
+    for x, etiqueta in columnas:
+        p.append(texto(x, 738, etiqueta, SUAVE, 12.5, anclaje="start", peso="600"))
+    p.append(linea(50, 750, 1250, 750, LINEA, 1.5))
+    tabla = (
+        (VIOLETA, "capas de la imagen", "docker build", "docker rmi", "sí", ACENTO),
+        (ACENTO, "la capa de escritura", "el proceso de adentro", "docker rm", "NO", ROJO),
+        (CIAN, "bind mount", "el host y el contenedor", "tú, borrando el archivo", "sí", ACENTO),
+        (AMBAR, "named volume", "el contenedor", "docker volume rm", "sí", ACENTO),
+    )
+    for k, (color, donde, quien, borra, sobrevive, color_s) in enumerate(tabla):
+        y = 784 + k * 38
+        p.append(relleno(50, y - 16, 8, 22, color, radio=3))
+        p.append(texto(70, y, donde, color, 13, anclaje="start", peso="600"))
+        p.append(texto(420, y, quien, TEXTO, 12.5, anclaje="start"))
+        p.append(teclado(740, y, borra, SUAVE, 12, anclaje="start", peso="normal"))
+        p.append(texto(1040, y, sobrevive, color_s, 13, anclaje="start", peso="600"))
+
+    p.append(texto(650, 944, "La pregunta nunca es «¿se guardó?»: es «¿en cuál de estos cuatro se guardó?». De ahí sale, sin adivinar, qué comando se lo lleva.", SUAVE, 13.5))
+    p.append(cierre())
+    return "".join(p)
+
+
+# --------------------------------------------------------------------------
+# 2/8 · Cuatro maneras de escribir el origen de un -v
+# --------------------------------------------------------------------------
+
+def cont_rutas():
+    """Absoluta, relativa, portable — y la que no es una ruta."""
+    ancho, alto = 1300, 830
+    aria = (
+        "Cuatro maneras de escribir el origen de un -v y que hace cada una. La "
+        "ruta absoluta monta ese directorio y nunca es portable. La ruta "
+        "relativa con -v punto barra app dos puntos barra app funciona desde "
+        "Docker CLI 23 y tambien en Podman. La forma portable usa -v con "
+        "pwd entre comillas. Y -v app dos puntos barra app, sin el punto "
+        "barra, no es una ruta: Docker crea un named volume vacio con ese "
+        "nombre y lo monta en silencio, sin error y sin aviso, y el codigo no "
+        "aparece por ningun lado. Abajo, un recuadro dibuja por que en macOS y "
+        "en Windows el bind mount cruza la frontera de una maquina virtual, y "
+        "por eso ahi es mas lento y los permisos se comportan distinto"
+    )
+    casos = (
+        (ACENTO, "-v /home/tu/app:/app", "la ruta absoluta",
+         ("Monta ese directorio y nada más. Siempre funciona y nunca es portable:",
+          "esa ruta no existe en la máquina de nadie más.")),
+        (ACENTO, "-v ./app:/app", "la ruta relativa",
+         ("El ./ es lo que la vuelve ruta. Funciona desde Docker CLI 23 (2023)",
+          "y también en Podman. Se resuelve contra tu directorio actual.")),
+        (CIAN, "-v \"$(pwd)/app\":/app", "la forma portable",
+         ("El shell la vuelve absoluta antes de que Docker la vea, así que",
+          "funciona con cualquier versión. Las comillas son por los espacios.")),
+        (ROJO, "-v app:/app", "esto NO es una ruta",
+         ("Le falta el ./ , y sin él Docker no ve una ruta: ve un nombre.",
+          "Crea un named volume vacío llamado app y lo monta en silencio.")),
+    )
+    p = [marco(ancho, alto, aria)]
+    p.append(texto(650, 42, "Cuatro maneras de escribir el origen de un -v", TEXTO, 21, peso="600"))
+    p.append(texto(650, 68, "y una de las cuatro no es una ruta", SUAVE, 14))
+
+    for k, (color, cadena, nombre, renglones) in enumerate(casos):
+        y = 108 + k * 96
+        p.append(caja(50, y, 420, 76, PANEL, color))
+        p.append(teclado(260, y + 34, cadena, color, 15))
+        p.append(texto(260, y + 58, nombre, SUAVE, 12))
+        p.append(flecha(476, y + 38, 516, y + 38, color, 2))
+        p.append(caja(522, y, 728, 76, PANEL, LINEA, grosor=1.5))
+        for i, renglon in enumerate(renglones):
+            p.append(texto(544, y + 32 + i * 22, renglon,
+                           ROJO if (color is ROJO and i == 0) else SUAVE,
+                           12.5, anclaje="start"))
+
+    p.append(texto(650, 512, "Sin error y sin aviso: docker volume ls lo delata, y tu código no aparece por ningún lado dentro del contenedor.", ROJO, 13, peso="600"))
+
+    p.append(linea(40, 540, 1260, 540, LINEA, 1.5, "6 6"))
+    p.append(texto(650, 574, "y en macOS y en Windows, el bind mount cruza una frontera más", AMBAR, 16, peso="600"))
+
+    p.append(caja(70, 600, 300, 96, PANEL, CIAN))
+    p.append(texto(220, 630, "tu disco", CIAN, 14, peso="600"))
+    p.append(texto(220, 654, "APFS en macOS,", SUAVE, 11.5))
+    p.append(texto(220, 672, "NTFS en Windows", SUAVE, 11.5))
+
+    p.append(flecha(376, 648, 418, 648, SUAVE, 2))
+    p.append(caja_punteada(426, 600, 96, 96, AMBAR, radio=10, grosor=2))
+    p.append(texto(474, 640, "la frontera", AMBAR, 12.5, peso="600"))
+    p.append(texto(474, 660, "de la VM", AMBAR, 12.5))
+    p.append(flecha(528, 648, 558, 648, SUAVE, 2))
+
+    p.append(caja(566, 600, 300, 96, PANEL, VIOLETA))
+    p.append(texto(716, 630, "la VM de Linux", VIOLETA, 14, peso="600"))
+    p.append(texto(716, 654, "la que Docker Desktop", SUAVE, 11.5))
+    p.append(texto(716, 672, "enciende sin decírtelo", SUAVE, 11.5))
+
+    p.append(flecha(872, 648, 920, 648, SUAVE, 2))
+    p.append(caja(928, 600, 300, 96, PANEL, ACENTO))
+    p.append(texto(1078, 630, "el contenedor", ACENTO, 14, peso="600"))
+    p.append(texto(1078, 654, "que cree estar leyendo", SUAVE, 11.5))
+    p.append(texto(1078, 672, "un disco normal", SUAVE, 11.5))
+
+    p.append(texto(650, 730, "Cada lectura y cada escritura del bind mount cruzan ese puente: por eso ahí es más lento que en Linux nativo,", SUAVE, 13.5))
+    p.append(texto(650, 752, "y por eso los permisos los inventa el filesystem compartido en vez de salir de tu disco.", SUAVE, 13.5))
+    p.append(texto(650, 794, "En Linux no hay puente: el bind mount es el mismo inodo del mismo kernel, y por eso ahí el dueño del archivo sí es una pregunta con respuesta.", SUAVE, 13))
+    p.append(cierre())
+    return "".join(p)
+
+
+# --------------------------------------------------------------------------
+# 2/9 · De quien queda el archivo, en cuatro plataformas
+# --------------------------------------------------------------------------
+
+def cont_uid_plataformas():
+    """Cuatro plataformas, cuatro resultados — y la frontera que explica cada uno."""
+    ancho, alto = 1340, 830
+    aria = (
+        "Cuatro plataformas en cuatro paneles y, en cada uno, de quien queda "
+        "el archivo que el contenedor acaba de escribir en el bind mount. "
+        "Linux nativo con Docker: queda de root, porque Docker no activa user "
+        "namespaces y el uid 0 de adentro es el uid 0 de afuera. Linux con "
+        "Podman rootless: queda de tu usuario, porque el uid 0 se mapea al "
+        "tuyo y solo ese. WSL2 en una ruta ext4 de tu carpeta personal: queda "
+        "de root, igual que en Linux, porque es Linux de verdad. Y macOS con "
+        "Docker Desktop o Windows con una ruta del disco de Windows: queda de "
+        "tu usuario, porque el filesystem compartido de la maquina virtual "
+        "inventa la propiedad. Cada panel dibuja la frontera que explica su "
+        "resultado, y al pie van las salidas: --user en Docker con su "
+        "asterisco, y --userns=keep-id o el sufijo dos puntos U del volumen en "
+        "Podman"
+    )
+    paneles = (
+        (ROJO, "Linux nativo", "Docker", "no hay user namespace",
+         ("Docker no lo activa por omisión.",
+          "El uid 0 de adentro es el uid 0",
+          "de afuera: el mismo número, el",
+          "mismo kernel, el mismo inodo."),
+         ("-rw-r--r-- 1 root root", "app/salida.txt"),
+         "queda de root", "y no lo borras sin sudo"),
+        (ACENTO, "Linux", "Podman rootless", "user namespace, con tu mapeo",
+         ("El uid 0 de adentro se mapea a TU",
+          "uid. Sólo ése: el 1000 de adentro",
+          "cae en tu rango de /etc/subuid,",
+          "que no es ningún usuario real."),
+         ("-rw-r--r-- 1 tu tu", "app/salida.txt"),
+         "queda tuyo", "sin sudo en ningún momento"),
+        (ROJO, "WSL2", "ruta ext4, en tu home de Linux", "es Linux de verdad",
+         ("Mismo kernel, mismo ext4, mismas",
+          "reglas: se comporta igual que el",
+          "primer panel. Guardar el proyecto",
+          "en /mnt/c es otra historia."),
+         ("-rw-r--r-- 1 root root", "app/salida.txt"),
+         "queda de root", "es el caso 1, con otro nombre"),
+        (ACENTO, "macOS o Windows", "ruta del disco de Windows o de macOS",
+         "el filesystem compartido lo inventa",
+         ("El bind mount cruza a la VM por un",
+          "puente que traduce la propiedad:",
+          "te devuelve tu uid pase lo que",
+          "pase adentro. No lo negocia nadie."),
+         ("-rw-r--r-- 1 tu staff", "app/salida.txt"),
+         "queda tuyo", "no porque esté bien: nadie lo mide"),
+    )
+    p = [marco(ancho, alto, aria)]
+    p.append(texto(670, 42, "De quién queda el archivo que escribe el contenedor", TEXTO, 21, peso="600"))
+    p.append(texto(670, 68, "el mismo bind mount y el mismo proceso, en cuatro plataformas — y cuatro resultados, no dos", SUAVE, 14))
+
+    for i, (color, plataforma, runtime, frontera, explica, archivo,
+            resultado, matiz) in enumerate(paneles):
+        x = 40 + i * 320
+        cx = x + 152
+        p.append(caja(x, 110, 305, 486, PANEL, color))
+        p.append(texto(cx, 142, plataforma, TEXTO, 16, peso="600"))
+        p.append(texto(cx, 164, runtime, SUAVE, 12))
+        p.append(linea(x + 18, 178, x + 287, 178, LINEA, 1))
+
+        p.append(caja(x + 24, 194, 257, 62, TINTE, LINEA, radio=8, grosor=1.5))
+        p.append(texto(cx, 218, "el proceso del contenedor", SUAVE, 11.5))
+        p.append(teclado(cx, 242, "uid 0  (root adentro)", TEXTO, 12.5))
+        p.append(flecha(cx, 258, cx, 288, SUAVE, 2))
+
+        p.append(caja_punteada(x + 16, 292, 273, 122, color, radio=10, grosor=2))
+        p.append(texto(cx, 314, frontera, color, 12.5, peso="600"))
+        for k, renglon in enumerate(explica):
+            p.append(texto(cx, 338 + k * 18, renglon, SUAVE, 10.5))
+        p.append(flecha(cx, 416, cx, 446, SUAVE, 2))
+
+        p.append(caja(x + 24, 450, 257, 66, FONDO, LINEA, radio=8, grosor=1.5))
+        p.append(teclado(cx, 476, archivo[0], color, 11.5, peso="normal"))
+        p.append(teclado(cx, 496, archivo[1], SUAVE, 11.5, peso="normal"))
+
+        p.append(texto(cx, 550, resultado, color, 19, peso="600"))
+        p.append(texto(cx, 576, matiz, SUAVE, 11))
+
+    # Las salidas.
+    p.append(texto(670, 638, "las salidas, cuando el resultado no te sirve", TEXTO, 16, peso="600"))
+    p.append(caja(40, 656, 630, 128, PANEL, CIAN))
+    p.append(texto(60, 686, "en Docker", CIAN, 14.5, anclaje="start", peso="600"))
+    p.append(teclado(180, 686, "docker run --user $(id -u):$(id -g) …", TEXTO, 13, anclaje="start"))
+    p.append(texto(468, 682, "*", ROJO, 18, anclaje="start", peso="600"))
+    p.append(parrafo(60, 714, (
+        "* el proceso deja de ser root DENTRO también: si la imagen esperaba escribir",
+        "en /app o instalar un paquete al arrancar, se rompe. Y ese uid no existe en el",
+        "/etc/passwd de la imagen, así que algunas herramientas se quejan del usuario.",
+    ), SUAVE, 11.5, 20))
+
+    p.append(caja(690, 656, 630, 128, PANEL, ACENTO))
+    p.append(texto(710, 686, "en Podman", ACENTO, 14.5, anclaje="start", peso="600"))
+    p.append(teclado(830, 686, "--userns=keep-id", TEXTO, 13, anclaje="start"))
+    p.append(teclado(985, 686, "o bien", SUAVE, 12, anclaje="start", peso="normal"))
+    p.append(teclado(1040, 686, "-v ./app:/app:U", TEXTO, 13, anclaje="start"))
+    p.append(parrafo(710, 714, (
+        "keep-id mapea tu uid al mismo número adentro, y ya no hay traducción que",
+        "sorprenda. El sufijo :U es otra cosa: hace un chown recursivo del origen al uid",
+        "mapeado — cámbiale el dueño a tu directorio de verdad, así que mídelo antes.",
+    ), SUAVE, 11.5, 20))
+
+    p.append(texto(670, 812, "No son dos casos con excepciones: son cuatro respuestas distintas, y cuál te toca depende de dónde corre el kernel y de quién inventa la propiedad.", SUAVE, 13.5))
+    p.append(cierre())
+    return "".join(p)
+
+
+# --------------------------------------------------------------------------
+# 2/10 · La matriz de ocho casos
+# --------------------------------------------------------------------------
+
+def cont_matriz_volumen():
+    """Tres decisiones binarias, ocho hojas, dos preguntas por hoja."""
+    ancho, alto = 1400, 830
+    aria = (
+        "La matriz de ocho casos del laboratorio, dibujada como un arbol de "
+        "tres decisiones binarias: el codigo dentro de la imagen o montado por "
+        "volumen, la edicion hecha en el host o dentro del contenedor, y con "
+        "docker build de por medio o sin el. Cada una de las ocho hojas dice "
+        "si el cambio se ve al correr y si sobrevive a un docker rm. Las "
+        "cuatro hojas de la rama del volumen van resaltadas y agrupadas bajo "
+        "la conclusion que cierra la pagina: con volumen, editar fuera y ver "
+        "dentro no necesita ningun rebuild"
+    )
+    hojas = (
+        (False, False, True, "El rebuild mete tu cambio en una capa nueva.",
+         "Hay que reconstruir Y volver a correr: dos pasos."),
+        (False, False, False, "La imagen sigue siendo la de antes: el contenedor corre",
+         "el código viejo. Tu edición existe, pero sólo en tu disco."),
+        (False, True, False, "El build lee el contexto del host, no la capa de escritura:",
+         "tu edición de adentro no entra nunca a la imagen nueva."),
+        (False, True, False, "Se ve ya, en ese contenedor. Vive en la capa de escritura,",
+         "y docker rm se la lleva entera sin preguntar."),
+        (True, False, True, "Se ve al instante — y el build sobró: el volumen tapa",
+         "lo que la imagen traiga en ese path, sea nuevo o viejo."),
+        (True, False, True, "La que usas todo el día: guardas el archivo y ya está.",
+         "Ni rebuild, ni reinicio, ni docker nada."),
+        (True, True, True, "Escribir en /app es escribir en tu disco. El build, otra",
+         "vez, no cambió nada que se llegue a ver."),
+        (True, True, True, "Escribes en el bind mount: el archivo cambia en tu carpeta",
+         "del host, con el dueño que diga tu plataforma."),
+    )
+    ve = (True, False, False, True, True, True, True, True)
+    sobrevive = (True, True, False, False, True, True, True, True)
+    centros = [155 + i * 70 for i in range(8)]
+
+    p = [marco(ancho, alto, aria)]
+    p.append(texto(700, 42, "Los ocho casos, como tres decisiones", TEXTO, 21, peso="600"))
+    p.append(texto(700, 68, "predice antes de ejecutar: el árbol da las ocho respuestas sin correr nada", SUAVE, 14))
+    p.append(texto(1240, 94, "¿se ve", SUAVE, 11.5, peso="600"))
+    p.append(texto(1240, 110, "al correr?", SUAVE, 11.5, peso="600"))
+    p.append(texto(1332, 94, "¿sobrevive", SUAVE, 11.5, peso="600"))
+    p.append(texto(1332, 110, "a docker rm?", SUAVE, 11.5, peso="600"))
+
+    # La raiz.
+    p.append(caja(50, 369, 170, 62, PANEL, LINEA))
+    p.append(texto(135, 396, "cambias una línea", TEXTO, 13, peso="600"))
+    p.append(texto(135, 416, "de app.py", SUAVE, 12))
+
+    # Nivel 1: donde vive el codigo.
+    p.append(linea(220, 400, 240, 400, LINEA, 2))
+    p.append(linea(240, 260, 240, 540, LINEA, 2))
+    nivel1 = ((260, VIOLETA, "en la IMAGEN", "el Dockerfile hace COPY . ."),
+              (540, CIAN, "por VOLUMEN", "-v \"$(pwd)\":/app"))
+    for cy, color, titulo, glosa in nivel1:
+        p.append(linea(240, cy, 258, cy, LINEA, 2))
+        p.append(caja(262, cy - 34, 190, 68, PANEL, color))
+        p.append(texto(357, cy - 4, titulo, color, 14, peso="600"))
+        p.append(teclado(357, cy + 18, glosa, SUAVE, 10.5, peso="normal"))
+
+    # Nivel 2: donde editas.
+    nivel2 = ((260, 190, 330), (540, 470, 610))
+    for cy, a, b in nivel2:
+        p.append(linea(452, cy, 470, cy, LINEA, 2))
+        p.append(linea(470, a, 470, b, LINEA, 2))
+    for cy, etiqueta in ((190, "editas en el HOST"), (330, "editas DENTRO"),
+                         (470, "editas en el HOST"), (610, "editas DENTRO")):
+        p.append(linea(470, cy, 488, cy, LINEA, 2))
+        p.append(caja(492, cy - 26, 172, 52, PANEL, LINEA, grosor=1.5))
+        p.append(texto(578, cy + 5, etiqueta, TEXTO, 12.5, peso="600"))
+
+    # Nivel 3: con build o sin build, y las hojas.
+    for k, cy in enumerate((190, 330, 470, 610)):
+        p.append(linea(664, cy, 682, cy, LINEA, 2))
+        p.append(linea(682, centros[2 * k], 682, centros[2 * k + 1], LINEA, 2))
+    for i, cy in enumerate(centros):
+        volumen, adentro, _ = hojas[i][0], hojas[i][1], None
+        p.append(linea(682, cy, 700, cy, LINEA, 2))
+        p.append(chip(750, cy, "con build" if i % 2 == 0 else "sin build",
+                      AMBAR if i % 2 == 0 else SUAVE, tam=12))
+        p.append(flecha(806, cy, 830, cy, SUAVE, 1.8))
+
+        color = ACENTO if volumen else LINEA
+        p.append(caja(836, cy - 29, 524, 58, TINTE if volumen else PANEL,
+                      color, radio=8, grosor=2 if volumen else 1.5))
+        p.append(texto(852, cy - 4, hojas[i][3], TEXTO, 11.5, anclaje="start"))
+        p.append(texto(852, cy + 15, hojas[i][4], SUAVE, 11.5, anclaje="start"))
+        for cxm, bandera in ((1240, ve[i]), (1332, sobrevive[i])):
+            if bandera:
+                p.append(palomita(cxm, cy, 9, ACENTO, 3))
+            else:
+                p.append(cruz(cxm, cy, 9, ROJO, 3))
+
+    p.append(linea(1376, 406, 1376, 674, ACENTO, 3))
+    p.append(caja(40, 700, 1320, 62, TINTE, ACENTO, grosor=2.5))
+    p.append(texto(700, 727, "Con volumen, editar fuera y ver dentro no necesita ningún rebuild: las cuatro hojas de esa rama se ven y sobreviven.", ACENTO, 15, peso="600"))
+    p.append(texto(700, 750, "En la rama de la imagen, en cambio, la respuesta cambia en cada hoja — y eso es exactamente lo que se practica.", SUAVE, 12.5))
+
+    p.append(texto(700, 800, "La segunda columna no pregunta si el archivo existe: pregunta dónde vive. Un cambio en la capa de escritura se ve igual de bien… hasta el docker rm.", SUAVE, 13.5))
+    p.append(cierre())
+    return "".join(p)
+
+
+# --------------------------------------------------------------------------
+# 2/11 · Tapar contra copiar
+# --------------------------------------------------------------------------
+
+def _contenido_imagen(x, y, w, entradas, color=VIOLETA, apagado=False):
+    """Lo que la imagen trae en ese path, como una lista de binarios."""
+    p = [caja(x, y, w, 140, PANEL, SUAVE if apagado else color, radio=8,
+              grosor=1.5 if apagado else 2)]
+    p.append(texto(x + w / 2, y + 26, "lo que la imagen trae en /bin",
+                   SUAVE if apagado else color, 12.5, peso="600"))
+    for i, entrada in enumerate(entradas):
+        ey = y + 52 + i * 21
+        p.append(teclado(x + 24, ey, entrada, SUAVE if apagado else TEXTO, 12,
+                         anclaje="start", peso="normal"))
+        if apagado:
+            p.append(tachado(x + 22, ey - 4, x + 24 + 9 * len(entrada), SUAVE, 1.5))
+    return "".join(p)
+
+
+def cont_tapar():
+    """Un bind mount siempre tapa; un named volume vacio copia. Lado a lado."""
+    ancho, alto = 1340, 880
+    aria = (
+        "La diferencia que medio internet cuenta al reves, en dos casos sobre "
+        "el mismo path de una imagen que ya traia archivos. Arriba, un bind "
+        "mount de un directorio vacio sobre barra bin: siempre tapa, no copia "
+        "nada nunca, ni en Docker ni en Podman, y el dibujo deja lo de la "
+        "imagen abajo, intacto e inalcanzable, con ls desaparecido y el error "
+        "command not found. Abajo, un named volume vacio, que hace lo "
+        "contrario: la primera vez que se monta copia al volumen lo que la "
+        "imagen tenia en ese path, con la flecha de copia dibujada "
+        "explicitamente, y si el volumen ya trae algo entonces si tapa, como "
+        "el bind mount. Al margen, la opcion que apaga la copia —nocopy con -v "
+        "y volume-nocopy con --mount— y la consecuencia que explica el "
+        "laboratorio de Postgres"
+    )
+    binarios = ("ls", "cat", "sh", "bash")
+    p = [marco(ancho, alto, aria)]
+    p.append(texto(670, 42, "Tapar y copiar no son lo mismo", TEXTO, 21, peso="600"))
+    p.append(texto(670, 68, "el mismo path, la misma imagen, dos montajes — y resultados opuestos", SUAVE, 14))
+
+    # -- caso 1: el bind mount siempre tapa --------------------------------
+    p.append(caja(40, 100, 940, 330, "none", CIAN))
+    p.append(texto(60, 132, "1 · un bind mount de un directorio vacío, sobre /bin", CIAN, 16, anclaje="start", peso="600"))
+    p.append(_contenido_imagen(60, 156, 250, binarios))
+    p.append(flecha(318, 226, 372, 226, SUAVE, 2))
+    p.append(caja(378, 156, 250, 140, PANEL, CIAN, radio=8))
+    p.append(texto(503, 182, "lo que montas", CIAN, 12.5, peso="600"))
+    p.append(teclado(503, 216, "-v ./vacio:/bin", CIAN, 14))
+    p.append(texto(503, 248, "un directorio de tu disco,", SUAVE, 11.5))
+    p.append(texto(503, 268, "y está vacío", SUAVE, 11.5))
+    p.append(flecha(634, 226, 696, 226, ROJO, 2.5))
+
+    p.append(caja(702, 156, 270, 246, PANEL, ROJO))
+    p.append(texto(837, 182, "lo que ves en /bin adentro", ROJO, 12.5, peso="600"))
+    p.append(texto(837, 216, "(nada)", SUAVE, 16))
+    p.append(linea(722, 240, 952, 240, LINEA, 1, "5 5"))
+    p.append(texto(837, 260, "debajo del montaje, intacto", SUAVE, 10.5))
+    p.append(texto(837, 276, "e inalcanzable:", SUAVE, 10.5))
+    for i_b, entrada in enumerate(binarios):
+        ey = 300 + i_b * 19
+        p.append(teclado(800, ey, entrada, SUAVE, 11.5, anclaje="start", peso="normal"))
+        p.append(tachado(798, ey - 4, 802 + 9 * len(entrada), SUAVE, 1.5))
+    p.append(teclado(837, 388, "bash: ls: command not found", ROJO, 12))
+
+    p.append(caja(60, 320, 568, 88, PANEL, ROJO))
+    p.append(texto(344, 352, "SIEMPRE tapa", ROJO, 18, peso="600"))
+    p.append(texto(344, 378, "El bind mount no copia nada, nunca: ni en Docker ni en Podman.", SUAVE, 12.5))
+    p.append(texto(344, 398, "Lo de la imagen sigue ahí abajo, intacto, y nadie lo alcanza.", SUAVE, 12.5))
+
+    # -- caso 2: el named volume vacio copia -------------------------------
+    p.append(caja(40, 450, 940, 360, "none", AMBAR))
+    p.append(texto(60, 482, "2 · un named volume VACÍO, sobre ese mismo /bin", AMBAR, 16, anclaje="start", peso="600"))
+    p.append(_contenido_imagen(60, 506, 250, binarios))
+    p.append(texto(345, 556, "COPIA", AMBAR, 13.5, peso="600"))
+    p.append(flecha(318, 576, 372, 576, AMBAR, 3))
+    p.append(caja(378, 506, 250, 140, PANEL, AMBAR, radio=8))
+    p.append(texto(503, 532, "lo que montas", AMBAR, 12.5, peso="600"))
+    p.append(teclado(503, 566, "-v midata:/bin", AMBAR, 14))
+    p.append(texto(503, 598, "un volumen nuevo,", SUAVE, 11.5))
+    p.append(texto(503, 618, "y vacío", SUAVE, 11.5))
+    p.append(flecha(634, 576, 696, 576, ACENTO, 2.5))
+
+    p.append(caja(702, 506, 270, 190, PANEL, ACENTO))
+    p.append(texto(837, 532, "lo que ves en /bin adentro", ACENTO, 12.5, peso="600"))
+    for i_b, entrada in enumerate(binarios):
+        p.append(teclado(800, 560 + i_b * 21, entrada, ACENTO, 12, anclaje="start", peso="normal"))
+    p.append(linea(722, 646, 952, 646, LINEA, 1, "5 5"))
+    p.append(texto(837, 666, "y midata ahora los guarda:", SUAVE, 10.5))
+    p.append(texto(837, 684, "sobreviven al docker rm", SUAVE, 10.5))
+
+    p.append(caja(60, 662, 568, 74, PANEL, AMBAR))
+    p.append(texto(344, 694, "COPIA la primera vez que se monta", AMBAR, 17, peso="600"))
+    p.append(texto(344, 720, "Docker copia al volumen lo que la imagen traía en ese path.", SUAVE, 12.5))
+
+    p.append(caja(60, 748, 912, 50, PANEL, ROJO))
+    p.append(texto(516, 779, "¿Y si el volumen YA trae algo? Entonces tapa, igual que el bind mount: la copia ocurre una sola vez.", ROJO, 13.5, peso="600"))
+
+    # -- el margen ---------------------------------------------------------
+    p.append(caja(1000, 100, 300, 330, PANEL, VIOLETA))
+    p.append(texto(1150, 132, "cómo se apaga la copia", VIOLETA, 14.5, peso="600"))
+    p.append(teclado(1020, 172, "-v midata:/bin:nocopy", TEXTO, 12, anclaje="start", peso="normal"))
+    p.append(texto(1020, 196, "con la sintaxis corta", SUAVE, 11, anclaje="start"))
+    p.append(teclado(1020, 234, "--mount type=volume,", TEXTO, 12, anclaje="start", peso="normal"))
+    p.append(teclado(1036, 254, "volume-nocopy=true,…", TEXTO, 12, anclaje="start", peso="normal"))
+    p.append(texto(1020, 278, "con la sintaxis larga", SUAVE, 11, anclaje="start"))
+    p.append(linea(1020, 298, 1280, 298, LINEA, 1))
+    p.append(parrafo(1020, 324, (
+        "Son la misma opción con dos",
+        "nombres. Sin ella, copiar ES el",
+        "comportamiento por omisión del",
+        "named volume — no una rareza.",
+    ), SUAVE, 11.5, 19))
+
+    p.append(caja(1000, 450, 300, 360, PANEL, CIAN))
+    p.append(texto(1150, 482, "y por eso el laboratorio", CIAN, 14.5, peso="600"))
+    p.append(texto(1150, 502, "de Postgres funciona", CIAN, 14.5, peso="600"))
+    p.append(parrafo(1020, 538, (
+        "postgres:16 trae vacío su",
+        "/var/lib/postgresql/data y lo",
+        "inicializa al arrancar.",
+        "",
+        "El named volume nuevo se lleva",
+        "esa inicialización, y el",
+        "contenedor siguiente la",
+        "encuentra hecha.",
+        "",
+        "Con un bind mount a un directorio",
+        "vacío saldría igual —pero por",
+        "otra razón: porque la imagen",
+        "también traía ese path vacío.",
+    ), SUAVE, 11.5, 19))
+
+    p.append(texto(670, 840, "La regla no es «el volumen copia y el bind mount no»: es que el bind mount NUNCA copia, y el named volume copia UNA vez, y sólo si está vacío.", SUAVE, 13.5))
+    p.append(texto(670, 864, "Medio internet lo cuenta al revés. Compruébalo con ls, no con un blog.", SUAVE, 13))
+    p.append(cierre())
+    return "".join(p)
+
+
+# --------------------------------------------------------------------------
+# 2/12 · El estado que sobrevive a su contenedor
+# --------------------------------------------------------------------------
+
+def _tabla_pg(x, y, w, apagada=False):
+    """La tabla con su fila recien insertada, dentro del volumen."""
+    color = SUAVE if apagada else ACENTO
+    p = [teclado(x + w / 2, y, "id │ nombre", SUAVE, 11.5, peso="normal"),
+         linea(x + 24, y + 8, x + w - 24, y + 8, LINEA, 1),
+         teclado(x + w / 2, y + 28, "1  │ ada", color, 12.5)]
+    if apagada:
+        p.append(tachado(x + 40, y + 24, x + w - 40, ROJO, 2))
+    return "".join(p)
+
+
+def cont_estado_postgres():
+    """Cuatro tiempos: el dato sobrevive al contenedor y muere con el volumen."""
+    ancho, alto = 1340, 750
+    aria = (
+        "Cuatro tiempos de la misma linea, de izquierda a derecha. Primero, un "
+        "contenedor postgres:16 con un named volume llamado pgdata montado en "
+        "/var/lib/postgresql/data y una tabla con su fila recien insertada. "
+        "Despues, el contenedor destruido con docker rm -f y el volumen "
+        "quedando solo en el dibujo, con los datos adentro. Luego, un "
+        "contenedor nuevo montando el mismo volumen y leyendo la misma fila, "
+        "sin inicializar nada. Y al final, docker volume rm pgdata, donde los "
+        "datos si mueren. Un recuadro marca dos decisiones de la pagina: aqui "
+        "no se publica puerto, se entra con docker exec, y el volumen es named "
+        "y no bind mount por los permisos del uid 999 y por la portabilidad"
+    )
+    tiempos = (
+        (ACENTO, "1 · corriendo, con su volumen",
+         "-v pgdata:/var/lib/postgresql/data", "postgres:16", "el contenedor pg",
+         False, False,
+         ("INSERT y COMMIT. La fila no vive",
+          "en el contenedor: vive en el",
+          "volumen, que es otra cosa.")),
+        (ROJO, "2 · se destruye el contenedor",
+         "docker rm -f pg", "postgres:16", "el contenedor pg",
+         True, False,
+         ("Se va su capa de escritura y se",
+          "va su nombre. El volumen sigue",
+          "entero, con la fila adentro.")),
+        (ACENTO, "3 · otro contenedor, mismo volumen",
+         "docker run --name pg2 -v pgdata:…", "postgres:16", "el contenedor pg2",
+         False, False,
+         ("SELECT devuelve la misma fila.",
+          "Postgres no inicializó nada: el",
+          "volumen ya venía inicializado.")),
+        (ROJO, "4 · y aquí sí mueren los datos",
+         "docker volume rm pgdata", "", "(ya no hay contenedor)",
+         True, True,
+         ("Es el único de los cuatro",
+          "comandos que se lleva el dato.",
+          "Y no hay deshacer.")),
+    )
+    p = [marco(ancho, alto, aria)]
+    p.append(texto(670, 42, "El estado sobrevive a su contenedor", TEXTO, 21, peso="600"))
+    p.append(texto(670, 68, "cuatro tiempos de la misma línea, con un named volume de por medio", SUAVE, 14))
+
+    for i, (color, titulo, cmd, imagen, etiqueta, muerto, volumen_muerto,
+            glosa) in enumerate(tiempos):
+        x = 40 + i * 326
+        cx = x + 143
+        p.append(caja(x, 128, 286, 412, PANEL, color))
+        p.append(texto(cx, 158, titulo, color, 13.5, peso="600"))
+        p.append(teclado(cx, 182, cmd, SUAVE, 10.5, peso="normal"))
+
+        if muerto and volumen_muerto:
+            p.append(caja_punteada(x + 22, 200, 242, 78, SUAVE, radio=8))
+            p.append(texto(cx, 244, etiqueta, SUAVE, 12))
+        elif muerto:
+            p.append(caja_punteada(x + 22, 200, 242, 78, SUAVE, radio=8))
+            p.append(teclado(cx, 232, imagen, SUAVE, 13, peso="normal"))
+            p.append(texto(cx, 254, etiqueta, SUAVE, 11))
+            p.append(tachado(x + 42, 228, x + 244, ROJO, 2.5))
+            p.append(cruz(x + 250, 214, 10, ROJO, 3))
+        else:
+            p.append(caja(x + 22, 200, 242, 78, TINTE, ACENTO, radio=8))
+            p.append(teclado(cx, 232, imagen, ACENTO, 14))
+            p.append(texto(cx, 254, etiqueta, SUAVE, 11))
+
+        if not muerto:
+            p.append(flecha_punteada(cx, 282, cx, 314, ACENTO, 2))
+            p.append(texto(cx + 14, 304, "monta", SUAVE, 10.5, anclaje="start"))
+
+        borde = ROJO if volumen_muerto else AMBAR
+        p.append(caja(x + 22, 320, 242, 132, PANEL, borde))
+        p.append(teclado(cx, 348, "pgdata", borde, 15))
+        p.append(texto(cx, 368, "named volume", SUAVE, 10.5))
+        p.append(_tabla_pg(x + 22, 398, 242, volumen_muerto))
+        if volumen_muerto:
+            p.append(cruz(x + 250, 334, 10, ROJO, 3))
+
+        for k, renglon in enumerate(glosa):
+            p.append(texto(cx, 480 + k * 19, renglon, SUAVE, 11.5))
+
+        if i:
+            p.append(flecha(x - 34, 334, x - 6, 334, SUAVE, 2))
+
+    p.append(caja(40, 572, 630, 122, PANEL, CIAN))
+    p.append(texto(60, 602, "aquí no se publica ningún puerto", CIAN, 14.5, anclaje="start", peso="600"))
+    p.append(teclado(60, 630, "docker exec -it pg psql -U postgres", TEXTO, 12.5, anclaje="start", peso="normal"))
+    p.append(parrafo(60, 654, (
+        "Un -p 5432:5432 pondría Postgres en tu red local sin que nadie lo",
+        "necesite. Entrar por exec es entrar por la puerta que ya existe.",
+    ), SUAVE, 12))
+
+    p.append(caja(690, 572, 630, 122, PANEL, AMBAR))
+    p.append(texto(710, 602, "y el volumen es named, no bind mount", AMBAR, 14.5, anclaje="start", peso="600"))
+    p.append(parrafo(710, 630, (
+        "Postgres corre como el uid 999, y un bind mount a tu carpeta le negaría",
+        "el permiso de escribir en su propio directorio de datos. El named volume",
+        "además es el mismo comando en Linux, en macOS y en Windows.",
+    ), SUAVE, 12))
+
+    p.append(texto(670, 726, "Un contenedor es desechable porque el dato no vive en él. Cuál de los dos borras no es un detalle: es la diferencia entre rehacer y perder.", SUAVE, 13.5))
+    p.append(cierre())
+    return "".join(p)
+
+
+# --------------------------------------------------------------------------
+# 2/13 · Qué se lleva exactamente cada prune
+# --------------------------------------------------------------------------
+
+def _monton(x, y, w, h, bloques, color):
+    """Un monton del disco: bloques apilados dentro de su recuadro."""
+    p = [caja(x, y, w, h, FONDO, color, radio=8, grosor=1.5)]
+    for i in range(bloques):
+        p.append(relleno(x + 14, y + h - 14 - (i + 1) * 17, w - 28, 13, color))
+    return "".join(p)
+
+
+def cont_prune():
+    """Una brocha por comando: exactamente que monton se lleva cada uno."""
+    ancho, alto = 1360, 800
+    aria = (
+        "El mismo disco dibujado como cuatro montones: las imagenes, partidas "
+        "en las que tienen un contenedor encima y las que no usa nadie; los "
+        "contenedores detenidos; las capas huerfanas; y los volumenes sin "
+        "dueno. Debajo, una brocha por comando marca exactamente que se lleva "
+        "cada uno: docker container prune solo los contenedores detenidos, "
+        "docker image prune las capas huerfanas, docker image prune -a ademas "
+        "las imagenes que nadie usa, y docker system prune -a todo lo "
+        "anterior. Resaltado en rojo, el aviso de que los volumenes no entran "
+        "en ninguno y se piden aparte. Arriba a la izquierda, docker system df "
+        "como el comando que mide antes de borrar"
+    )
+    montones = (
+        (ACENTO, 4, "2.1 GB", "con un contenedor", "encima"),
+        (VIOLETA, 6, "4.8 GB", "que nadie usa", "—"),
+        (CIAN, 3, "380 MB", "contenedores", "detenidos"),
+        (AMBAR, 4, "1.9 GB", "capas huérfanas", "(dangling)"),
+        (ROJO, 4, "3.4 GB", "volúmenes", "sin dueño"),
+    )
+    comandos = (
+        ("docker container prune", (2,), CIAN),
+        ("docker image prune", (3,), AMBAR),
+        ("docker image prune -a", (1, 3), VIOLETA),
+        ("docker system prune -a", (1, 2, 3), TEXTO),
+    )
+    col = [270 + i * 212 for i in range(5)]
+
+    p = [marco(ancho, alto, aria)]
+    p.append(texto(680, 42, "Qué se lleva exactamente cada prune", TEXTO, 21, peso="600"))
+    p.append(texto(680, 68, "cuatro montones en el disco, y una brocha por comando", SUAVE, 14))
+
+    # Mide antes de borrar.
+    p.append(caja(40, 150, 210, 170, PANEL, CIAN))
+    p.append(texto(145, 178, "mide antes de borrar", CIAN, 13, peso="600"))
+    p.append(teclado(145, 204, "docker system df", TEXTO, 12.5))
+    p.append(linea(58, 218, 232, 218, LINEA, 1))
+    for i, (tipo, tam, libre) in enumerate((("TYPE", "SIZE", "FREE"),
+                                            ("Images", "6.9G", "4.8G"),
+                                            ("Containers", "380M", "380M"),
+                                            ("Volumes", "3.4G", "3.4G"))):
+        y = 240 + i * 22
+        color = SUAVE if i == 0 else TEXTO
+        p.append(teclado(58, y, tipo, color, 10.5, anclaje="start", peso="normal"))
+        p.append(teclado(170, y, tam, color, 10.5, anclaje="end", peso="normal"))
+        p.append(teclado(232, y, libre, color, 10.5, anclaje="end", peso="normal"))
+
+    # Los montones.
+    p.append(linea(270, 136, 674, 136, VIOLETA, 1.5))
+    p.append(linea(270, 136, 270, 148, VIOLETA, 1.5))
+    p.append(linea(674, 136, 674, 148, VIOLETA, 1.5))
+    p.append(texto(472, 128, "imágenes", VIOLETA, 13, peso="600"))
+    for i, (color, bloques, tam, n1, n2) in enumerate(montones):
+        x = col[i]
+        p.append(_monton(x, 152, 192, 118, bloques, color))
+        p.append(teclado(x + 96, 292, tam, color, 14))
+        p.append(texto(x + 96, 314, n1, TEXTO, 12, peso="600"))
+        p.append(texto(x + 96, 332, n2, SUAVE, 11))
+
+    # Una brocha por comando.
+    for k, (cmd, alcanza, color) in enumerate(comandos):
+        y = 356 + k * 60
+        p.append(teclado(40, y + 28, cmd, color, 13, anclaje="start"))
+        p.append(linea(40, y + 44, 1310, y + 44, LINEA, 1))
+        for i in range(5):
+            if i in alcanza:
+                p.append(relleno(col[i] + 6, y + 6, 180, 30, color, radio=15))
+                p.append(texto(col[i] + 96, y + 26, "se lo lleva", FONDO, 12.5, peso="600"))
+            else:
+                p.append(texto(col[i] + 96, y + 26, "—", SUAVE, 13))
+    p.append(texto(40, 618, "sin el -a, docker system prune se salta las imágenes que nadie usa: de ese lado sólo se lleva las capas huérfanas.", SUAVE, 12.5, anclaje="start"))
+
+    p.append(caja(40, 640, 640, 122, PANEL, ROJO))
+    p.append(texto(60, 670, "los volúmenes NO entran en ninguno de los cuatro", ROJO, 14.5, anclaje="start", peso="600"))
+    p.append(teclado(60, 698, "docker volume prune", TEXTO, 12.5, anclaje="start", peso="normal"))
+    p.append(teclado(260, 698, "docker system prune --volumes", TEXTO, 12.5, anclaje="start", peso="normal"))
+    p.append(texto(60, 724, "Se piden aparte, a propósito: es la única columna donde borrar es perder", SUAVE, 12, anclaje="start"))
+    p.append(texto(60, 744, "un dato y no rehacer un build.", SUAVE, 12, anclaje="start"))
+
+    p.append(caja(700, 640, 620, 122, PANEL, ACENTO))
+    p.append(texto(720, 670, "y nada de esto toca lo que está en uso", ACENTO, 14.5, anclaje="start", peso="600"))
+    p.append(parrafo(720, 698, (
+        "Una imagen con un contenedor encima —aunque ese contenedor esté",
+        "detenido— no es candidata para ningún prune. Por eso el primer montón",
+        "no se marca en ninguna de las cuatro filas.",
+    ), SUAVE, 12))
+
+    p.append(texto(680, 786, "Ningún prune pregunta dos veces lo mismo: cada uno tiene una columna, y docker system df te dice antes cuánto vas a recuperar.", SUAVE, 13.5))
+    p.append(cierre())
+    return "".join(p)
+
+
+# --------------------------------------------------------------------------
+# 3/1 · La red y el nombre
+# --------------------------------------------------------------------------
+
+def cont_red_y_pod():
+    """La misma pareja de contenedores, en tres redes distintas."""
+    ancho, alto = 1360, 720
+    aria = (
+        "Tres escenarios con la misma pareja de contenedores, una API y una "
+        "base. En la red bridge por omision se alcanzan por IP pero no hay "
+        "resolucion por nombre, y el intento por nombre aparece tachado. En "
+        "una red creada por ti se alcanzan por nombre, y la IP va tachada "
+        "porque cambia en cada arranque. En un pod de Podman comparten "
+        "localhost y se hablan por puerto, sin nombre de por medio. Alrededor "
+        "de los tres, la linea del host, con la unica flecha que la atraviesa "
+        "rotulada -p 5432:5432 y etiquetada como lo que es: superficie "
+        "expuesta y decision de diseno"
+    )
+    escenarios = (
+        (ROJO, "la red bridge por omisión", "docker run  (sin --network)",
+         "psql -h 172.17.0.3", "por IP sí llega",
+         "psql -h db", "could not translate host name",
+         ("No hay DNS en la bridge por omisión.",
+          "Y esa IP cambia en cada arranque.")),
+        (ACENTO, "una red creada por ti", "docker network create datos",
+         "psql -h db", "por nombre: hay DNS embebido",
+         "psql -h 172.18.0.3", "funciona hoy, falla mañana",
+         ("El DNS resuelve el nombre del contenedor.",
+          "La IP es justo lo que no debes escribir.")),
+        (CIAN, "un pod de Podman", "podman pod create --name app",
+         "psql -h localhost -p 5432", "mismo netns: se hablan por puerto",
+         "psql -h db", "no hay ningún nombre que resolver",
+         ("Comparten el network namespace, como",
+          "dos procesos de la misma máquina.")),
+    )
+    p = [marco(ancho, alto, aria)]
+    p.append(texto(680, 42, "Que dos contenedores se hablen", TEXTO, 21, peso="600"))
+    p.append(texto(680, 68, "tres redes, y sólo en una de ellas el nombre significa algo", SUAVE, 14))
+
+    p.append(caja_punteada(40, 168, 1280, 448, SUAVE, radio=14, grosor=2))
+    p.append(texto(66, 194, "el host", SUAVE, 13.5, anclaje="start", peso="600"))
+
+    for i, (color, titulo, cmd, bueno, glosa_b, malo, glosa_m, nota) in enumerate(escenarios):
+        x = 70 + i * 386
+        cx = x + 175
+        p.append(caja(x, 212, 350, 384, PANEL, color))
+        p.append(texto(cx, 244, titulo, color, 15, peso="600"))
+        p.append(teclado(cx, 266, cmd, SUAVE, 10.5, peso="normal"))
+
+        p.append(caja(x + 20, 292, 130, 66, TINTE, ACENTO, radio=8))
+        p.append(teclado(x + 85, 322, "api", ACENTO, 14))
+        p.append(texto(x + 85, 342, "sin estado", SUAVE, 10))
+        p.append(caja(x + 200, 292, 130, 66, TINTE, AMBAR, radio=8))
+        p.append(teclado(x + 265, 322, "db", AMBAR, 14))
+        p.append(texto(x + 265, 342, "postgres:16", SUAVE, 10))
+        p.append(flecha(x + 156, 325, x + 194, 325, color, 2))
+
+        p.append(palomita(x + 34, 392, 8, ACENTO, 2.5))
+        p.append(texto(x + 52, 397, "así sí se hablan", ACENTO, 12, anclaje="start", peso="600"))
+        p.append(teclado(x + 24, 424, bueno, TEXTO, 12, anclaje="start", peso="normal"))
+        p.append(texto(x + 24, 446, glosa_b, SUAVE, 11, anclaje="start"))
+
+        p.append(cruz(x + 34, 480, 8, ROJO, 2.5))
+        p.append(texto(x + 52, 485, "y así no", ROJO, 12, anclaje="start", peso="600"))
+        p.append(teclado(x + 24, 512, malo, SUAVE, 12, anclaje="start", peso="normal"))
+        p.append(tachado(x + 22, 508, x + 26 + 7.3 * len(malo), ROJO, 2))
+        p.append(texto(x + 24, 534, glosa_m, ROJO, 11, anclaje="start"))
+
+        for k, renglon in enumerate(nota):
+            p.append(texto(cx, 562 + k * 17, renglon, SUAVE, 10.5))
+
+    # La unica flecha que cruza la linea del host.
+    p.append(texto(1250, 122, "desde tu máquina", SUAVE, 12))
+    p.append(linea(1250, 130, 1250, 154, AMBAR, 2.5))
+    p.append(chip(1250, 168, "-p 5432:5432", AMBAR, tam=12.5))
+    p.append(linea(1250, 182, 1250, 325, AMBAR, 2.5))
+    p.append(flecha(1250, 325, 1178, 325, AMBAR, 2.5))
+    p.append(texto(1250, 372, "la única flecha", AMBAR, 11.5, peso="600"))
+    p.append(texto(1250, 390, "que cruza la línea", AMBAR, 11.5, peso="600"))
+    p.append(texto(1250, 416, "superficie expuesta,", SUAVE, 11))
+    p.append(texto(1250, 434, "y decisión de diseño", SUAVE, 11))
+
+    p.append(texto(680, 660, "Publicar un puerto no es «conectar»: los tres escenarios ya conectan la API con la base sin publicar nada.", SUAVE, 13.5))
+    p.append(texto(680, 684, "Un -p abre la base al resto de tu red local, y eso se decide a propósito o no se decide.", SUAVE, 13.5))
+    p.append(cierre())
+    return "".join(p)
+
+
+# --------------------------------------------------------------------------
+# 3/2 · El contrato de un servicio
+# --------------------------------------------------------------------------
+
+def cont_contrato():
+    """Puerto, variables y volumen: lo que un servicio promete por escrito."""
+    ancho, alto = 1340, 800
+    aria = (
+        "Tres cajas colgando de un mismo contenedor, etiquetadas el puerto que "
+        "escucha, las variables de entorno que espera y el volumen que "
+        "necesita, y a la derecha, por cada una, lo que le permite a quien lo "
+        "consume: por donde hablarle, como configurarlo sin reconstruir la "
+        "imagen, y que sobrevive a un docker rm. Debajo, el mismo servicio con "
+        "las tres cajas en blanco y la etiqueta monolito repartido, que es lo "
+        "que queda cuando el contrato no esta escrito, y una linea que separa "
+        "el servicio con estado del servicio sin estado, con el aviso de que "
+        "partir cuesta red, despliegue y depuracion"
+    )
+    clausulas = (
+        (CIAN, "el puerto que escucha", ("8000/tcp",),
+         "por dónde hablarle",
+         ("Desde la misma red: http://api:8000 — sin saber su IP,",
+          "sin publicar nada y sin que a nadie le importe dónde corre.")),
+        (AMBAR, "las variables que espera", ("DB_URL", "LOG_LEVEL"),
+         "cómo configurarlo sin reconstruir",
+         ("La misma imagen en desarrollo y en producción: lo que cambia",
+          "es el entorno, no el artefacto. Sin rebuild de por medio.")),
+        (VIOLETA, "el volumen que necesita", ("/data",),
+         "qué sobrevive a un docker rm",
+         ("Lo que está en /data, y sólo eso. Todo lo demás que el",
+          "proceso escriba se va con la capa de escritura.")),
+    )
+    p = [marco(ancho, alto, aria)]
+    p.append(texto(670, 42, "El contrato de un servicio", TEXTO, 21, peso="600"))
+    p.append(texto(670, 68, "tres cosas escritas, y lo que cada una le permite a quien lo consume", SUAVE, 14))
+
+    p.append(caja(50, 150, 220, 316, PANEL, ACENTO, grosor=2.5))
+    p.append(texto(160, 186, "un servicio", ACENTO, 16, peso="600"))
+    p.append(teclado(160, 214, "mi-api:v1", TEXTO, 15))
+    p.append(parrafo(72, 250, (
+        "Lo que promete es",
+        "exactamente esto, y",
+        "nada más. Lo que no",
+        "está escrito no es",
+        "parte del trato.",
+    ), SUAVE, 12, 20))
+    p.append(texto(160, 400, "y las tres cosas", SUAVE, 12))
+    p.append(texto(160, 420, "caben en un README", SUAVE, 12))
+    p.append(texto(160, 446, "de diez líneas", SUAVE, 12))
+
+    for k, (color, titulo, valores, permite, renglones) in enumerate(clausulas):
+        y = 150 + k * 108
+        p.append(flecha(274, y + 42, 316, y + 42, color, 2))
+        p.append(caja(322, y, 260, 84, PANEL, color))
+        p.append(texto(452, y + 28, titulo, color, 13, peso="600"))
+        p.append(teclado(452, y + 58, "   ".join(valores), TEXTO, 13.5))
+        p.append(flecha(586, y + 42, 628, y + 42, SUAVE, 2))
+        p.append(caja(634, y, 656, 84, PANEL, LINEA, grosor=1.5))
+        p.append(texto(652, y + 26, permite, color, 13, anclaje="start", peso="600"))
+        for i, renglon in enumerate(renglones):
+            p.append(texto(652, y + 48 + i * 18, renglon, SUAVE, 11.5, anclaje="start"))
+
+    # Sin contrato escrito.
+    p.append(caja(50, 500, 600, 228, PANEL, ROJO))
+    p.append(texto(350, 532, "el mismo servicio, sin contrato escrito", ROJO, 15, peso="600"))
+    p.append(caja(76, 558, 160, 140, PANEL, SUAVE, grosor=1.5))
+    p.append(texto(156, 600, "un servicio", SUAVE, 13, peso="600"))
+    p.append(teclado(156, 626, "mi-api:v1", SUAVE, 13, peso="normal"))
+    p.append(texto(156, 656, "el mismo de arriba", SUAVE, 10.5))
+    for k in range(3):
+        y = 562 + k * 46
+        p.append(flecha(240, y + 18, 272, y + 18, SUAVE, 1.6))
+        p.append(caja_punteada(278, y, 200, 36, SUAVE, radio=8))
+    p.append(chip(378, 706, "monolito repartido", ROJO, tam=13))
+    p.append(parrafo(496, 578, (
+        "Quien lo consume",
+        "tiene que leer tu",
+        "código para saber",
+        "por dónde entrarle,",
+        "y cualquier cambio",
+        "tuyo lo rompe sin",
+        "avisar a nadie.",
+    ), SUAVE, 11.5, 18))
+
+    # Con estado y sin estado.
+    p.append(caja(670, 500, 620, 228, PANEL, AMBAR))
+    p.append(texto(980, 532, "y la línea que sí importa al partir", AMBAR, 15, peso="600"))
+    p.append(linea(980, 556, 980, 692, AMBAR, 1.5, "6 6"))
+    p.append(texto(824, 582, "servicio SIN estado", ACENTO, 13, peso="600"))
+    p.append(parrafo(700, 606, (
+        "Desechable y replicable.",
+        "Lo matas y lo repones",
+        "sin pensarlo: partirlo",
+        "cuesta poco.",
+    ), SUAVE, 11.5, 18))
+    p.append(texto(1136, 582, "servicio CON estado", VIOLETA, 13, peso="600"))
+    p.append(parrafo(1000, 606, (
+        "Uno solo, con su volumen.",
+        "Partirlo cuesta red,",
+        "despliegue y depuración",
+        "— y casi nunca se parte.",
+    ), SUAVE, 11.5, 18))
+
+    p.append(texto(670, 762, "Un microservicio no es «un servicio chico»: es un servicio cuyo contrato cabe en tres líneas y no obliga a nadie a leer su código.", SUAVE, 13.5))
+    p.append(cierre())
+    return "".join(p)
+
+
+# --------------------------------------------------------------------------
+# 3/3 · El pipeline de la unidad 2, repartido en servicios
+# --------------------------------------------------------------------------
+
+def cont_pipeline_servicios():
+    """Cinco servicios en una red propia, y la unica flecha que cruza al host."""
+    ancho, alto = 1360, 780
+    aria = (
+        "El pipeline de la unidad 2 repartido en servicios dentro de una red "
+        "propia: extraccion, transformacion y carga como tres contenedores sin "
+        "estado, la base de datos con su named volume como el unico que guarda "
+        "algo, y el tablero que la lee. Cada flecha lleva rotulado el contrato "
+        "por el que pasa —nombre y puerto, o variable de entorno— y solo una "
+        "cruza la linea del host, la del tablero, porque la base no publica "
+        "puerto. Al margen, por que la base casi nunca se parte, y que "
+        "sobrevive a un docker rm de cada pieza"
+    )
+    servicios = (
+        (90, ACENTO, "extracción", "descarga el crudo", "sin estado"),
+        (280, ACENTO, "transformación", "limpia y normaliza", "sin estado"),
+        (470, ACENTO, "carga", "escribe en la base", "sin estado"),
+        (660, AMBAR, "db", "postgres:16", "el único con estado"),
+        (850, CIAN, "tablero", "streamlit", "sin estado"),
+    )
+    contratos = (
+        (260, VIOLETA, "RAW_DIR", "variable de entorno"),
+        (455, VIOLETA, "CLEAN_DIR", "variable de entorno"),
+        (645, AMBAR, "db:5432", "nombre y puerto"),
+        (835, AMBAR, "db:5432", "nombre y puerto"),
+    )
+    p = [marco(ancho, alto, aria)]
+    p.append(texto(680, 42, "El pipeline de la unidad 2, repartido en servicios", TEXTO, 21, peso="600"))
+    p.append(texto(680, 68, "cada flecha es un contrato, y sólo una cruza la línea del host", SUAVE, 14))
+
+    p.append(caja_punteada(60, 170, 970, 330, ACENTO, radio=14, grosor=2))
+    p.append(teclado(80, 196, "docker network create pipeline", ACENTO, 12.5, anclaje="start", peso="normal"))
+
+    for cx, color, etiqueta, glosa in contratos:
+        p.append(chip(cx, 226, etiqueta, color, tam=12))
+        p.append(texto(cx, 250, glosa, SUAVE, 10))
+
+    for i, (x, color, nombre, glosa, estado) in enumerate(servicios):
+        p.append(caja(x, 266, 150, 110, PANEL, color))
+        p.append(texto(x + 75, 300, nombre, color, 14.5, peso="600"))
+        p.append(texto(x + 75, 322, glosa, SUAVE, 11))
+        p.append(texto(x + 75, 350, estado, TEXTO if color is AMBAR else SUAVE,
+                       10.5, peso="600" if color is AMBAR else "normal"))
+        if i:
+            p.append(flecha(x - 34, 321, x - 6, 321, contratos[i - 1][1], 2))
+
+    p.append(flecha(735, 376, 735, 404, AMBAR, 2.5))
+    p.append(caja(660, 410, 150, 62, PANEL, AMBAR))
+    p.append(teclado(735, 438, "pgdata", AMBAR, 14))
+    p.append(texto(735, 458, "named volume", SUAVE, 10.5))
+    p.append(texto(640, 434, "el único que guarda algo", AMBAR, 12, anclaje="end", peso="600"))
+    p.append(texto(640, 454, "de todo el dibujo", SUAVE, 11, anclaje="end"))
+
+    # La linea del host, y la unica flecha que la cruza.
+    p.append(linea(40, 536, 1330, 536, SUAVE, 2, "9 7"))
+    p.append(texto(60, 560, "la línea del host", SUAVE, 13, anclaje="start", peso="600"))
+    p.append(linea(925, 376, 925, 522, CIAN, 2.5))
+    p.append(chip(925, 536, "-p 8501:8501", CIAN, tam=12.5))
+    p.append(flecha(925, 550, 925, 598, CIAN, 2.5))
+    p.append(caja(820, 602, 210, 66, PANEL, CIAN))
+    p.append(texto(925, 630, "tu navegador", CIAN, 13.5, peso="600"))
+    p.append(texto(925, 652, "la única pieza que se publica", SUAVE, 10.5))
+    p.append(texto(1046, 630, "la base no publica puerto:", AMBAR, 12, anclaje="start", peso="600"))
+    p.append(texto(1046, 650, "sólo el tablero la alcanza,", SUAVE, 11, anclaje="start"))
+    p.append(texto(1046, 668, "y por nombre", SUAVE, 11, anclaje="start"))
+
+    p.append(caja(1050, 170, 280, 150, PANEL, VIOLETA))
+    p.append(texto(1190, 200, "por qué la base", VIOLETA, 14, peso="600"))
+    p.append(texto(1190, 220, "casi nunca se parte", VIOLETA, 14, peso="600"))
+    p.append(parrafo(1068, 248, (
+        "Partir un servicio con",
+        "estado obliga a repartir",
+        "el dato, y eso cuesta",
+        "más que lo que compra.",
+    ), SUAVE, 11.5, 18))
+
+    p.append(caja(1050, 340, 280, 160, PANEL, ACENTO))
+    p.append(texto(1190, 370, "qué sobrevive a", ACENTO, 14, peso="600"))
+    p.append(texto(1190, 390, "un docker rm", ACENTO, 14, peso="600"))
+    p.append(parrafo(1068, 418, (
+        "De las cinco piezas: sólo",
+        "lo que hay en pgdata.",
+        "Las otras cuatro se",
+        "reponen con un run, y por",
+        "eso pueden morir.",
+    ), SUAVE, 11.5, 17))
+
+    p.append(texto(680, 718, "Dibujar los contratos antes de escribir el código es lo que convierte «lo parto en servicios» en una decisión que se puede discutir.", SUAVE, 13.5))
+    p.append(texto(680, 742, "Si una flecha no se puede rotular, esa pieza todavía no es un servicio.", SUAVE, 13.5))
+    p.append(cierre())
+    return "".join(p)
+
+
+# --------------------------------------------------------------------------
+# 3/4 · Por dónde se sale
+# --------------------------------------------------------------------------
+
+def _brecha(x, y, w, h):
+    """Borra un tramo del borde de un anillo: la brecha que abre una bandera."""
+    return relleno(x, y, w, h, FONDO, radio=0)
+
+
+def cont_superficie_ataque():
+    """Las cuatro capas por omision, y las cuatro decisiones que las abren."""
+    ancho, alto = 1400, 870
+    aria = (
+        "El contenedor rodeado de sus capas de defensa por omision —seccomp, "
+        "AppArmor o SELinux, capabilities recortadas y usuario no root— y, "
+        "atravesandolas, las decisiones que abren un agujero en cada una, "
+        "dibujadas como brechas rotuladas: --privileged, que abre las cuatro "
+        "de un golpe, --security-opt seccomp=unconfined, --cap-add SYS_ADMIN, "
+        "y el socket de Docker montado, que no es un exploit sino entregar el "
+        "host. Dos casos marcados sostienen la tesis: CVE-2022-0492 "
+        "funcionaba sin privilegios y aun asi la configuracion por defecto lo "
+        "tapaba, y Dirty Pipe atraviesa todas las capas porque usa splice y "
+        "write, que todo contenedor necesita"
+    )
+    anillos = (
+        (200, 240, 560, 400, ROJO, 268, 220, 740,
+         "seccomp", "el perfil por omisión bloquea unas 44 syscalls"),
+        (246, 286, 468, 308, VIOLETA, 314, 266, 694,
+         "AppArmor / SELinux", "qué del filesystem puede tocar"),
+        (292, 332, 376, 216, AMBAR, 360, 312, 648,
+         "capabilities recortadas", "le quedan unas 14 de las 38"),
+        (338, 378, 284, 124, CIAN, 404, 358, 602,
+         "usuario no root", "si la imagen trae USER"),
+    )
+    p = [marco(ancho, alto, aria)]
+    p.append(texto(700, 42, "Por dónde se sale de un contenedor", TEXTO, 21, peso="600"))
+    p.append(texto(700, 68, "un mapa de decisiones mal tomadas: casi ninguna fuga real fue un bug del kernel", SUAVE, 14))
+
+    p.append(caja(200, 720, 560, 56, TINTE, ACENTO, grosor=2.5))
+    p.append(texto(480, 754, "el kernel del host — uno solo, el mismo para todos", TEXTO, 13.5, peso="600"))
+
+    for x, y, w, h, color, ty, tx_izq, tx_der, nombre, glosa in anillos:
+        p.append(caja(x, y, w, h, "none", color, radio=24, grosor=2.5))
+        p.append(texto(tx_izq, ty, nombre, color, 12.5, anclaje="start", peso="600"))
+        p.append(texto(tx_der, ty, glosa, SUAVE, 10.5, anclaje="end"))
+
+    p.append(caja(384, 416, 192, 48, TINTE, ACENTO, radio=10, grosor=2.5))
+    p.append(texto(480, 446, "tu proceso, adentro", ACENTO, 13, peso="600"))
+
+    # Brecha 1: --privileged abre las cuatro de un golpe.
+    for bx in (338, 292, 246, 200):
+        p.append(_brecha(bx - 5, 422, 10, 36))
+    p.append(flecha(380, 440, 152, 440, ROJO, 3))
+    p.append(teclado(40, 416, "--privileged", ROJO, 14, anclaje="start"))
+    p.append(parrafo(40, 474, (
+        "Abre las cuatro a la vez:",
+        "es correr como si no",
+        "hubiera contenedor.",
+        "No es «un poco menos",
+        "seguro»: es ninguna capa.",
+    ), SUAVE, 11, 18))
+
+    # Brecha 2: --cap-add SYS_ADMIN abre solo el anillo de capabilities.
+    p.append(_brecha(320, 543, 120, 10))
+    p.append(linea(380, 548, 380, 562, ROJO, 2))
+    p.append(teclado(380, 578, "--cap-add SYS_ADMIN", ROJO, 12.5))
+
+    # Brecha 3: seccomp=unconfined abre solo el anillo de fuera.
+    p.append(_brecha(645, 635, 110, 10))
+    p.append(linea(700, 640, 700, 654, ROJO, 2))
+    p.append(teclado(700, 670, "--security-opt seccomp=unconfined", ROJO, 11.5))
+    p.append(texto(586, 690, "y las otras tres siguen en pie:", SUAVE, 10.5, anclaje="start"))
+    p.append(texto(586, 706, "una brecha abre su capa, no el host", SUAVE, 10.5, anclaje="start"))
+
+    # Brecha 4: el socket montado no rompe ninguna capa. Las rodea.
+    p.append(flecha_punteada(580, 440, 892, 440, ROJO, 2.5, "7 6"))
+    p.append(chip(825, 440, "el socket", ROJO, tam=12))
+    p.append(texto(825, 414, "montado por ti", ROJO, 11, peso="600"))
+
+    # Dirty Pipe atraviesa las cuatro sin abrir ninguna.
+    p.append(flecha(500, 470, 500, 700, VIOLETA, 3))
+    p.append(chip(500, 676, "Dirty Pipe", VIOLETA, tam=12))
+
+    # CVE-2022-0492 no llego: la configuracion por omision lo tapo.
+    p.append(flecha(478, 410, 478, 262, AMBAR, 2.5))
+    p.append(cruz(478, 242, 11, ROJO, 3))
+    p.append(chip(478, 212, "CVE-2022-0492", AMBAR, tam=12))
+
+    p.append(caja(900, 150, 440, 190, PANEL, AMBAR))
+    p.append(texto(922, 182, "CVE-2022-0492", AMBAR, 15, anclaje="start", peso="600"))
+    p.append(parrafo(922, 212, (
+        "Funcionaba SIN privilegios: bastaba un user",
+        "namespace no privilegiado para llegar al",
+        "release_agent de cgroup v1.",
+        "",
+        "Y aun así, la configuración por omisión lo",
+        "tapaba. Quien lo sufrió había apagado algo.",
+    ), SUAVE, 11.5, 20))
+
+    p.append(caja(900, 360, 440, 190, PANEL, ROJO))
+    p.append(texto(922, 392, "el socket de Docker montado", ROJO, 15, anclaje="start", peso="600"))
+    p.append(teclado(922, 418, "-v /var/run/docker.sock:/var/run/…", TEXTO, 11.5, anclaje="start", peso="normal"))
+    p.append(parrafo(922, 444, (
+        "No rompe ninguna de las cuatro capas: las",
+        "rodea. Quien habla con ese socket le pide al",
+        "daemon —que es root— que monte / y corra",
+        "otro contenedor con --privileged.",
+        "No es un exploit: es entregar el host.",
+    ), SUAVE, 11.5, 19))
+
+    p.append(caja(900, 570, 440, 190, PANEL, VIOLETA))
+    p.append(texto(922, 602, "Dirty Pipe (CVE-2022-0847)", VIOLETA, 15, anclaje="start", peso="600"))
+    p.append(parrafo(922, 632, (
+        "Atraviesa las cuatro capas sin abrir ninguna,",
+        "porque usa splice() y write(): dos syscalls",
+        "que todo contenedor necesita y que ningún",
+        "perfil razonable puede prohibir.",
+        "",
+        "Contra esto no hay bandera: hay parchar el kernel.",
+    ), SUAVE, 11.5, 19))
+
+    p.append(texto(700, 812, "Las capas por omisión son buenas: el catálogo de fugas reales está lleno de configuraciones apagadas a mano, no de bugs del kernel.", SUAVE, 13.5))
+    p.append(texto(700, 836, "Y cuando sí es un bug del kernel, ninguna de las cuatro ayuda — porque el kernel es uno solo y es el mismo para todos.", SUAVE, 13.5))
+    p.append(cierre())
+    return "".join(p)
+
+
 DIAGRAMAS_CONCEPTUALES = {
     "cont-intermodal": cont_intermodal,
     "cont-ns-cgroups": cont_ns_cgroups,
@@ -897,6 +2719,23 @@ DIAGRAMAS_CONCEPTUALES = {
     "cont-espectro": cont_espectro,
     "cont-docker-vs-podman": cont_docker_vs_podman,
     "cont-capas-cache": cont_capas_cache,
+    "cont-sin-sudo": cont_sin_sudo,
+    "cont-planes-b": cont_planes_b,
+    "cont-registro": cont_registro,
+    "cont-ciclo-de-vida": cont_ciclo_de_vida,
+    "cont-build-contexto": cont_build_contexto,
+    "cont-dockerfile-roto": cont_dockerfile_roto,
+    "cont-overlay-volumen": cont_overlay_volumen,
+    "cont-rutas": cont_rutas,
+    "cont-uid-plataformas": cont_uid_plataformas,
+    "cont-matriz-volumen": cont_matriz_volumen,
+    "cont-tapar": cont_tapar,
+    "cont-estado-postgres": cont_estado_postgres,
+    "cont-prune": cont_prune,
+    "cont-red-y-pod": cont_red_y_pod,
+    "cont-contrato": cont_contrato,
+    "cont-pipeline-servicios": cont_pipeline_servicios,
+    "cont-superficie-ataque": cont_superficie_ataque,
 }
 
 # Las cuatro graficas de benchmark viven en su propio modulo porque dibujan un
