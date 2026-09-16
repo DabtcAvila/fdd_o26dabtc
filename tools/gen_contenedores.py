@@ -1426,14 +1426,15 @@ def _insignia(cx, cy, numero, color=ROJO, r=13):
 
 def cont_dockerfile_roto():
     """Tres defectos, cada uno con su consecuencia medible y su arreglo."""
-    ancho, alto = 1340, 760
+    ancho, alto = 1340, 800
     aria = (
         "El Dockerfile de la carpeta roto con sus cinco lineas a la izquierda "
         "y sus tres defectos senalados con insignias numeradas: FROM "
         "python:latest sin pinear, el COPY punto punto antes del RUN pip "
         "install, y la ausencia de una instruccion USER. A la derecha, una "
-        "tarjeta por defecto con su consecuencia, con la medicion que la hace "
-        "visible y con el arreglo concreto: FROM python:3.12-slim, partir el "
+        "tarjeta por defecto con su consecuencia, con la medicion real que la "
+        "hace visible —el segundo build baja de 6.53 a 0.41 segundos al "
+        "reordenar, con una sola dependencia— y con el arreglo concreto: FROM python:3.12-slim, partir el "
         "COPY dejando requirements.txt primero, y RUN useradd mas USER. Abajo "
         "a la izquierda, el mismo Dockerfile ya arreglado, entero, con las "
         "ocho instrucciones en el orden correcto"
@@ -1483,21 +1484,23 @@ def cont_dockerfile_roto():
     tarjetas = (
         ("1", "FROM python:latest — sin pinear",
          "la imagen de hoy no es la de mañana: latest se mueve",
-         "construye hoy y dentro de un mes: otro digest y otro Python",
+         "construye hoy y dentro de un mes: otro digest y otro Python", (),
          ("FROM python:3.12-slim",)),
         ("2", "COPY . .  antes del  RUN pip install",
          "cada cambio de una línea de código tira el caché de instalación",
-         "cronometra el segundo build tras tocar app.py: 41 s contra 1.2 s",
+         "el segundo build tras tocar app.py: 6.53 s contra 0.41 s",
+         ("medido con una sola dependencia pequeña, requests: la brecha crece con",
+          "el número de paquetes — con pandas y compañía son minutos contra segundos"),
          ("COPY requirements.txt .", "RUN pip install -r requirements.txt",
           "COPY . .")),
         ("3", "no hay ninguna instrucción USER",
          "el proceso corre como root, y lo que escribe en el bind mount queda de root",
-         "ls -l del archivo que escribió: owner root, y no lo puedes borrar",
+         "ls -l del archivo que escribió: owner root, y no lo puedes borrar", (),
          ("RUN useradd -m app && chown -R app /app", "USER app")),
     )
-    for k, (num, titulo, consecuencia, medicion, arreglo) in enumerate(tarjetas):
-        y = 104 + k * 200
-        p.append(caja(560, y, 740, 182, PANEL, ROJO))
+    for k, (num, titulo, consecuencia, medicion, matiz, arreglo) in enumerate(tarjetas):
+        y = 104 + k * 220
+        p.append(caja(560, y, 740, 208, PANEL, ROJO))
         p.append(_insignia(590, y + 30, num))
         p.append(texto(616, y + 35, titulo, ROJO, 14.5, anclaje="start", peso="600"))
         p.append(linea(580, y + 52, 1280, y + 52, LINEA, 1))
@@ -1505,12 +1508,15 @@ def cont_dockerfile_roto():
         p.append(texto(704, y + 76, consecuencia, TEXTO, 12.5, anclaje="start"))
         p.append(texto(580, y + 102, "cómo se mide", SUAVE, 11, anclaje="start"))
         p.append(texto(704, y + 102, medicion, AMBAR, 12.5, anclaje="start"))
-        p.append(texto(580, y + 130, "el arreglo", SUAVE, 11, anclaje="start"))
+        for i, renglon in enumerate(matiz):
+            p.append(texto(704, y + 122 + i * 17, renglon, SUAVE, 11, anclaje="start"))
+        y_arreglo = y + (156 if matiz else 130)
+        p.append(texto(580, y_arreglo, "el arreglo", SUAVE, 11, anclaje="start"))
         for i, renglon in enumerate(arreglo):
-            p.append(teclado(704, y + 130 + i * 20, renglon, ACENTO, 12,
+            p.append(teclado(704, y_arreglo + i * 20, renglon, ACENTO, 12,
                              anclaje="start", peso="normal"))
 
-    p.append(texto(670, 730, "Ninguno de los tres es una cuestión de gusto: los tres se comprueban con un comando, y por eso se pueden corregir sin discutir.", SUAVE, 13.5))
+    p.append(texto(670, 776, "Ninguno de los tres es una cuestión de gusto: los tres se comprueban con un comando, y por eso se pueden corregir sin discutir.", SUAVE, 13.5))
     p.append(cierre())
     return "".join(p)
 
