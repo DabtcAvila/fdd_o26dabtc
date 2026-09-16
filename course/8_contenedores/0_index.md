@@ -44,11 +44,11 @@ La primera sesión es **corta y sin computadora**: 60 minutos, no 90. Las págin
 
 ## Cuánto trabajo hay fuera de clase
 
-Además de las tres clases, la unidad pide ≈ 236 minutos de lectura —las páginas marcadas «lectura» o «previa» dentro de cada sección, más los cuatro anexos de referencia— más **8 h 27 de DataCamp**, repartidas entre *Introduction to Docker* e *Intermediate Docker*. En total son **unas 12 horas y media en doce días**. Es el número con el que decides, desde el jueves 17, cómo repartes el resto de tu semana.
+Además de las tres clases, la unidad pide ≈ 246 minutos de lectura —las páginas marcadas «lectura» o «previa» dentro de cada sección, más los cuatro anexos de referencia— más **8 h 27 de DataCamp**, repartidas entre *Introduction to Docker* e *Intermediate Docker*. En total son **unas 12 horas y media en doce días**. Es el número con el que decides, desde el jueves 17, cómo repartes el resto de tu semana.
 
 ## Los benchmarks de la unidad
 
-Los cinco scripts que miden lo que de verdad cuesta un contenedor —arranque, escala, ejecución y anidamiento— viven en `_assets/benchmarks/`, junto con los CSV ya medidos. [`code/analyze.py`](code/analyze.py) los lee y genera las cuatro gráficas que usa la unidad; es opcional, no es una entrega, y sigue el mismo patrón que el notebook publicado en la unidad de arquitectura de computadoras.
+Los seis scripts que miden lo que de verdad cuesta un contenedor —arranque, escala, ejecución, anidamiento y la comparación de runtimes OCI, más el que los corre todos— viven en `_assets/benchmarks/`, junto con los CSV ya medidos. [`code/analyze.py`](code/analyze.py) los lee y genera las cuatro gráficas que usa la unidad; es opcional, no es una entrega, y sigue el mismo patrón que el notebook publicado en la unidad de arquitectura de computadoras.
 
 ## Antes de empezar
 
