@@ -102,7 +102,7 @@ Así que la frase honesta es: no tener daemon no te hace más rápido. Te da roo
 :::
 
 ::: problem {#cont-p7-el-cruce title="El cruce que no existe"}
-La figura 2 es la medición cruda de un script que mide la memoria del supervisor al pasar de 1 a 20 contenedores. Dibujada así, las dos líneas parecen ir a cruzarse: el RSS de `dockerd` se queda casi plano —179 MiB con un contenedor, 184 MiB con veinte— y la suma del RSS de los `conmon` de Podman sube de 1.7 a 35.8 MiB. De ahí salió la conclusión que circula: «a partir de unos 100 contenedores, Docker usa menos memoria».
+La @cont-bench-escala es la medición cruda de un script que mide la memoria del supervisor al pasar de 1 a 20 contenedores. Dibujada así, las dos líneas parecen ir a cruzarse: el RSS de `dockerd` se queda casi plano —179 MiB con un contenedor, 184 MiB con veinte— y la suma del RSS de los `conmon` de Podman sube de 1.7 a 35.8 MiB. De ahí salió la conclusión que circula: «a partir de unos 100 contenedores, Docker usa menos memoria».
 
 El script tiene **dos errores**, y los dos datos que faltan son éstos:
 
