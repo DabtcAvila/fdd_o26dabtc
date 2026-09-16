@@ -56,7 +56,7 @@ Nada que instalar no quiere decir nada que preparar: dos de los tres bloques de 
 - **Unas 15 hojas** con la salida de `ls -l /proc/1/ns/` del host y la del contenedor, una junto a la otra, para compararlas a mano. Es el ejercicio de la página 2.
 - **Seis hojas rotuladas**: una por eslabón —`docker CLI`, `dockerd`, `containerd`, `shim`, `runc`— y una sexta que dice `proceso del contenedor`. Es el ejercicio de la página 4.
 
-Eso es todo. El ejercicio de las tijeras no entra: se fue con la página 3 a lectura.
+Eso es todo. La página 3 no pide nada impreso: se fue a lectura, y su ejercicio se hace a solas, con una hoja o con el editor abierto.
 
 ## Qué te llevas
 

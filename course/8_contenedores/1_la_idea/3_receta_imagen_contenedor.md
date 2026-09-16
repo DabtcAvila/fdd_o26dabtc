@@ -59,8 +59,8 @@ Es la pregunta que sigue, y ya tienes media respuesta: lo dice la receta. La otr
 
 Por la misma razón, las ocho instrucciones de Dockerfile que de verdad vas a usar viven en la chuleta de la unidad: eso es referencia, se consulta y no se memoriza. Lo que esta página quiere que cargues es la analogía.
 
-::: problem {#cont-p3-tijeras title="Recorta el Dockerfile en dos montones"}
-Se reparte impreso este Dockerfile, una línea por tira de papel:
+::: problem {#cont-p3-dos-columnas title="Parte el Dockerfile en dos columnas"}
+Copia este Dockerfile donde te acomode —una hoja, tu editor, el margen de esta página—:
 
 ```dockerfile
 FROM python:3.12-slim
@@ -70,21 +70,21 @@ RUN pip install pandas
 CMD ["python", "app.py"]
 ```
 
-En parejas, con tijeras: hagan **dos montones**. A la izquierda, las líneas que ocurren cuando se construye la imagen —`docker build`—. A la derecha, las que ocurren cuando se arranca un contenedor —`docker run`—.
+Ahora acomoda las cinco líneas en **dos columnas**. A la izquierda, las que ocurren cuando se construye la imagen —`docker build`—. A la derecha, las que ocurren cuando se arranca un contenedor —`docker run`—.
 
-Si una tira no cabe entera en un montón, díganlo en voz alta antes de cortarla.
+Una de las cinco no cabe entera en una sola columna. Escríbela en las dos y anota, en media línea, qué hace de cada lado.
 :::
 
-::: hint {of="cont-p3-tijeras"}
-Pregúntense línea por línea: ¿esto **se ejecuta** mientras se cocina el platillo, o es una **nota escrita en la etiqueta** para quien lo va a servir? Y revisen si alguna de las cinco hace las dos cosas.
+::: hint {of="cont-p3-dos-columnas"}
+Pregúntate línea por línea: ¿esto **se ejecuta** mientras se cocina el platillo, o es una **nota escrita en la etiqueta** para quien lo va a servir? Y revisa si alguna de las cinco hace las dos cosas.
 :::
 
-::: answer {of="cont-p3-tijeras"}
-**Montón de `build`: `FROM`, `COPY` y `RUN`.** Las tres se ejecutan al construir y las tres dejan su resultado congelado dentro de la imagen: la base, tu archivo copiado y `pandas` ya instalado. Cuando alguien corra esa imagen, `pip` no vuelve a correr — ya corrió, hace rato, en otra máquina si hace falta.
+::: answer {of="cont-p3-dos-columnas"}
+**Columna de `build`: `FROM`, `COPY` y `RUN`.** Las tres se ejecutan al construir y las tres dejan su resultado congelado dentro de la imagen: la base, tu archivo copiado y `pandas` ya instalado. Cuando alguien corra esa imagen, `pip` no vuelve a correr — ya corrió, hace rato, en otra máquina si hace falta.
 
-**Montón de `run`: `CMD`.** Es la única de las cinco que **no ejecuta nada** durante el `build`. Se apunta en la imagen como «el comando por defecto» y se dispara cuando nace un contenedor. Esa tira es, literalmente, la nota en la etiqueta del platillo congelado.
+**Columna de `run`: `CMD`.** Es la única de las cinco que **no ejecuta nada** durante el `build`. Se apunta en la imagen como «el comando por defecto» y se dispara cuando nace un contenedor. Esa línea es, literalmente, la nota en la etiqueta del platillo congelado.
 
-**Y `WORKDIR` hay que partirla en dos**, que es el punto del ejercicio. Actúa durante el `build` —el `COPY` y el `RUN` que vienen después ocurren dentro de `/app`— y además queda anotada en la imagen como el directorio de trabajo con el que arranca el contenedor. Si su pareja dijo «ésta no cabe en un solo montón», **no se equivocaron: ésa es la respuesta**, y es lo que hay que entender: **el Dockerfile no es un script que se ejecuta de arriba a abajo una vez; es una receta, y parte de la receta son instrucciones para quien sirve el plato, no para quien lo cocina.**
+**Y `WORKDIR` va en las dos columnas**, que es el punto del ejercicio. Actúa durante el `build` —el `COPY` y el `RUN` que vienen después ocurren dentro de `/app`— y además queda anotada en la imagen como el directorio de trabajo con el que arranca el contenedor. Si la escribiste de los dos lados, **no te equivocaste: ésa es la respuesta**, y es lo que hay que entender: **el Dockerfile no es un script que se ejecuta de arriba a abajo una vez; es una receta, y parte de la receta son instrucciones para quien sirve el plato, no para quien lo cocina.**
 :::
 
 Ya sabes que un contenedor es una imagen puesta a correr. Sigue con [[anatomia-de-docker-run]], que abre esa frase por la mitad: quién hace qué, y en qué orden, entre que tecleas `docker run` y el proceso existe.
