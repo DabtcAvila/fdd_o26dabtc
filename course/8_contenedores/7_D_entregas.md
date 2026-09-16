@@ -70,7 +70,7 @@ docker login                     # y después el prepull de seis imágenes
 
 **Entregas dos archivos**
 
-- `certificaciones.md` con la sección *Introduction to Docker* llena: la fecha en que lo terminaste y la **URL del Statement of Accomplishment**. Las otras dos secciones se quedan vacías, que son para las entregas 4 y 5.
+- `certificaciones.md` con la sección *Introduction to Docker* llena: la fecha en que lo terminaste y la **URL del Statement of Accomplishment**. Las otras tres secciones se quedan vacías, que son para las entregas 4 y 5: la 5 llena dos.
 - `introduccion-a-docker.png`: el curso terminado, con **tu nombre y el 100 % visibles**. Con ese nombre exacto, porque la plantilla ya lo enlaza; si te sale en `jpg`, corrige el enlace dentro del archivo.
 
 **El ritual**

@@ -60,7 +60,7 @@ docker history info
 docker images --format 'table {{.Repository}}\t{{.Tag}}\t{{.Size}}' | grep -E 'info|ubuntu|alpine'
 ```
 
-**Deberías ver:** en `history`, una fila por capa, de la más nueva a la más vieja, con su `SIZE` y la instrucción que la creó — las que no tocan el sistema de archivos pesan `0B`, y tu imagen pesa casi exactamente lo que pesaba su base. Y en `images`, la diferencia que decide el tamaño de tu entrega: `ubuntu:22.04`, que es la base de `info`, ronda los **78 MB**; `alpine:3.20` ronda los **8 MB**. Un orden de magnitud de diferencia **antes** de que la imagen lleve una sola línea tuya.
+**Deberías ver:** en `history`, una fila por capa, de la más nueva a la más vieja, con su `SIZE` y la instrucción que la creó — las que no tocan el sistema de archivos pesan `0B`, y tu imagen pesa casi exactamente lo que pesaba su base. Y en `images`, la diferencia que decide el tamaño de tu entrega: `ubuntu:24.04`, que es la base de `info`, ronda los **78 MB**; `alpine:3.20` ronda los **8 MB**. Un orden de magnitud de diferencia **antes** de que la imagen lleve una sola línea tuya.
 
 Ahí está el consejo de la entrega, con su mecanismo: **el tamaño se elige en la primera línea, no se recorta en la última.** Borrar archivos en un `RUN` posterior no adelgaza la imagen — la capa de abajo sigue ahí, con los bytes dentro, y la de arriba sólo anota que ya no se ven. Y recuerda de [[capas-y-cache|capas y caché]] que cada instrucción es una capa: `history` es, literalmente, tu Dockerfile leído de abajo hacia arriba.
 

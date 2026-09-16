@@ -1,5 +1,5 @@
-# Imagen base: ubuntu 22.04
-FROM ubuntu:22.04
+# Imagen base: ubuntu 24.04
+FROM ubuntu:24.04
 
 # Crear directorio de trabajo
 WORKDIR /app
