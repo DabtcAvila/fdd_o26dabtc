@@ -549,9 +549,10 @@ hash **invierte el signo**.
 | Orquestación | 1/1 | 1/5 | paga |
 | gVisor | 1/6 (figura) | 3/5 | paga |
 | Aislamiento máximo | 1/6 | 3/5 | paga |
-| Estado persistente | 1/6 | 2/12 | paga |
+| Estado persistente | 1/1 | 2/12 | paga |
 | Bind mounts distintos en macOS/Windows | 1/6 | 2/8 y 2/9 | paga |
 | `overlay` | 1/4, nombrado como deuda | 2/7 | paga |
+| Escribir en el socket de Docker es mandar sobre un proceso root | 1/4 | 3/4 | paga |
 | Que Docker no active user namespaces | 1/2 | 2/9 y 3/4 | paga |
 | `CMD` contra `ENTRYPOINT` | 1/3, deuda explícita | 2/5 | paga |
 | El arranque no descomprime la imagen | 1/4 | 1/9 | paga |

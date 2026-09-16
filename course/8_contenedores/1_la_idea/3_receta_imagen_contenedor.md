@@ -87,5 +87,7 @@ Pregúntense línea por línea: ¿esto **se ejecuta** mientras se cocina el plat
 **Y `WORKDIR` hay que partirla en dos**, que es el punto del ejercicio. Actúa durante el `build` —el `COPY` y el `RUN` que vienen después ocurren dentro de `/app`— y además queda anotada en la imagen como el directorio de trabajo con el que arranca el contenedor. Si su pareja dijo «ésta no cabe en un solo montón», **no se equivocaron: ésa es la respuesta**, y es lo que hay que entender: **el Dockerfile no es un script que se ejecuta de arriba a abajo una vez; es una receta, y parte de la receta son instrucciones para quien sirve el plato, no para quien lo cocina.**
 :::
 
+Ya sabes que un contenedor es una imagen puesta a correr. Sigue con [[anatomia-de-docker-run]], que abre esa frase por la mitad: quién hace qué, y en qué orden, entre que tecleas `docker run` y el proceso existe.
+
 > [!NOTE]
 > **Si sólo recuerdas una cosa:** la imagen es inmutable y el contenedor es efímero; si quieres cambiar algo, cambias la receta y vuelves a construir.
