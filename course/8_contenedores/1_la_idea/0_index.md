@@ -43,7 +43,7 @@ Los 60 minutos de la sesión, repartidos:
 
 Suman **56**, no 60. Los cuatro minutos de diferencia son colchón a propósito: los dos ejercicios son de pie y con papel en las manos, y eso siempre se desborda.
 
-Los números de esta sección vienen de dos tandas de medición distintas —los benchmarks de arranque y ejecución son del semestre pasado, los inodos de namespaces se midieron ahora—, y cada uno lleva su propio pie con la máquina y las versiones con que se obtuvo. No es un descuido: es la regla que la página 9 enseña con nombre y apellido.
+Los números de esta sección vienen de tres tandas de medición distintas —los benchmarks de arranque, escala, ejecución y anidamiento son del semestre pasado; la comparación de runtimes OCI de la página 7 se midió aparte, en otra máquina; los inodos de namespaces se midieron ahora—, y cada una lleva su propio pie con la máquina y las versiones con que se obtuvo. No es un descuido: es la regla que la página 9 enseña con nombre y apellido.
 
 ## Antes de empezar
 
