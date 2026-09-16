@@ -63,3 +63,24 @@ Eso es todo. El ejercicio de las tijeras no entra: se fue con la página 3 a lec
 - Un modelo mental de qué es un contenedor, no una definición de memoria.
 - La cadena completa de lo que pasa al escribir `docker run`, y qué queda vivo cuando matas cada pieza.
 - Números propios de cuánto cuesta arrancar y correr dentro de un contenedor.
+
+## Lo que esta sección te debe
+
+Varias páginas abren una pregunta y la dejan abierta a propósito. No es descuido y no hace falta perseguirlas: cada una se paga en una página concreta, y aquí está dónde.
+
+| Lo que queda abierto | Se abre en | Se paga en |
+|---|---|---|
+| Kata Containers | 1/2 | 3/5 |
+| Orquestación | 1/1 | 1/5 |
+| gVisor | 1/6 | 3/5 |
+| Aislamiento máximo | 1/6 | 3/5 |
+| Estado que sobrevive al contenedor | 1/1 | 2/12 |
+| Bind mounts distintos en macOS y Windows | 1/6 | 2/8 y 2/9 |
+| `overlay` | 1/4 | 2/7 |
+| El copy-up de la capa de escritura | 1/9 | 2/7 |
+| Escribir en el socket de Docker es mandar sobre un proceso `root` | 1/4 | 3/4 |
+| Que Docker no active user namespaces | 1/2 | 2/9 y 3/4 |
+| `CMD` contra `ENTRYPOINT` | 1/3 | 2/5 |
+| El arranque no descomprime la imagen | 1/4 | 1/9 |
+| `pods` | 1/5 | 3/1 |
+| **Kubernetes como herramienta** | 1/5 | **no se paga en este curso, a propósito** |

@@ -13,7 +13,7 @@ prerequisites: [a-docker-hub]
 
 **Página 4 de 13 · sección 2 de 3**
 
-Meta: que todo el ciclo se deduzca de una sola regla, en vez de memorizarse como doce comandos sueltos.
+Meta: que todo el ciclo se deduzca de una sola regla, en vez de memorizarse como doce comandos sueltos. Los doce están en [[chuleta-contenedores|la chuleta]]; esta página es la regla que los ordena.
 
 ::: figure {#cont-ciclo-de-vida title="Tres estados, y qué comando alcanza a cuál"}
 ![Máquina de estados de tres casillas rotuladas created, running y exited, con cada transición etiquetada por lo que la provoca: docker run, la salida del proceso PID 1 —que es la única razón por la que un contenedor se detiene—, docker start, docker stop y docker rm, que saca la casilla del dibujo junto con su capa de escritura. A la derecha, qué alcanza cada comando: docker ps sólo ve running, docker ps -a ve las tres, docker logs muestra lo que escribió ese proceso, y la flecha de docker exec -it entra a running y aparece tachada contra exited. Un caso al pie, el exited con código 127 del comando que no existe](../_assets/cont-ciclo-de-vida.svg)

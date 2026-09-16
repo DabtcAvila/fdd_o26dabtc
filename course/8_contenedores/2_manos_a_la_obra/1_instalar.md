@@ -146,7 +146,7 @@ De ahí sale la prohibición que no tiene matices: **nunca `chmod 666 /var/run/d
 
 ## El prepull, y por qué salva la clase del martes
 
-La sesión del 22 baja seis imágenes. Somos treinta personas detrás del NAT del ITAM, o sea **una sola dirección IP para todos**: el límite de descargas anónimas de Docker Hub se agota alrededor del minuto diez y la clase se detiene para todo el grupo.
+La sesión del 22 baja seis imágenes. Somos treinta personas detrás del NAT del ITAM, o sea **una sola dirección IP para todos**: el límite de descargas anónimas de Docker Hub se agota alrededor del minuto diez y la clase se detiene para todo el grupo. El mensaje, cuando pasa, es `toomanyrequests: You have reached your pull rate limit`, y no se arregla reintentando: se arregla habiendo bajado las imágenes antes.
 
 Hay dos salidas y conviene usar las dos. La primera: los **pulls autenticados cuentan contra tu cuenta, no contra la IP** — y ya tienes cuenta, porque la hiciste en [[a-docker-hub|la página 3]]. La segunda: bajarlas desde tu casa, antes.
 

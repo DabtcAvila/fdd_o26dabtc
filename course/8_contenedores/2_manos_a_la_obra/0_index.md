@@ -55,3 +55,16 @@ Necesitas haber resuelto la instalación (página 1) antes del martes: Docker o 
 - Docker y Podman corriendo en tu máquina, sin `sudo`.
 - Una imagen propia, publicada en un registro público.
 - Un modelo de dónde vive cada byte que escribe un contenedor, y por qué eso decide si sobrevive a un `docker rm`.
+
+## Lo que esta sección te debe
+
+Igual que la anterior: lo que queda abierto, queda abierto a propósito, y cada cosa tiene su página.
+
+| Lo que queda abierto | Se abre en | Se paga en |
+|---|---|---|
+| Estar en el grupo `docker` es ser `root` | 2/1 | 3/4 |
+| Los UID altos de Podman rootless | 2/9 | 2/12 |
+| Por qué el Postgres «funciona sin pensarlo» | 2/11 | 2/12 |
+| El código va dentro de la imagen en producción | 2/11 | 3/2 |
+| Todavía no publicamos ningún puerto | 2/12 | 3/1 |
+| `docker cp` para sacar un archivo | 2/4, y una fila de la chuleta | **se delega a DataCamp**, *Intermediate Docker* cap. 1 |
