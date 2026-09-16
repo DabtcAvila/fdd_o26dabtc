@@ -77,6 +77,10 @@ Ni `dockerd` ni `containerd` aparecen ahí. Y de eso salen dos cosas más: la ca
 
 ## Entonces, ¿queda algo de Docker en medio?
 
+::: definition {#cont-def-syscall title="`syscall`"}
+Una **`syscall`** (*system call*) es la única forma que tiene un programa de pedirle algo al kernel: abrir un archivo, reservar memoria, mandar un paquete por la red. Tu código no toca el disco ni la tarjeta de red — pide, y el kernel lo hace por él.
+:::
+
 En el **camino de ejecución**, no: cuando tu programa pide memoria o abre un archivo, esa `syscall` va directo al kernel del host, sin pasar por `dockerd`, por `containerd` ni por `runc`. Ahí está la mitad de la tesis de la unidad — ejecutar dentro de un contenedor no cuesta.
 
 Pero decir «ya no hay nada de Docker en medio» a secas es falso, y por eso el matiz importa: **queda un supervisor**. El shim está ahí, sosteniendo la salida estándar de tu proceso para que `docker logs` tenga qué enseñarte y esperando su código de salida para que `docker ps -a` pueda decir `exited (0)`. No está en el camino de los datos; está sosteniendo el contrato.
