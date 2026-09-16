@@ -11,6 +11,8 @@ prerequisites: [git-y-github]
 
 # Contenedores
 
+![Muelle de carga nocturno visto desde una pasarela elevada: una hilera de bloques sellados e idénticos entre sí desciende por un haz de luz vertical y se acomoda, sin abrirse, sobre un camión, un vagón de tren y la cubierta de un barco alineados abajo; al fondo se recorta la silueta de una grúa portuaria, y en primer plano una figura de espaldas observa el descenso a contraluz contra el resplandor del muelle.](_assets/ilus-contenedores-portada.jpg)
+
 **Tres clases** · 35 páginas · unos 399 min
 
 ## En corto
