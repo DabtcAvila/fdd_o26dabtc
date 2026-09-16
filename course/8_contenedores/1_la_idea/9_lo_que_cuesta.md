@@ -25,13 +25,23 @@ Meta: tener números propios de lo que cuesta un contenedor, y saber leerlos.
 - El primero es real y se mide en cientos de milisegundos. **El segundo, en la práctica, no existe.**
 - Ningún número de esta página vale sin su pie de versiones, y las dos sorpresas que trae eran, las dos, estar midiendo otra cosa.
 
-## El pie, una vez para toda la unidad
+## Los pies, porque no hay una sola tanda
 
-Todas las cifras que esta unidad cita —aquí, en la página 5 y en la 7— salen de la misma máquina y de la misma tanda. Éste es su pie completo, y es el que hay que arrastrar cada vez que alguien repita un número fuera de contexto:
+Lo cómodo sería decir que todos los números de esta unidad salen de la misma máquina y de la misma corrida. No es cierto, y decirlo aquí es el mejor ejemplo que esta página puede dar de lo que enseña: **el pie no es un trámite que se pega al final del número, es parte del número**. Son dos tandas, con una excepción dentro de la primera, y las tres se dicen.
+
+**Tanda 1 — los cuatro experimentos de benchmark.** De aquí salen la gráfica de arranque, la de escala, la de ejecución y la del contenedor anidado, y con ellas los números que citan la página 5 y la 7. Éste es el pie que hay que arrastrar cada vez que alguien repita uno de ellos fuera de contexto:
 
 > **Intel Core i7-7700HQ · Linux 6.12 · Docker 28.4.0 · Podman 4.6.2 (rootless, runtime `crun`) · imágenes `ubuntu:24.04` y `alpine` · GNU coreutils 8.32 en el host y 9.4 dentro de la imagen · mediana de 10 repeticiones en arranque y de 5 en ejecución, más un warm-up descartado.**
 
-Los scripts y los CSV están publicados en `_assets/benchmarks/`, para que puedas rehacerlo.
+**La excepción, dentro de esa misma tanda: el experimento de escala es una sola corrida.** `exp2_scale.csv` tiene un punto por tamaño —1, 5, 10 y 20 contenedores— sin repeticiones y, por lo tanto, sin mediana: ese «mediana de 10» del pie **no lo cubre**. Y aun así basta para lo que ese experimento hace, con una condición. Lo que se argumenta con él no es un tiempo, es **qué se contó de cada lado**: el daemon contra los supervisores, RSS contra PSS. Ése es un error de orden de magnitud, y repetir la corrida diez veces habría dado diez versiones del mismo error, no lo habría corregido. Lo que no se puede hacer es citar «Docker tarda 5.52 s con veinte contenedores» como si fuera una mediana: es **una** corrida, y se dice así.
+
+**Tanda 2 — la comparación de runtimes OCI de la página 7.** Los 215 / 361 / 373 ms que desarman el mito del 2× **no son de la tanda 1**. Se midieron después, en otra máquina y con otras versiones, a propósito para esa pregunta:
+
+> **Docker 29.6.0 · Podman 4.6.2 (rootless) · `crun` y `runc` del sistema · Linux 6.17.9 · imagen `ubuntu:24.04` · comando `echo ok` · mediana de 20 repeticiones más un warm-up descartado por brazo.**
+
+Esos tres brazos se comparan **entre sí** —para eso se midieron juntos, en la misma tanda y fijando todo menos el runtime— y con ningún número de la tanda 1. Poner los 215 ms de Podman con `crun` al lado de los 212.7 ms de la gráfica de arranque y concluir cualquier cosa sería justo el error que esta página existe para evitar: son otro kernel, otro Docker y otra máquina.
+
+Los scripts y los CSV de las dos tandas están publicados en `_assets/benchmarks/`, para que puedas rehacerlo.
 
 ## LAUNCH y RUNNING
 
