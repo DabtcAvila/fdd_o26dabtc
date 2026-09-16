@@ -33,6 +33,8 @@ Meta: que "proceso aislado" deje de ser una frase hecha, y que `docker run` deje
 | 8 | Capas y caché | Por qué un `build` a veces tarda tres segundos y a veces tres minutos | 15 | lectura |
 | 9 | Lo que cuesta | Números propios de arranque y ejecución, y cómo leerlos sin engañarte | 15 | lectura |
 
+Los números de esta sección vienen de dos tandas de medición distintas —los benchmarks de arranque y ejecución son del semestre pasado, los inodos de namespaces se midieron ahora—, y cada uno lleva su propio pie con la máquina y las versiones con que se obtuvo. No es un descuido: es la regla que la página 9 enseña con nombre y apellido.
+
 ## Antes de empezar
 
 Nada que instalar. Esta sección corre entera sin terminal: instalar Docker y Podman es la primera página de la sección siguiente.
