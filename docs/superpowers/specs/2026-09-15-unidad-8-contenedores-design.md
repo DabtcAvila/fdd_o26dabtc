@@ -1131,10 +1131,12 @@ apareció de golpe.
 `id -nG | grep docker`**: en macOS, en Windows y en rootless no existe grupo
 `docker` ni debe existir. La que vale en las tres pega la salida completa de
 `whoami`, `id -u`, `type -a docker`, `docker context ls`, `docker version` y
-`docker run --rm hello-world`. Eso delata las nueve formas de creer que corres sin
-`sudo` sin correr sin `sudo`: el alias, la función de shell, ser root en WSL2, el
-`sudo -i` olvidado, el `newgrp` que sólo valía en esa ventana, el `chmod 666` del
-socket, el `DOCKER_HOST` remoto, y usar Podman diciendo que es Docker.
+`docker run --rm hello-world`. Eso delata las **ocho** formas de creer que corres
+sin `sudo` sin correr sin `sudo`: el alias, la función de shell, ser root en WSL2,
+el `sudo -i` olvidado, el `newgrp` que sólo valía en esa ventana, el `chmod 666`
+del socket, el `DOCKER_HOST` remoto, y usar Podman diciendo que es Docker. Son
+ocho y no nueve: la v3 decía nueve y enumeraba ocho, porque el `chmod 666` del
+socket y "el socket suelto" son la misma trampa.
 
 **1 · DataCamp Introduction to Docker** — `certificaciones.md` sección 1, la
 captura, y la **URL del Statement of Accomplishment**, que se verifica en un clic.
