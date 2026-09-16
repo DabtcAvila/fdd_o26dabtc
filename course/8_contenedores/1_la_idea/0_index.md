@@ -49,6 +49,15 @@ Los números de esta sección vienen de dos tandas de medición distintas —los
 
 Nada que instalar. Esta sección corre entera sin terminal: instalar Docker y Podman es la primera página de la sección siguiente.
 
+## Lo que se reparte en clase
+
+Nada que instalar no quiere decir nada que preparar: dos de los tres bloques de clase se hacen con papel en las manos, y el papel hay que llevarlo impreso. Esto es a la vez el aviso al grupo y la lista de quien imprime.
+
+- **Unas 15 hojas** con la salida de `ls -l /proc/1/ns/` del host y la del contenedor, una junto a la otra, para compararlas a mano. Es el ejercicio de la página 2.
+- **Seis hojas rotuladas**: una por eslabón —`docker CLI`, `dockerd`, `containerd`, `shim`, `runc`— y una sexta que dice `proceso del contenedor`. Es el ejercicio de la página 4.
+
+Eso es todo. El ejercicio de las tijeras no entra: se fue con la página 3 a lectura.
+
 ## Qué te llevas
 
 - Un modelo mental de qué es un contenedor, no una definición de memoria.
