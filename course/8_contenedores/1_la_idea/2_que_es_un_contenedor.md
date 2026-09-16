@@ -77,27 +77,29 @@ Se puede activar, con `userns-remap` en la configuración del daemon, y Podman *
 Y si el kernel es uno solo y compartido, queda una pregunta abierta: **¿qué haces cuando no quieres compartirlo?** Se llama **Kata Containers**, y es lo último de esta unidad, en la sesión 3.
 
 ::: problem {#cont-p2-diez-enlaces title="Diez enlaces, ¿cuántos difieren?"}
-Se reparte impresa la salida de los dos lados. Arriba, `ls -la /proc/1/ns/` en el host. Abajo, `docker exec <nombre> ls -la /proc/1/ns/` en un contenedor recién arrancado. Se recortaron los permisos, el dueño y la fecha, que son idénticos en los veinte renglones:
+Se reparte impresa la salida de los dos lados. A la izquierda, `ls -la /proc/1/ns/` en el host; a la derecha, `docker exec <nombre> ls -la /proc/1/ns/` en un contenedor recién arrancado. De cada renglón se dejó sólo el nombre del enlace y el inodo al que apunta, porque los permisos, el dueño y la fecha son idénticos en los veinte:
 
 ```text
-HOST                                   CONTENEDOR
-cgroup            -> cgroup:[4026531835]     cgroup            -> cgroup:[4026532678]
-ipc               -> ipc:[4026531839]        ipc               -> ipc:[4026532554]
-mnt               -> mnt:[4026531841]        mnt               -> mnt:[4026532552]
-net               -> net:[4026531840]        net               -> net:[4026532556]
-pid               -> pid:[4026531836]        pid               -> pid:[4026532555]
-pid_for_children  -> pid:[4026531836]        pid_for_children  -> pid:[4026532555]
-time              -> time:[4026531834]       time              -> time:[4026532679]
-time_for_children -> time:[4026531834]       time_for_children -> time:[4026532679]
-user              -> user:[4026531837]       user              -> user:[4026531837]
-uts               -> uts:[4026531838]        uts               -> uts:[4026532553]
+                       HOST              CONTENEDOR
+cgroup             4026531835         4026534671
+ipc                4026531839         4026534669
+mnt                4026531832         4026534667
+net                4026531833         4026534672
+pid                4026531836         4026534670
+pid_for_children   4026531836         4026534670
+time               4026531834         4026535022
+time_for_children  4026531834         4026535022
+user               4026531837         4026531837
+uts                4026531838         4026534668
 ```
+
+Medido con **Docker 29.6.0 sobre Linux 6.17**, y la versión importa: el `time` namespace es lo único de los diez que cambia entre runtimes —Podman con `crun` no lo crea— y un número medido sin su versión no vale.
 
 En parejas: **¿cuántos de los diez difieren, y cuál no?** Y la de verdad importante: ¿qué consecuencia tiene el que no difiere?
 :::
 
 ::: hint {of="cont-p2-diez-enlaces"}
-El número entre corchetes es el inodo del namespace: si es el mismo número, es literalmente el mismo namespace, no uno igualito. Busca el renglón donde las dos columnas coinciden y vuelve a leer la sección de arriba que habla de él.
+Ese número es el inodo del namespace: si las dos columnas traen el mismo número, no es un namespace igualito, es **literalmente el mismo**. Busca el renglón donde las dos columnas coinciden y vuelve a leer la sección de arriba que habla de él.
 :::
 
 ::: answer {of="cont-p2-diez-enlaces"}
@@ -106,8 +108,6 @@ El número entre corchetes es el inodo del namespace: si es el mismo número, es
 El contenedor tiene su propia tabla de procesos, su propia red, su propio árbol de archivos, su propio nombre de máquina — todo eso son inodos nuevos. Pero comparte el user namespace del host, porque **Docker no lo activa por defecto**.
 
 Y ésa es toda la explicación de algo que te va a pasar en el laboratorio de la sesión 2: cuando el contenedor escriba un archivo en una carpeta tuya, el archivo va a salir siendo de **`root`**. No es un bug ni un permiso mal puesto: el UID 0 de adentro es el UID 0 de afuera, porque nadie los separó.
-
-Si en tu propia salida `time` y `time_for_children` también coinciden con el host, es que tu runtime no creó un *time namespace* —es lo único de los diez que cambia entre runtimes y versiones— y el conteo te da ocho. El renglón que importa no se mueve: `user` coincide **siempre** con Docker por defecto.
 :::
 
 Sigue con [[receta-imagen-contenedor]], que separa las tres cosas que todo el mundo confunde.
