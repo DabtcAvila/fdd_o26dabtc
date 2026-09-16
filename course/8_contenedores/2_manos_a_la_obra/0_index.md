@@ -13,11 +13,16 @@ tags: [docker, podman, volumen, bind-mount, dockerfile, registro]
 
 Meta: instalar los dos runtimes, construir una imagen, publicarla, y saber exactamente dónde vive cada byte que escribe un contenedor.
 
-## Dos carpetas que no son lo mismo
+## Dónde vive cada cosa
 
-Todo el trabajo de práctica —construir, romper, montar volúmenes— ocurre en `~/fdd/docker-lab`: una carpeta **local y desechable**, que **no es un repositorio** de Git. Se puede borrar y rehacer sin ninguna consecuencia.
+Todo el trabajo de práctica —construir, romper, montar volúmenes— ocurre en `~/fdd/docker-lab`: una carpeta **local y desechable**, que **no es un repositorio** de Git. Se puede borrar y rehacer sin ninguna consecuencia. Nada de lo que hagas ahí se sube a ningún lado por sí solo.
 
-Lo que sí se entrega vive en `estudiantes/<tu-login>/08_contenedores/`, dentro de tu fork del repositorio del curso, y llega ahí por pull request, igual que todo lo demás desde la unidad de Git y GitHub. No confundas las dos carpetas: nada de lo que hagas en `docker-lab` se sube a ningún lado por sí solo.
+Lo que sí se entrega llega a tu fork por pull request, igual que todo desde la unidad de Git y GitHub, y cae en **dos** carpetas distintas. Son dos porque las entregas del martes 22 nacen las dos de `main`: si escribieran en la misma carpeta, cada pull request agregaría su propia versión de los mismos archivos y el merge acabaría en conflicto. Separadas, los conjuntos no se tocan.
+
+- `estudiantes/<tu-login>/docker/` **acumula tus certificaciones de DataCamp** a lo largo del mes: un solo `certificaciones.md`, que llenas una sección por entrega, más las capturas. Es espejo de `codigo/docker/`, exactamente como la unidad 7 hizo con `github/certificaciones.md`. Ahí van las tres entregas de DataCamp de esta unidad.
+- `estudiantes/<tu-login>/08_contenedores/` **guarda el trabajo de la unidad**: tu imagen publicada, el `Dockerfile` arreglado y la bitácora. Es la carpeta de una sola entrega, la del `tarea-08-imagen`.
+
+De ahí sale una regla que la revisión automática comprueba y que no tiene periodo de gracia: **cada pull request toca una sola de las dos**, nunca las dos a la vez.
 
 ## Léelas antes del martes
 
