@@ -5,7 +5,9 @@
 #   Level 1         — docker/podman run
 #   Level 2         — Docker-in-Docker / Podman-in-Podman
 #
-# Startup: docker run --rm alpine echo ok (includes container creation)
+# Imagen pineada a alpine:3.20, el tag exacto con el que se midio el CSV publicado.
+# Sin tag fijo el benchmark no es reproducible: alpine:latest se mueve varias veces al ano.
+# Startup: docker run --rm alpine:3.20 echo ok (includes container creation)
 # CPU:     sha256sum 50MB via exec in PRE-STARTED containers (no startup cost)
 #
 # Uso: bash exp4_nested.sh
@@ -40,16 +42,16 @@ echo "--- Setup ---"
 
 # Pre-pull images
 echo "Verifying images..."
-docker pull alpine > /dev/null 2>&1
-podman pull alpine > /dev/null 2>&1
+docker pull alpine:3.20 > /dev/null 2>&1
+podman pull alpine:3.20 > /dev/null 2>&1
 
 # Docker L1: pre-start container for CPU tests
 docker rm -f exp4-docker-l1 > /dev/null 2>&1 || true
-docker run -d --name exp4-docker-l1 alpine sleep 3600 > /dev/null
+docker run -d --name exp4-docker-l1 alpine:3.20 sleep 3600 > /dev/null
 
 # Podman L1: pre-start container for CPU tests
 podman rm -f exp4-podman-l1 > /dev/null 2>&1 || true
-podman run -d --name exp4-podman-l1 alpine sleep 3600 > /dev/null
+podman run -d --name exp4-podman-l1 alpine:3.20 sleep 3600 > /dev/null
 
 # Docker-in-Docker
 echo "Starting Docker-in-Docker (DinD)..."
@@ -60,10 +62,10 @@ for _ in $(seq 1 20); do
     docker exec exp4-dind docker info > /dev/null 2>&1 && break
     sleep 1
 done
-docker exec exp4-dind docker pull alpine > /dev/null 2>&1
+docker exec exp4-dind docker pull alpine:3.20 > /dev/null 2>&1
 # Pre-start inner container for CPU tests
 docker exec exp4-dind docker rm -f inner > /dev/null 2>&1 || true
-docker exec exp4-dind docker run -d --name inner alpine sleep 3600 > /dev/null
+docker exec exp4-dind docker run -d --name inner alpine:3.20 sleep 3600 > /dev/null
 echo "  DinD ready."
 
 # Podman-in-Podman
@@ -71,15 +73,15 @@ echo "Starting Podman-in-Podman..."
 podman rm -f exp4-podman-nest > /dev/null 2>&1 || true
 podman run -d --privileged --name exp4-podman-nest quay.io/podman/stable sleep 3600 > /dev/null
 sleep 3
-podman exec exp4-podman-nest podman pull alpine > /dev/null 2>&1
+podman exec exp4-podman-nest podman pull alpine:3.20 > /dev/null 2>&1
 # Pre-start inner container for CPU tests
 podman exec exp4-podman-nest podman rm -f inner > /dev/null 2>&1 || true
-podman exec exp4-podman-nest podman run -d --name inner alpine sleep 3600 > /dev/null
+podman exec exp4-podman-nest podman run -d --name inner alpine:3.20 sleep 3600 > /dev/null
 echo "  Podman nested ready."
 echo ""
 
 # ======== STARTUP BENCHMARK ========
-echo "--- Startup Latency (run --rm alpine echo ok) ---"
+echo "--- Startup Latency (run --rm alpine:3.20 echo ok) ---"
 
 for i in $(seq 0 $((REPS + WARMUP - 1))); do
     rep=$((i - WARMUP))
@@ -89,22 +91,22 @@ for i in $(seq 0 $((REPS + WARMUP - 1))); do
     record "bare" "startup_ms" "$rep" "$(ms_diff $s $e)"
 
     # docker L1
-    s=$(now_ns); docker run --rm alpine echo ok > /dev/null; e=$(now_ns)
+    s=$(now_ns); docker run --rm alpine:3.20 echo ok > /dev/null; e=$(now_ns)
     record "docker" "startup_ms" "$rep" "$(ms_diff $s $e)"
 
     # docker L2 (DinD)
     s=$(now_ns)
-    docker exec exp4-dind docker run --rm alpine echo ok > /dev/null
+    docker exec exp4-dind docker run --rm alpine:3.20 echo ok > /dev/null
     e=$(now_ns)
     record "dind" "startup_ms" "$rep" "$(ms_diff $s $e)"
 
     # podman L1
-    s=$(now_ns); podman run --rm alpine echo ok > /dev/null; e=$(now_ns)
+    s=$(now_ns); podman run --rm alpine:3.20 echo ok > /dev/null; e=$(now_ns)
     record "podman" "startup_ms" "$rep" "$(ms_diff $s $e)"
 
     # podman L2 (nested)
     s=$(now_ns)
-    podman exec exp4-podman-nest podman run --rm alpine echo ok > /dev/null
+    podman exec exp4-podman-nest podman run --rm alpine:3.20 echo ok > /dev/null
     e=$(now_ns)
     record "podman-nested" "startup_ms" "$rep" "$(ms_diff $s $e)"
 
