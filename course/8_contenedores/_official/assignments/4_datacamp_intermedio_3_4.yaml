@@ -46,6 +46,9 @@ content:
     archivo. Reportar el pendiente cuenta como entrega; presumir un avance que no
     ocurrió, no.
   resources:
+    - title: "Unidad — Las cinco entregas"
+      url: "https://rayalucaria.org/fdd_o26/contenedores/d-entregas/"
+      note: "El tablero de la unidad. Esta es la entrega 5: branch tarea-08-datacamp-inter-2, carpeta docker/, y con ella cierras los cuarenta puntos."
     - title: "DataCamp — Intermediate Docker"
       url: "https://app.datacamp.com/learn/courses/intermediate-docker"
       note: "El mismo curso de la entrega anterior. Aquí van los capítulos 3 y 4."

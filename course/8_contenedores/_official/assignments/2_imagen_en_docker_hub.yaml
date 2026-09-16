@@ -73,6 +73,9 @@ content:
     dicen, ni que tu imagen se baje de verdad. Eso lo corro yo, con el comando
     que tú me escribiste.
   resources:
+    - title: "Unidad — Las cinco entregas"
+      url: "https://rayalucaria.org/fdd_o26/contenedores/d-entregas/"
+      note: "El tablero de la unidad. Esta es la entrega 3: branch tarea-08-imagen, carpeta 08_contenedores/, con los cuatro archivos y el ritual."
     - title: "Unidad — El ritual"
       url: "https://rayalucaria.org/fdd_o26/git-y-github/github/el-ritual/"
       note: "Los tres bloques del flujo, con sus comandos exactos."

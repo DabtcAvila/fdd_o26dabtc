@@ -45,6 +45,9 @@ content:
     capítulos, sube lo que sí completaste y dilo en el archivo. Reportar el
     pendiente cuenta como entrega; presumir un avance que no ocurrió, no.
   resources:
+    - title: "Unidad — Las cinco entregas"
+      url: "https://rayalucaria.org/fdd_o26/contenedores/d-entregas/"
+      note: "El tablero de la unidad. Esta es la entrega 4: branch tarea-08-datacamp-inter-1, carpeta docker/, que esta vez ya no se copia."
     - title: "DataCamp — Intermediate Docker"
       url: "https://app.datacamp.com/learn/courses/intermediate-docker"
       note: "El curso de esta entrega y de la siguiente. Aquí van los capítulos 1 y 2."

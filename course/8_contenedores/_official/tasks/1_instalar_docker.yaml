@@ -57,6 +57,9 @@ content:
     arregla; la misma atorada que aparece el lunes a medianoche te cuesta la
     clase y las dos entregas que vencen esa mañana.
   resources:
+    - title: "Unidad — Las cinco entregas"
+      url: "https://rayalucaria.org/fdd_o26/contenedores/d-entregas/"
+      note: "El tablero de la unidad. Esta instalación es la entrega 1, la que no lleva puntos y de la que dependen las otras cuatro."
     - title: "Docker — instalar Docker Engine"
       url: "https://docs.docker.com/engine/install/"
       note: "Linux, por distribución. Es el camino de Ubuntu y de WSL2."
