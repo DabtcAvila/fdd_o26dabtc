@@ -122,5 +122,7 @@ Mira otra vez el árbol de procesos de arriba y pregúntate de quién cuelga el 
 «Matar el daemon mata los contenedores» es falso. «El daemon los readopta» también. Lo cierto es que **matar el daemon no los toca, y reiniciarlo sí los mata**.
 :::
 
+Sigue con [[escalamiento-y-orquestacion]], que dice por qué el mundo se movió a esto más allá de la reproducibilidad.
+
 > [!NOTE]
 > **Si sólo recuerdas una cosa:** el contenedor no cuelga de Docker, cuelga de su shim; `runc` ya salió y cada `syscall` va directo al kernel.
