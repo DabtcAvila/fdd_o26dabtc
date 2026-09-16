@@ -41,9 +41,16 @@ content:
     si algo no sale, es exactamente lo que necesito ver para decirte qué pasó en
     dos minutos en vez de en media hora.
     Baja antes de clase las imágenes que vamos a usar, con docker pull, para no
-    depender de la red del salón: ubuntu en su versión 24.04, alpine en su
-    versión 3.20, python en su versión 3.12 con la variante slim, y postgres en
-    su versión 16. Son unos cuantos cientos de megabytes y se bajan una sola vez.
+    depender de la red del salón. Son seis: ubuntu en su versión 24.04, alpine en
+    su versión 3.20, hello world, python en su versión 3.12 con la variante slim,
+    y postgres en dos versiones, la 16 y la 17, porque un ejercicio de la sesión
+    usa las dos justamente para enseñar qué pasa cuando no coinciden. Son unos
+    cuantos cientos de megabytes y se bajan una sola vez.
+    Hazlo con la sesión iniciada, corriendo docker login antes de los pull. No es
+    un capricho: en el salón somos treinta detrás de una sola dirección IP, y el
+    límite de descargas anónimas de Docker Hub se agota a los pocos minutos y
+    detiene la clase para todo el grupo. Las descargas autenticadas cuentan
+    contra tu cuenta, no contra la dirección del salón.
     Y la parte que de verdad importa: si algo se atoró, dilo antes, no el martes
     en la noche. Escribe qué sistema operativo tienes, qué comando corriste, qué
     esperabas y qué salió. Una instalación atorada que se reporta el viernes se
