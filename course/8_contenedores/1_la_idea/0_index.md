@@ -23,15 +23,15 @@ Meta: que "proceso aislado" deje de ser una frase hecha, y que `docker run` deje
 
 | # | Página | Qué agrega | Min | Dónde |
 |---:|---|---|---:|---|
-| 1 | En mi máquina sí funciona | Qué problema resolvieron los contenedores, y la comparación con `venv`/conda | 8 | clase |
-| 2 | Qué es un contenedor | Namespaces y cgroups: qué ve un proceso contra cuánto puede usar | 12 | clase |
-| 3 | Receta, congelado, servido | Dockerfile, imagen y contenedor: las tres cosas que todo el mundo confunde | 10 | lectura |
-| 4 | Qué pasa cuando escribes `docker run` | La cadena completa y medida: CLI, daemon, containerd, shim y runc | 12 | clase |
-| 5 | De uno a mil: escalamiento y orquestación | Por qué el mundo se movió a esto, más allá de la reproducibilidad | 10 | lectura |
-| 6 | VM contra contenedor | Dónde ocurre el aislamiento, y cuándo el contenedor no es la respuesta | 10 | lectura |
-| 7 | Docker y Podman | La diferencia es arquitectónica, y qué compra exactamente correr sin daemon | 14 | lectura |
-| 8 | Capas y caché | Por qué un `build` a veces tarda tres segundos y a veces tres minutos | 15 | lectura |
-| 9 | Lo que cuesta | Números propios de arranque y ejecución, y cómo leerlos sin engañarte | 15 | lectura |
+| 1 | [[en-mi-maquina-si-funciona]] | Qué problema resolvieron los contenedores, y la comparación con `venv`/conda | 8 | clase |
+| 2 | [[que-es-un-contenedor]] | Namespaces y cgroups: qué ve un proceso contra cuánto puede usar | 12 | clase |
+| 3 | [[receta-imagen-contenedor]] | Dockerfile, imagen y contenedor: las tres cosas que todo el mundo confunde | 10 | lectura |
+| 4 | [[anatomia-de-docker-run]] | La cadena completa y medida: CLI, daemon, containerd, shim y runc | 12 | clase |
+| 5 | [[escalamiento-y-orquestacion]] | Por qué el mundo se movió a esto, más allá de la reproducibilidad | 10 | lectura |
+| 6 | [[vm-contra-contenedor]] | Dónde ocurre el aislamiento, y cuándo el contenedor no es la respuesta | 10 | lectura |
+| 7 | [[docker-y-podman]] | La diferencia es arquitectónica, y qué compra exactamente correr sin daemon | 14 | lectura |
+| 8 | [[capas-y-cache]] | Por qué un `build` a veces tarda tres segundos y a veces tres minutos | 15 | lectura |
+| 9 | [[lo-que-cuesta]] | Números propios de arranque y ejecución, y cómo leerlos sin engañarte | 15 | lectura |
 
 Los 60 minutos de la sesión, repartidos:
 

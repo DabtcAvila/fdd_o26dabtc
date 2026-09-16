@@ -32,19 +32,19 @@ Las tres primeras páginas de la tabla son **lectura previa**, no de clase, y po
 
 | # | Página | Qué agrega | Min | Dónde |
 |---:|---|---|---:|---|
-| 1 | Instalar Docker y Podman | Los dos runtimes corriendo sin `sudo`, en las tres plataformas | 25 | previa |
-| 2 | Planes B | Qué hacer si la instalación no salió, con las trampas más comunes y su síntoma | 12 | previa |
-| 3 | A Docker Hub | Publicar una imagen propia y comprobar que existe para los demás | 12 | previa |
-| 4 | El ciclo de vida de un contenedor | La única idea que explica todo el ciclo: un contenedor vive lo que vive su proceso | 12 | clase |
-| 5 | El Dockerfile por dentro | Construir una imagen y ver de qué está hecha: capas, contexto, `CMD` contra `ENTRYPOINT` | 15 | lectura |
-| 6 | Arreglar un Dockerfile | Reconocer y corregir los tres defectos de un Dockerfile real | 12 | lectura |
-| 7 | Dónde vive cada byte | La tabla que ordena toda la clase: capas de imagen, capa de escritura, bind mount, named volume | 10 | clase |
-| 8 | Rutas | Relativa contra absoluta, y por qué un `./` olvidado crea un volumen vacío en silencio | 10 | lectura |
-| 9 | El archivo compartido | El bind mount en las dos direcciones, y de quién queda el archivo según tu plataforma | 15 | clase |
-| 10 | Los ocho casos | Código en la imagen o en volumen, editado dentro o fuera, con o sin rebuild: predecir antes de ejecutar | 15 | clase |
-| 11 | Las cuatro trampas | Los filos que cortan la primera vez, incluida la del volumen que copia en vez de tapar | 15 | lectura |
-| 12 | Named volumes y Postgres | Ver el estado sobrevivir a su contenedor | 15 | lectura |
-| 13 | Limpieza | Recuperar el disco y entender qué se borra con cada `prune` | 12 | lectura |
+| 1 | [[instalar-docker-y-podman]] | Los dos runtimes corriendo sin `sudo`, en las tres plataformas | 25 | previa |
+| 2 | [[planes-b-de-instalacion]] | Qué hacer si la instalación no salió, con las trampas más comunes y su síntoma | 12 | previa |
+| 3 | [[a-docker-hub]] | Publicar una imagen propia y comprobar que existe para los demás | 12 | previa |
+| 4 | [[ciclo-de-vida-de-un-contenedor]] | La única idea que explica todo el ciclo: un contenedor vive lo que vive su proceso | 12 | clase |
+| 5 | [[el-dockerfile-por-dentro]] | Construir una imagen y ver de qué está hecha: capas, contexto, `CMD` contra `ENTRYPOINT` | 15 | lectura |
+| 6 | [[arreglar-un-dockerfile]] | Reconocer y corregir los tres defectos de un Dockerfile real | 12 | lectura |
+| 7 | [[donde-vive-cada-byte]] | La tabla que ordena toda la clase: capas de imagen, capa de escritura, bind mount, named volume | 10 | clase |
+| 8 | [[rutas-en-docker]] | Relativa contra absoluta, y por qué un `./` olvidado crea un volumen vacío en silencio | 10 | lectura |
+| 9 | [[el-archivo-compartido]] | El bind mount en las dos direcciones, y de quién queda el archivo según tu plataforma | 15 | clase |
+| 10 | [[los-ocho-casos]] | Código en la imagen o en volumen, editado dentro o fuera, con o sin rebuild: predecir antes de ejecutar | 15 | clase |
+| 11 | [[las-cuatro-trampas]] | Los filos que cortan la primera vez, incluida la del volumen que copia en vez de tapar | 15 | lectura |
+| 12 | [[named-volumes-y-postgres]] | Ver el estado sobrevivir a su contenedor | 15 | lectura |
+| 13 | [[limpieza-de-docker]] | Recuperar el disco y entender qué se borra con cada `prune` | 12 | lectura |
 
 ## Antes de empezar
 

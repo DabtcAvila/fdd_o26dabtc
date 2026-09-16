@@ -25,9 +25,20 @@ prerequisites: [git-y-github]
 
 | # | Sección | Qué contesta | Sesión | Páginas | Min |
 |---:|---|---|---|---:|---:|
-| 1 | La idea | Qué es un contenedor, y qué pasa exactamente cuando escribes `docker run` | jueves 17 de septiembre, 19:00–20:00 | 9 | 106 |
-| 2 | Manos a la obra | Instalar, construir, montar y limpiar. Dónde vive cada byte de tu contenedor | martes 22 de septiembre, 19:00–20:30 | 13 | 180 |
-| 3 | Diseño y seguridad | Cómo se reparte una aplicación en servicios, y por dónde se rompe el aislamiento | jueves 24 de septiembre, 19:00–20:30 | 5 | 69 |
+| 1 | [[la-idea-del-contenedor]] | Qué es un contenedor, y qué pasa exactamente cuando escribes `docker run` | jueves 17 de septiembre, 19:00–20:00 | 9 | 106 |
+| 2 | [[contenedores-con-las-manos]] | Instalar, construir, montar y limpiar. Dónde vive cada byte de tu contenedor | martes 22 de septiembre, 19:00–20:30 | 13 | 180 |
+| 3 | [[disenar-con-contenedores]] | Cómo se reparte una aplicación en servicios, y por dónde se rompe el aislamiento | jueves 24 de septiembre, 19:00–20:30 | 5 | 69 |
+
+## Los cuatro anexos
+
+No son lectura de una sesión: son las páginas que se consultan. La chuleta y el tablero de entregas conviene tenerlos abiertos.
+
+| Anexo | Qué es | Cuándo lo abres | Min |
+|---|---|---|---:|
+| [[chuleta-contenedores]] | Los comandos de Docker y Podman lado a lado, y 19 errores con su causa y su arreglo | En clase, y cada vez que algo truene | 8 |
+| [[entregas-contenedores]] | Las cinco entregas: qué vence cuándo, con qué branch y en qué carpeta | Antes de cada entrega | 9 |
+| [[prompts-contenedores]] | Ocho prompts para estudiar con un modelo, y las seis afirmaciones falsas que esta unidad desarma | Cuando estudies por tu cuenta | 12 |
+| [[contenedores-anidados]] | Docker dentro de Docker: qué se entrega a cambio, medido | Después de la sesión 3 | 15 |
 
 La primera sesión es **corta y sin computadora**: 60 minutos, no 90. Las páginas se proyectan y no se teclea nada; el teclado empieza en la sesión 2.
 

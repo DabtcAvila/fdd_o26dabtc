@@ -23,11 +23,11 @@ Meta: pasar de correr contenedores a diseñar con ellos, y entender que la mayor
 
 | # | Página | Qué agrega | Min |
 |---:|---|---|---:|
-| 1 | La red y el nombre | Que dos contenedores se hablen por nombre, y por qué publicar un puerto es una decisión de diseño | 12 |
-| 2 | El contrato de un servicio | Qué es un microservicio sin decirlo como si fuera magia: puerto, variables, volumen | 15 |
-| 3 | Diseñar un sistema | Dibujar un pipeline completo como servicios, antes de escribirlo | 15 |
-| 4 | Cuando se rompe el aislamiento | Las fugas reales de contenedor, y por qué casi todas fueron una mala configuración y no un bug | 15 |
-| 5 | Kata y los dos ejes | Dos ejes distintos —dónde aterriza la syscall que no controlas, qué privilegio tiene quien se escapa— y dónde entra un segundo kernel | 12 |
+| 1 | [[la-red-y-el-nombre]] | Que dos contenedores se hablen por nombre, y por qué publicar un puerto es una decisión de diseño | 12 |
+| 2 | [[el-contrato-de-un-servicio]] | Qué es un microservicio sin decirlo como si fuera magia: puerto, variables, volumen | 15 |
+| 3 | [[disenar-un-sistema]] | Dibujar un pipeline completo como servicios, antes de escribirlo | 15 |
+| 4 | [[cuando-se-rompe-el-aislamiento]] | Las fugas reales de contenedor, y por qué casi todas fueron una mala configuración y no un bug | 15 |
+| 5 | [[kata-y-el-espectro]] | Dos ejes distintos —dónde aterriza la syscall que no controlas, qué privilegio tiene quien se escapa— y dónde entra un segundo kernel | 12 |
 
 ## Qué te llevas
 
