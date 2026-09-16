@@ -42,8 +42,9 @@ muchas de lectura**, y el reparto está calculado sobre el trabajo real:
 | 2 | 4 | 52 min | ~35 min | ~87 | 90 |
 | 3 | 5 | 69 min | ~20 min | ~89 | 90 |
 
-Fuera de clase: ≈ 300 min de lectura **más 8 h 27 de DataCamp**, o sea unas
-**13 horas en doce días**. Ese número va escrito en `0_index.md` de la unidad,
+Fuera de clase: ≈ 236 min de lectura —las páginas de lectura y previa, más los
+cinco anexos de referencia— **más 8 h 27 de DataCamp**, o sea unas **12 horas y
+media en doce días**. Ese número va escrito en `0_index.md` de la unidad,
 porque es donde un alumno decide cómo reparte su semana.
 
 ## Idea que sostiene toda la unidad
@@ -548,9 +549,10 @@ hash **invierte el signo**.
 | Orquestación | 1/1 | 1/5 | paga |
 | gVisor | 1/6 (figura) | 3/5 | paga |
 | Aislamiento máximo | 1/6 | 3/5 | paga |
-| Estado persistente | 1/6 | 2/12 | paga |
+| Estado persistente | 1/1 | 2/12 | paga |
 | Bind mounts distintos en macOS/Windows | 1/6 | 2/8 y 2/9 | paga |
 | `overlay` | 1/4, nombrado como deuda | 2/7 | paga |
+| Escribir en el socket de Docker es mandar sobre un proceso root | 1/4 | 3/4 | paga |
 | Que Docker no active user namespaces | 1/2 | 2/9 y 3/4 | paga |
 | `CMD` contra `ENTRYPOINT` | 1/3, deuda explícita | 2/5 | paga |
 | El arranque no descomprime la imagen | 1/4 | 1/9 | paga |
@@ -1131,10 +1133,12 @@ apareció de golpe.
 `id -nG | grep docker`**: en macOS, en Windows y en rootless no existe grupo
 `docker` ni debe existir. La que vale en las tres pega la salida completa de
 `whoami`, `id -u`, `type -a docker`, `docker context ls`, `docker version` y
-`docker run --rm hello-world`. Eso delata las nueve formas de creer que corres sin
-`sudo` sin correr sin `sudo`: el alias, la función de shell, ser root en WSL2, el
-`sudo -i` olvidado, el `newgrp` que sólo valía en esa ventana, el `chmod 666` del
-socket, el `DOCKER_HOST` remoto, y usar Podman diciendo que es Docker.
+`docker run --rm hello-world`. Eso delata las **ocho** formas de creer que corres
+sin `sudo` sin correr sin `sudo`: el alias, la función de shell, ser root en WSL2,
+el `sudo -i` olvidado, el `newgrp` que sólo valía en esa ventana, el `chmod 666`
+del socket, el `DOCKER_HOST` remoto, y usar Podman diciendo que es Docker. Son
+ocho y no nueve: la v3 decía nueve y enumeraba ocho, porque el `chmod 666` del
+socket y "el socket suelto" son la misma trampa.
 
 **1 · DataCamp Introduction to Docker** — `certificaciones.md` sección 1, la
 captura, y la **URL del Statement of Accomplishment**, que se verifica en un clic.
