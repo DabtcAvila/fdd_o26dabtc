@@ -97,5 +97,14 @@ Las cuatro preguntas tienen la misma causa detrás, y está en la tabla de arrib
 **4. Qué ve del host.** En los dos casos `nginx` empieza viendo poco. La diferencia es qué hay que romper para salir: desde el contenedor, **una vulnerabilidad del kernel del host** —y ese kernel es el tuyo, el que corre todo lo demás—; desde la VM, primero el kernel invitado y **después** el hipervisor, que es una segunda frontera y mucho más chica. Por eso el caso 2 de arriba sigue siendo de VM, y por eso existe Kata.
 :::
 
+Esta página movió la frontera hacia abajo, hasta el kernel. La que sigue la mueve
+hacia arriba, hasta el otro extremo de la cadena de la página 4: **quitar el
+daemon**. Es el mismo tipo de pregunta —qué compras y qué no compras al sacar una
+pieza— y tiene la misma clase de respuesta incómoda, porque lo que casi todo el
+mundo cree que compra no es lo que compra. Y de paso, ahí la VM de macOS deja de
+ser invisible: es la que tienes que arrancar tú, a mano, con `podman machine`.
+
+Sigue con [[docker-y-podman]].
+
 > [!NOTE]
 > **Si sólo recuerdas una cosa:** el contenedor no lleva kernel propio; de ahí sale que arranque en milisegundos y de ahí sale que un bug del kernel sea un bug de todos.
