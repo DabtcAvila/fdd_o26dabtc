@@ -106,8 +106,10 @@ La @cont-bench-escala es la medición cruda de un script que mide la memoria del
 
 El script tiene **dos errores**, y los dos datos que faltan son éstos:
 
-- Del lado de Docker sólo se midió el RSS de `dockerd`. **Nunca se contó el `containerd-shim-runc-v2`, que es uno por contenedor** y pesa **11.0 MB** de RSS cada uno.
-- Del lado de Podman se **sumó** el RSS de todos los `conmon`. Medidos aparte: `conmon` pesa **2.02 MB** de RSS, y **doce `conmon` juntos son 25 MB de RSS pero 4 MB de PSS**.
+- Del lado de Docker sólo se midió el RSS de `dockerd`. **Nunca se contó el `containerd-shim-runc-v2`, que es uno por contenedor** y pesa **12.0 MiB** de RSS cada uno.
+- Del lado de Podman se **sumó** el RSS de todos los `conmon`. Y un `conmon` pesa **2.32 MiB** de RSS pero **0.38 MiB** de PSS: el RSS cuenta entero lo que el PSS reparte, y aquí la diferencia es de **seis veces**.
+
+**El pie de estos tres números:** son una medición aparte, de un contenedor de cada lado con `ubuntu:24.04` y `sleep 300`, leyendo `/proc/<pid>/status` y `/proc/<pid>/smaps_rollup`. Docker 29.6.0 · Podman 4.6.2 (rootless) · Linux 6.17.9 — la misma máquina de la tabla de runtimes de arriba, que **no** es la de la gráfica. Los pies de las dos tandas están juntos en [[lo-que-cuesta|la página 9]].
 
 Contesta:
 
@@ -122,11 +124,11 @@ Las dos correcciones son la misma pregunta hecha dos veces: **¿estoy contando l
 :::
 
 ::: answer {of="cont-p7-el-cruce"}
-**1. Docker es el `dockerd` medido más `11 × N`.** Con un contenedor, `179 + 11 × 1` = **190**; con veinte, `184 + 11 × 20` = **404**, o sea el daemon más veinte shims. La línea no era plana: era plana **porque el script sólo miraba el daemon**. Docker tiene un supervisor por contenedor igual que Podman, sólo que además tiene el daemon.
+**1. Docker es el `dockerd` medido más `12 × N`.** Con un contenedor, `179 + 12 × 1` = **191**; con veinte, `184 + 12 × 20` = **424**, o sea el daemon más veinte shims. La línea no era plana: era plana **porque el script sólo miraba el daemon**. Docker tiene un supervisor por contenedor igual que Podman, sólo que además tiene el daemon. Y dilo al corregirlo: el `179` sale de la gráfica y el `12` de otra máquina, así que **esa suma es un orden de magnitud, no una cifra** — basta y sobra para lo único que se le pide, que es mover la línea de plana a creciente.
 
-**2. Porque el RSS no es aditivo.** El RSS cuenta entera cada página residente del proceso, **incluidas las que comparte con otros**: doce `conmon` son doce copias del mismo binario y de las mismas librerías, así que sumar sus RSS cuenta esas páginas doce veces. La métrica que sí reparte cada página entre quienes la usan es el **PSS**, y está en `/proc/<pid>/smaps_rollup`. Medido: 25 MB de RSS contra **4 MB de PSS** — sumar RSS **infla a Podman unas seis veces**.
+**2. Porque el RSS no es aditivo.** El RSS cuenta entera cada página residente del proceso, **incluidas las que comparte con otros**: doce `conmon` son doce copias del mismo binario y de las mismas librerías, así que sumar sus RSS cuenta esas páginas doce veces. La métrica que sí reparte cada página entre quienes la usan es el **PSS**, y está en `/proc/<pid>/smaps_rollup`. Medido sobre un `conmon`: 2.32 MiB de RSS contra **0.38 MiB de PSS** — sumar RSS **infla a Podman unas seis veces**.
 
-**3. No hay cruce.** A N = 1, Docker va 190 MB contra ~2 MB; a N = 20, 404 MB contra ~7 MB de PSS. **Podman gana en todo N**, y por dos órdenes de magnitud. El «cruce en 100 contenedores» era un artefacto de contar el supervisor por contenedor de un lado y no del otro, y de sumar una métrica que no se suma.
+**3. No hay cruce.** A N = 1, Docker va 191 MB contra menos de 2 MB; a N = 20, 424 MB contra los **~6 MB** en que se quedan los 35.8 MiB de la gráfica al dividirlos entre esas seis veces. **Podman gana en todo N**, y por dos órdenes de magnitud. El «cruce en 100 contenedores» era un artefacto de contar el supervisor por contenedor de un lado y no del otro, y de sumar una métrica que no se suma.
 
 **4. La regla.** Un benchmark no compara herramientas: compara **lo que mediste** de cada una. Antes de publicar un número, dilo en voz alta —«medí el RSS del daemon contra la suma de los RSS de los supervisores»— y la mitad de los errores se caen solos. Y la segunda mitad: si vas a sumar una métrica, asegúrate de que sea aditiva.
 :::
