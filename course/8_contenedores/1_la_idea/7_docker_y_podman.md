@@ -91,7 +91,7 @@ Para eso hay una medición aparte, hecha a propósito para esta pregunta: misma 
 
 > **El pie de estos tres números: Docker 29.6.0 · Podman 4.6.2 (rootless) · `crun` y `runc` del sistema · Linux 6.17.9 · imagen `ubuntu:24.04` · comando `echo ok` · mediana de 20 repeticiones más un warm-up descartado por brazo. Script y datos: `_assets/benchmarks/bench_oci.sh` y `results/exp5_oci.csv`.**
 
-No es la tanda de la que salen las cuatro gráficas de la unidad —ésas son Linux 6.12 y Docker 28.4.0—, así que **estos tres se comparan entre sí y con ninguno de los otros números de la unidad**, ni con los 213 ms del párrafo de arriba. Decirlo no es un trámite: es la regla que la página 9 enseña con nombre y apellido, aplicada a la tabla que la tiene enfrente.
+No es la tanda de la que salen las cuatro gráficas de la unidad —ésas son Linux 6.12 y Docker 28.4.0—, así que **estos tres se comparan entre sí y con ninguno de los otros números de la unidad**, ni con los 213 ms del párrafo de arriba. Decirlo no es un trámite: es la regla que la página 9 enseña con nombre y apellido, aplicada a la tabla que está justo arriba.
 
 Leído en orden: lo que compra la mitad del tiempo es **`crun`, que es el runtime por defecto de Podman y está escrito en C**, no la ausencia del daemon. Y con el runtime igualado —`runc` de los dos lados— pasa algo más fuerte que un empate: **Podman rootless no gana, sale detrás**. 373 ms contra 361, un **~3 % más lento**, porque el mapeo de usuarios y la red en espacio de usuario cuestan algo. Ese 3 % está dentro de la dispersión de la tanda y no sirve para presumir; lo que sirve es el signo, que es el contrario del que promete el mito.
 
