@@ -37,7 +37,7 @@ El archivo no se entrega y no se califica. Su único valor es que lo llenes ante
 
 ```bash
 mkdir -p ~/fdd/docker-lab/ocho && cd ~/fdd/docker-lab/ocho
-cp ~/fdd/fdd_o26/estudiantes/"$GHUSER"/08_contenedores/volumenes/app.py .
+cp ~/fdd/fdd_o26/codigo/08_contenedores/volumenes/app.py .
 printf '%s\n' 'FROM python:3.12-slim' 'WORKDIR /app' 'COPY . .' \
   'CMD ["python", "app.py"]' > Dockerfile
 docker build -t ocho:1 .
