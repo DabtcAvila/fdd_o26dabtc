@@ -86,29 +86,33 @@ En el **camino de ejecución**, no: cuando tu programa pide memoria o abre un ar
 Pero decir «ya no hay nada de Docker en medio» a secas es falso, y por eso el matiz importa: **queda un supervisor**. El shim está ahí, sosteniendo la salida estándar de tu proceso para que `docker logs` tenga qué enseñarte y esperando su código de salida para que `docker ps -a` pueda decir `exited (0)`. No está en el camino de los datos; está sosteniendo el contrato.
 
 ::: problem {#cont-p4-la-cadena title="La cadena, de pie"}
-Se hace de pie, y son cinco voluntarios. Cada uno recibe una hoja con su nombre y se forma en este orden, de izquierda a derecha:
+**Caja de tiempo: 12 minutos.** Se hace de pie, y son seis voluntarios. Los cinco primeros reciben una hoja con su nombre y se forman en este orden, de izquierda a derecha:
 
 ```text
 docker CLI    dockerd    containerd    shim    runc
 ```
 
-Un sexto voluntario, **el proceso del contenedor**, espera de pie a la derecha.
+El sexto recibe la hoja que dice `proceso del contenedor` y espera **sentado, detrás del shim**: todavía no existe.
 
-1. Se pasa un papelito que dice `corre ubuntu` por la cadena, de mano en mano.
-2. Cuando le llega a `runc`, `runc` **se lo entrega al proceso y se sienta**.
+**La regla, antes de empezar: sentarse es morirse.** Quien se sienta deja de existir, y ya no se vuelve a levantar.
+
+**La segunda regla: el proceso se sostiene de una sola mano.** Cuando el sexto voluntario se ponga de pie, apoya la mano en el hombro del shim — **sólo** en el del shim, de nadie más. Si el shim se sienta, la mano se queda sin hombro y el proceso se sienta con él. No hay que discutirlo: se ve.
+
+**La predicción, también antes de empezar.** Apúntala ahora, antes de que nadie se mueva: de las cuatro sentadas que vienen —`runc`, `dockerd`, `containerd`, el shim—, ¿cuál crees que tira al proceso?
+
+1. Se pasa un papelito que dice `corre ubuntu` por la cadena, de mano en mano, de izquierda a derecha.
+2. Cuando le llega a `runc`, `runc` **se lo entrega al sexto voluntario**. Ésa es su señal de entrada: el proceso del contenedor se pone de pie y **apoya la mano en el hombro del shim**. Y entonces `runc` **se sienta**.
 3. Ahora, uno por uno, se van sentando: primero `dockerd`, después `containerd`, y al final el shim.
 
 Después de cada quien que se sienta, la pregunta para toda la sala es la misma: **¿el proceso sigue de pie?**
-
-Y antes de que nadie se siente, apúntalo: ¿cuál de las cuatro veces crees que tira al proceso?
 :::
 
 ::: hint {of="cont-p4-la-cadena"}
-Mira otra vez el árbol de procesos de arriba y pregúntate de quién cuelga el proceso del contenedor. Sentarse es morirse; lo que decide si el proceso cae no es quién arrancó la cadena, es quién lo está sosteniendo **ahora**.
+Mira otra vez el árbol de procesos de arriba y pregúntate de quién cuelga el proceso del contenedor. Lo que decide si el proceso cae no es quién arrancó la cadena, es quién lo está sosteniendo **ahora** — y la mano en el hombro ya te está señalando a quién.
 :::
 
 ::: answer {of="cont-p4-la-cadena"}
-**`runc` se sienta y no pasa nada.** Ya había salido, dos veces. Sentarse sólo hace visible lo que ya era cierto.
+**`runc` se sienta y no pasa nada.** Ya había salido. En la máquina real `runc` se ejecuta **dos veces** —una en `create` y otra en `start`— y termina las dos; la coreografía lo simplifica a una sola sentada porque lo que el ejercicio pregunta es qué queda vivo cuando el contenedor ya corre, y ahí la respuesta es la misma con una salida que con dos: **ningún `runc`**. Sentarse sólo hace visible lo que ya era cierto antes de que empezara la ronda.
 
 **`dockerd` se sienta y el proceso sigue de pie.** Un `kill -9` al daemon no mata a los contenedores: el daemon no los está sosteniendo. El shim sí.
 
