@@ -39,9 +39,9 @@ En los ejemplos, `ubuntu:24.04`, `alpine:3.20` y `postgres:16` son las imágenes
 
 ## El ciclo de vida
 
-Doce comandos que salen todos de la misma regla — el contenedor **es** su `PID` 1 — y se leen contra la figura de [[ciclo-de-vida-de-un-contenedor|la página 4 de la sección 2]].
+Trece comandos que salen todos de la misma regla — el contenedor **es** su `PID` 1 — y se leen contra la figura de [[ciclo-de-vida-de-un-contenedor|la página 4 de la sección 2]].
 
-::: table {#cont-chuleta-ciclo title="Los doce del ciclo de vida"}
+::: table {#cont-chuleta-ciclo title="Los trece del ciclo de vida"}
 
 | Quiero | Docker | Podman | Dónde |
 |---|---|---|---|
@@ -54,6 +54,7 @@ Doce comandos que salen todos de la misma regla — el contenedor **es** su `PID
 | Correr un comando suelto adentro | `docker exec lab cat /datos.txt` | igual | [[donde-vive-cada-byte|2/7]] |
 | Detenerlo | `docker stop lab` | igual | [[ciclo-de-vida-de-un-contenedor|2/4]] |
 | Revivirlo con su mismo comando | `docker start lab` | igual | [[ciclo-de-vida-de-un-contenedor|2/4]] |
+| Pararlo y volverlo a arrancar de un golpe | `docker restart lab` | igual | [[el-contrato-de-un-servicio|3/2]] |
 | Borrarlo de la lista | `docker rm lab` | igual | [[ciclo-de-vida-de-un-contenedor|2/4]] |
 | Matarlo y borrarlo de un golpe | `docker rm -f lab` | igual | [[ciclo-de-vida-de-un-contenedor|2/4]] |
 | Sacarle un archivo, **vivo o muerto** | `docker cp lab:/app/salida.csv .` | igual | esta página |
@@ -61,6 +62,8 @@ Doce comandos que salen todos de la misma regla — el contenedor **es** su `PID
 :::
 
 `exec` no arranca nada: se mete en lo que ya existe. Sobre un contenedor terminado no hay adónde entrar, y los dos comandos que sí sirven son `docker ps -a` —para el código de salida— y `docker logs` —para lo que alcanzó a escribir—. `docker cp` es el tercero, y es el único que rescata un archivo de un contenedor que ya murió: funciona mientras no le hayas hecho `rm`.
+
+Y dos que en Podman se escriben igual y conviene saber en qué se diferencian: `podman exec` entra exactamente como su gemelo, pero `podman ps` **no le pregunta a ningún daemon** — lee el estado del disco, en tu propio directorio, porque no hay un proceso central que sea dueño de la verdad. `docker restart`, en cambio, es literalmente un `stop` seguido de un `start`, con los mismos diez segundos de espera antes del `SIGKILL`.
 
 ::: table {#cont-chuleta-salidas title="Los códigos de salida que vas a ver"}
 
@@ -207,8 +210,10 @@ Ningún `prune` toca lo que está **en uso**, y ninguno toca los **volúmenes** 
 |---|---|---|
 | Saber si el cliente habla con su daemon | `docker version` | [[instalar-docker-y-podman|2/1]] |
 | Saber **cuál** `docker` estoy corriendo | `type -a docker` y `docker context ls` | [[instalar-docker-y-podman|2/1]] |
+| Ver cómo está configurado el motor por dentro | `docker info` | [[contenedores-anidados|Anexo C]] |
 | Comprobar mi rango rootless | `grep "^$USER:" /etc/subuid /etc/subgid` | [[instalar-docker-y-podman|2/1]] |
 | Ver la máquina de Podman | `podman machine list` | [[instalar-docker-y-podman|2/1]] |
+| Ver los uid como los ve Podman — diagnostica, no arregla | `podman unshare ls -ln` | [[el-archivo-compartido|2/9]] |
 | Ver con qué capabilities arranca | `docker run --rm alpine:3.20 grep CapEff /proc/self/status` | [[cuando-se-rompe-el-aislamiento|3/4]] |
 | Apagar todas las capabilities | `--cap-drop ALL` | [[cuando-se-rompe-el-aislamiento|3/4]] |
 | Impedir que escale privilegios | `--security-opt no-new-privileges` | [[cuando-se-rompe-el-aislamiento|3/4]] |
