@@ -1,0 +1,53 @@
+---
+id: contenedores-con-las-manos
+title: "Manos a la obra"
+nav_title: "2. Manos a la obra"
+summary: "Instalar, construir, montar y limpiar. Dónde vive cada byte de tu contenedor."
+status: ready
+tags: [docker, podman, volumen, bind-mount, dockerfile, registro]
+---
+
+# Manos a la obra
+
+**Sección 2 de 3** · 13 páginas · unos 180 min · sesión del martes 22 de septiembre, 19:00–20:30
+
+Meta: instalar los dos runtimes, construir una imagen, publicarla, y saber exactamente dónde vive cada byte que escribe un contenedor.
+
+## Dos carpetas que no son lo mismo
+
+Todo el trabajo de práctica —construir, romper, montar volúmenes— ocurre en `~/fdd/docker-lab`: una carpeta **local y desechable**, que **no es un repositorio** de Git. Se puede borrar y rehacer sin ninguna consecuencia.
+
+Lo que sí se entrega vive en `estudiantes/<tu-login>/08_contenedores/`, dentro de tu fork del repositorio del curso, y llega ahí por pull request, igual que todo lo demás desde la unidad de Git y GitHub. No confundas las dos carpetas: nada de lo que hagas en `docker-lab` se sube a ningún lado por sí solo.
+
+## Léelas antes del martes
+
+Las tres primeras páginas de la tabla son **lectura previa**, no de clase, y por eso van primero: sus entregas vencen el mismo martes 22, antes de que empiece la sesión. Leerlas en el orden en que se usan en clase, en vez del orden de la tabla, significa llegar tarde a tu propia entrega.
+
+## Las trece páginas
+
+| # | Página | Qué agrega | Min | Dónde |
+|---:|---|---|---:|---|
+| 1 | Instalar Docker y Podman | Los dos runtimes corriendo sin `sudo`, en las tres plataformas | 25 | previa |
+| 2 | Planes B | Qué hacer si la instalación no salió, con las trampas más comunes y su síntoma | 12 | previa |
+| 3 | A Docker Hub | Publicar una imagen propia y comprobar que existe para los demás | 12 | previa |
+| 4 | El ciclo de vida de un contenedor | La única idea que explica todo el ciclo: un contenedor vive lo que vive su proceso | 12 | clase |
+| 5 | El Dockerfile por dentro | Construir una imagen y ver de qué está hecha: capas, contexto, `CMD` contra `ENTRYPOINT` | 15 | lectura |
+| 6 | Arreglar un Dockerfile | Reconocer y corregir los tres defectos de un Dockerfile real | 12 | lectura |
+| 7 | Dónde vive cada byte | La tabla que ordena toda la clase: capas de imagen, capa de escritura, bind mount, named volume | 10 | clase |
+| 8 | Rutas | Relativa contra absoluta, y por qué un `./` olvidado crea un volumen vacío en silencio | 10 | lectura |
+| 9 | El archivo compartido | El bind mount en las dos direcciones, y de quién queda el archivo según tu plataforma | 15 | clase |
+| 10 | Los ocho casos | Código en la imagen o en volumen, editado dentro o fuera, con o sin rebuild: predecir antes de ejecutar | 15 | clase |
+| 11 | Las cuatro trampas | Los filos que cortan la primera vez, incluida la del volumen que copia en vez de tapar | 15 | lectura |
+| 12 | Named volumes y Postgres | Ver el estado sobrevivir a su contenedor | 15 | lectura |
+| 13 | Limpieza | Recuperar el disco y entender qué se borra con cada `prune` | 12 | lectura |
+
+## Antes de empezar
+
+Necesitas haber resuelto la instalación (página 1) antes del martes: Docker o Podman corriendo sin `sudo`, y las imágenes del prepull ya descargadas.
+
+## Qué te llevas
+
+- Docker y Podman corriendo en tu máquina, sin `sudo`.
+- Una imagen propia, publicada en un registro público.
+- Un modelo de dónde vive cada byte que escribe un contenedor, y por qué eso decide si sobrevive a un `docker rm`.
+</content>
