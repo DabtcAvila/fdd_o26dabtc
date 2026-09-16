@@ -3,11 +3,15 @@
 # Usa docker/podman stats (cgroup memory.current) en vez de free -m
 # Uso: bash bench_scale.sh
 # Salida: results/exp2_scale.csv
+# Imagen pineada a ubuntu:24.04, el tag exacto con el que se midio el CSV publicado.
+# Sin tag fijo el benchmark no es reproducible: ubuntu:latest ya apunta a 26.04, y
+# una imagen distinta cambia la memoria por contenedor que mide este experimento.
 set -e
 
 OUTFILE="results/exp2_scale.csv"
 mkdir -p results
 
+IMAGE="ubuntu:24.04"
 COUNTS=(1 5 10 20)
 
 echo "runtime,count,launch_time_s,per_container_kb,total_container_kb,daemon_rss_kb" > "$OUTFILE"
@@ -74,8 +78,8 @@ for runtime in docker podman; do
     fi
 
     echo "Midiendo $runtime..."
-    $runtime pull -q ubuntu > /dev/null 2>&1 \
-        || $runtime pull -q docker.io/library/ubuntu > /dev/null 2>&1 || true
+    $runtime pull -q "$IMAGE" > /dev/null 2>&1 \
+        || $runtime pull -q "docker.io/library/$IMAGE" > /dev/null 2>&1 || true
 
     for count in "${COUNTS[@]}"; do
         prefix="exp2_${runtime}_${count}"
@@ -87,7 +91,7 @@ for runtime in docker podman; do
         # --- Launch time ---
         start_ns=$(date +%s%N)
         for i in $(seq 1 "$count"); do
-            $runtime run -d --name "${prefix}_${i}" ubuntu sleep 3600 > /dev/null 2>&1
+            $runtime run -d --name "${prefix}_${i}" "$IMAGE" sleep 3600 > /dev/null 2>&1
         done
         end_ns=$(date +%s%N)
         launch_s=$(echo "scale=3; ($end_ns - $start_ns) / 1000000000" | bc)

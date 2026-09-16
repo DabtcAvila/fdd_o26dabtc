@@ -3,9 +3,14 @@
 # Prueba: Docker vs Podman x Ubuntu vs Alpine + bare metal baseline
 # Uso: bash bench_startup.sh [repeticiones]
 # Salida: results/exp1_startup.csv
+# Imagenes pineadas a ubuntu:24.04 y alpine:3.20, los tags exactos con los que se
+# midio el CSV publicado. Sin tag fijo el benchmark no es reproducible: ubuntu:latest
+# ya apunta a 26.04, y alpine:latest se mueve varias veces al ano.
 set -e
 
 REPS=${1:-10}
+# La columna image del CSV guarda el nombre corto (ubuntu, alpine); el tag va aparte.
+IMAGES=("ubuntu:24.04" "alpine:3.20")
 OUTFILE="results/exp1_startup.csv"
 mkdir -p results
 
@@ -28,14 +33,15 @@ echo "  bare metal: listo"
 
 # --- Docker ---
 if command -v docker &>/dev/null; then
-    for image in ubuntu alpine; do
-        echo "Midiendo Docker + $image..."
-        docker pull -q "$image" > /dev/null 2>&1 || true
+    for ref in "${IMAGES[@]}"; do
+        image="${ref%%:*}"
+        echo "Midiendo Docker + $ref..."
+        docker pull -q "$ref" > /dev/null 2>&1 || true
         # Warm-up (descartado)
-        docker run --rm "$image" echo ok > /dev/null 2>&1
+        docker run --rm "$ref" echo ok > /dev/null 2>&1
         for i in $(seq 1 "$REPS"); do
             start_ns=$(date +%s%N)
-            docker run --rm "$image" echo ok > /dev/null 2>&1
+            docker run --rm "$ref" echo ok > /dev/null 2>&1
             end_ns=$(date +%s%N)
             ms=$(echo "scale=2; ($end_ns - $start_ns) / 1000000" | bc)
             echo "docker,$image,$i,$ms" >> "$OUTFILE"
@@ -48,15 +54,16 @@ fi
 
 # --- Podman ---
 if command -v podman &>/dev/null; then
-    for image in ubuntu alpine; do
-        echo "Midiendo Podman + $image..."
-        podman pull -q "$image" > /dev/null 2>&1 \
-            || podman pull -q "docker.io/library/$image" > /dev/null 2>&1 || true
+    for ref in "${IMAGES[@]}"; do
+        image="${ref%%:*}"
+        echo "Midiendo Podman + $ref..."
+        podman pull -q "$ref" > /dev/null 2>&1 \
+            || podman pull -q "docker.io/library/$ref" > /dev/null 2>&1 || true
         # Warm-up (descartado)
-        podman run --rm "$image" echo ok > /dev/null 2>&1
+        podman run --rm "$ref" echo ok > /dev/null 2>&1
         for i in $(seq 1 "$REPS"); do
             start_ns=$(date +%s%N)
-            podman run --rm "$image" echo ok > /dev/null 2>&1
+            podman run --rm "$ref" echo ok > /dev/null 2>&1
             end_ns=$(date +%s%N)
             ms=$(echo "scale=2; ($end_ns - $start_ns) / 1000000" | bc)
             echo "podman,$image,$i,$ms" >> "$OUTFILE"
