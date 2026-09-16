@@ -27,13 +27,15 @@ Meta: tener números propios de lo que cuesta un contenedor, y saber leerlos.
 
 ## Los pies, porque no hay una sola tanda
 
-Lo cómodo sería decir que todos los números de esta unidad salen de la misma máquina y de la misma corrida. No es cierto, y decirlo aquí es el mejor ejemplo que esta página puede dar de lo que enseña: **el pie no es un trámite que se pega al final del número, es parte del número**. Son dos tandas, con una excepción dentro de la primera, y las tres se dicen.
+Lo cómodo sería decir que todos los números de esta unidad salen de la misma máquina y de la misma corrida. No es cierto, y decirlo aquí es el mejor ejemplo que esta página puede dar de lo que enseña: **el pie no es un trámite que se pega al final del número, es parte del número**. Son dos tandas, con **dos** excepciones dentro de la primera, y las cuatro se dicen.
 
 **Tanda 1 — los cuatro experimentos de benchmark.** De aquí salen la gráfica de arranque, la de escala, la de ejecución y la del contenedor anidado, y con ellas los números que citan la página 5 y la 7. Éste es el pie que hay que arrastrar cada vez que alguien repita uno de ellos fuera de contexto:
 
 > **Intel Core i7-7700HQ · Linux 6.12 · Docker 28.4.0 · Podman 4.6.2 (rootless, runtime `crun`) · imágenes `ubuntu:24.04` y `alpine` · GNU coreutils 8.32 en el host y 9.4 dentro de la imagen · mediana de 10 repeticiones en arranque y de 5 en ejecución, más un warm-up descartado.**
 
 **La excepción, dentro de esa misma tanda: el experimento de escala es una sola corrida.** `exp2_scale.csv` tiene un punto por tamaño —1, 5, 10 y 20 contenedores— sin repeticiones y, por lo tanto, sin mediana: ese «mediana de 10» del pie **no lo cubre**. Y aun así basta para lo que ese experimento hace, con una condición. Lo que se argumenta con él no es un tiempo, es **qué se contó de cada lado**: el daemon contra los supervisores, RSS contra PSS. Ése es un error de orden de magnitud, y repetir la corrida diez veces habría dado diez versiones del mismo error, no lo habría corregido. Lo que no se puede hacer es citar «Docker tarda 5.52 s con veinte contenedores» como si fuera una mediana: es **una** corrida, y se dice así.
+
+**La segunda excepción: el experimento de anidamiento son cuatro repeticiones, no diez.** `exp4_nested.csv` trae cuatro por serie, y ese «mediana de 10» del pie tampoco lo cubre. Cuatro es poco para afinar un número y suficiente para lo que ese experimento afirma, que es **un orden de magnitud**: anidar cuesta caro, no cuesta un 5 % más. La regla que sale de aquí es la misma de arriba, y es la que conviene llevarse: **un pie que aplica a casi todos los números de una página no aplica a ninguno**. O lo cubre entero, o dice de qué se excluye.
 
 **Tanda 2 — la comparación de runtimes OCI de la página 7.** Los 215 / 361 / 373 ms que desarman el mito del 2× **no son de la tanda 1**. Se midieron después, en otra máquina y con otras versiones, a propósito para esa pregunta:
 

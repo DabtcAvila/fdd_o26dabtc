@@ -113,7 +113,7 @@ Por eso el renglón del socket montado en la tabla no es una fuga de aislamiento
 
 ## Y sin embargo, en CI se hace justo lo que esta página prohíbe
 
-Hay una contradicción honesta que vale la pena nombrar antes de que la encuentres tú: correr Docker **dentro** de Docker —que es lo que hace media industria en sus servidores de integración continua— suele exigir exactamente las banderas que acabas de aprender a no escribir. No es que ahí la regla no aplique; es que ahí se paga a conciencia, con la máquina aislada y desechable, y sabiendo qué se entregó. El anexo C de esta unidad, *Contenedores anidados*, lo desarma con sus números y con su precio; está escrito **después** de esta página a propósito, para que lo leas sabiendo qué se está entregando y no al revés.
+Hay una contradicción honesta que vale la pena nombrar antes de que la encuentres tú: correr Docker **dentro** de Docker —que es lo que hace media industria en sus servidores de integración continua— suele exigir exactamente las banderas que acabas de aprender a no escribir. No es que ahí la regla no aplique; es que ahí se paga a conciencia, con la máquina aislada y desechable, y sabiendo qué se entregó. El anexo C de esta unidad, [[contenedores-anidados|*Contenedores anidados*]], lo desarma con sus números y con su precio; está escrito **después** de esta página a propósito, para que lo leas sabiendo qué se está entregando y no al revés.
 
 Esta página no lleva ningún exploit funcional ni pasos para reproducir uno, y no es por timidez: los siete renglones de arriba se entienden por su mecanismo, y el mecanismo es lo que te deja **decidir**. Reproducirlos no agrega nada que sirva para diseñar.
 
