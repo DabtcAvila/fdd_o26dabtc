@@ -211,8 +211,13 @@ def muestra(x, y, etiqueta, color, tam=13.5):
 
 # La maquina donde se corrieron los cuatro experimentos. Va en el pie de las
 # cuatro graficas: un numero de benchmark sin su maquina no es reproducible.
-MAQUINA = "Intel Core i7-7700HQ · Pop!_OS 22.04, Linux 6.17.9"
-RUNTIMES = "Docker 29.6.0 · Podman 4.6.2"
+#
+# Estas son las versiones de CUANDO SE MIDIO, no las de hoy. La misma maquina
+# hoy corre Docker 29.6.0 sobre Linux 6.17.9; poner eso afirmaria que los
+# numeros salieron de un Docker que todavia no existia cuando se midieron. La
+# fuente es fdd_p26/clase/08_containers/04_benchmarks.md.
+MAQUINA = "Intel Core i7-7700HQ · Linux 6.12"
+RUNTIMES = "Docker 28.4.0 · Podman 4.6.2"
 
 
 # --------------------------------------------------------------------------
@@ -304,9 +309,12 @@ def cont_bench_escala():
         r: serie(filas, "count", "launch_time_s", cuentas, runtime=r)
         for r in ("docker", "podman")
     }
-    # daemon_rss_kb viene en kilobytes; el CSV los reporta tal cual los dio ps.
+    # `ps -o rss=` reporta KIBIbytes, no kilobytes, aunque la columna del CSV
+    # se llame daemon_rss_kb. La conversion correcta es /1024 y la unidad es
+    # MiB: dividir entre 1000 y llamarlo MB es justo el error de unidades que
+    # esta unidad ensena a no cometer.
     memoria = {
-        r: [v / 1000 for v in
+        r: [v / 1024 for v in
             serie(filas, "count", "daemon_rss_kb", cuentas, runtime=r)]
         for r in ("docker", "podman")
     }
@@ -322,8 +330,8 @@ def cont_bench_escala():
         "izquierda el tiempo de arranque, que sube de 0.35 a 5.52 segundos en "
         "Docker y de 0.19 a 2.74 en Podman; a la derecha la memoria del "
         "supervisor tal como la midio el script, con el RSS de dockerd plano "
-        "en 184 megabytes y la suma de los conmon de Podman subiendo de 1.8 a "
-        "36.6 megabytes"
+        "en 179 mebibytes y la suma de los conmon de Podman subiendo de 1.7 a "
+        "35.8 mebibytes"
     )
     p = [marco(ancho, alto, aria)]
     p.append(texto(ancho / 2, 44, "Qué cambia al pasar de 1 a 20 contenedores",
@@ -360,7 +368,7 @@ def cont_bench_escala():
 
     # --- Panel derecho: memoria del supervisor ---
     x0, x1 = paneles[1]
-    p.append(texto((x0 + x1) / 2, 136, "Memoria del supervisor, RSS (MB)",
+    p.append(texto((x0 + x1) / 2, 136, "Memoria del supervisor, RSS (MiB)",
                    TEXTO, 16, peso="600"))
     ticks_y = [(lineal(v, 0, 200, base, arriba), f"{v}")
                for v in (0, 50, 100, 150, 200)]
@@ -371,17 +379,17 @@ def cont_bench_escala():
         p.append(polilinea(puntos, color))
         for px, py in puntos:
             p.append(punto(px, py, color))
-    p.append(muestra(x0 + 22, 262,
+    p.append(muestra(x0 + 22, 248,
                      f"dockerd · {memoria['docker'][0]:.1f} a "
-                     f"{memoria['docker'][-1]:.1f} MB", CIAN))
-    p.append(muestra(x0 + 22, 288,
+                     f"{memoria['docker'][-1]:.1f} MiB", CIAN))
+    p.append(muestra(x0 + 22, 274,
                      f"suma de los conmon · {memoria['podman'][0]:.1f} a "
-                     f"{memoria['podman'][-1]:.1f} MB", AMBAR))
+                     f"{memoria['podman'][-1]:.1f} MiB", AMBAR))
     p.append(texto(x1 - 35, lineal(memoria["docker"][-1], 0, 200, base, arriba)
-                   - 14, f"{memoria['docker'][-1]:.1f} MB", TEXTO, 13.5,
+                   - 14, f"{memoria['docker'][-1]:.1f} MiB", TEXTO, 13.5,
                    anclaje="end", peso="600"))
     p.append(texto(x1 - 35, lineal(memoria["podman"][-1], 0, 200, base, arriba)
-                   - 14, f"{memoria['podman'][-1]:.1f} MB", TEXTO, 13.5,
+                   - 14, f"{memoria['podman'][-1]:.1f} MiB", TEXTO, 13.5,
                    anclaje="end", peso="600"))
     p.append(eje_x(x0, x1, base, list(zip(xs[1], cuentas)), "contenedores"))
 
@@ -423,7 +431,7 @@ def cont_bench_overhead():
     ancho, alto = 1040, 640
     arriba, base = 172, 400
     paneles = (
-        ((110, 490), "hash", "hash — dd 100 MB · sha256sum", 1.2,
+        ((110, 490), "hash", "hash — dd 100 MiB · sha256sum", 1.2,
          (0, 0.2, 0.4, 0.6, 0.8, 1.0, 1.2)),
         ((620, 1000), "sort", "sort — seq 1..1 000 000 · shuf · sort -n", 1.8,
          (0, 0.3, 0.6, 0.9, 1.2, 1.5, 1.8)),
