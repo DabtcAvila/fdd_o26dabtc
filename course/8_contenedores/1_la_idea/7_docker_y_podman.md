@@ -94,7 +94,7 @@ Así que la frase honesta es: no tener daemon no te hace más rápido. Te da roo
 ![Dos paneles del experimento de escala, de 1 a 20 contenedores. El izquierdo, tiempo de arranque: Docker sube de 0.35 a 5.52 segundos y Podman de 0.19 a 2.74. El derecho, memoria del supervisor en MiB tal como la midió el script y sin corregir nada: la línea casi plana del RSS de dockerd, alrededor de 179 a 184 MiB, contra la suma del RSS de todos los conmon de Podman, que sube de 1.7 a 35.8 MiB y parece que va a cruzarla. Una nota al pie advierte que ésta es la medición cruda: el script mide sólo el RSS de dockerd y nunca cuenta los containerd-shim, uno por contenedor, y del lado de Podman suma el RSS de procesos que comparten páginas entre sí](../_assets/cont-bench-escala.svg)
 
 ::: problem {#cont-p7-el-cruce title="El cruce que no existe"}
-La gráfica de arriba es la medición cruda de un script que mide la memoria del supervisor al pasar de 1 a 20 contenedores. Dibujada así, las dos líneas parecen ir a cruzarse: `dockerd` se queda plano en unos 179 MiB y la suma de los `conmon` de Podman sube de 1.7 a 35.8 MiB. De ahí salió la conclusión que circula: «a partir de unos 100 contenedores, Docker usa menos memoria».
+La gráfica de arriba es la medición cruda de un script que mide la memoria del supervisor al pasar de 1 a 20 contenedores. Dibujada así, las dos líneas parecen ir a cruzarse: el RSS de `dockerd` se queda casi plano —179 MiB con un contenedor, 184 MiB con veinte— y la suma del RSS de los `conmon` de Podman sube de 1.7 a 35.8 MiB. De ahí salió la conclusión que circula: «a partir de unos 100 contenedores, Docker usa menos memoria».
 
 El script tiene **dos errores**, y los dos datos que faltan son éstos:
 
@@ -114,7 +114,7 @@ Las dos correcciones son la misma pregunta hecha dos veces: **¿estoy contando l
 :::
 
 ::: answer {of="cont-p7-el-cruce"}
-**1. Docker es `179 + 11 × N`.** A 1 contenedor, unos **190 MB**; a 20, unos **404 MB** —el `dockerd` plano más veinte shims de 11 MB—. La línea no era plana: era plana **porque el script sólo miraba el daemon**. Docker tiene un supervisor por contenedor igual que Podman, sólo que además tiene el daemon.
+**1. Docker es el `dockerd` medido más `11 × N`.** Con un contenedor, `179 + 11 × 1` = **190**; con veinte, `184 + 11 × 20` = **404**, o sea el daemon más veinte shims. La línea no era plana: era plana **porque el script sólo miraba el daemon**. Docker tiene un supervisor por contenedor igual que Podman, sólo que además tiene el daemon.
 
 **2. Porque el RSS no es aditivo.** El RSS cuenta entera cada página residente del proceso, **incluidas las que comparte con otros**: doce `conmon` son doce copias del mismo binario y de las mismas librerías, así que sumar sus RSS cuenta esas páginas doce veces. La métrica que sí reparte cada página entre quienes la usan es el **PSS**, y está en `/proc/<pid>/smaps_rollup`. Medido: 25 MB de RSS contra **4 MB de PSS** — sumar RSS **infla a Podman unas seis veces**.
 
