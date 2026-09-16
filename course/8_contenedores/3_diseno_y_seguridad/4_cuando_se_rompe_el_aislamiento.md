@@ -21,7 +21,7 @@ Meta: entender que la mayoría de los escapes no son bugs, son decisiones.
 
 ## En corto
 
-- Un contenedor **por omisión** ya viene con cuatro capas puestas: capabilities recortadas, seccomp, AppArmor y un cgroup. Casi todos los escapes famosos empiezan por quitar una.
+- Un contenedor **por omisión** ya trae tres capas puestas —capabilities recortadas, seccomp y AppArmor— y una cuarta que depende de la imagen: correr como un usuario que no sea `root`. Casi todos los escapes famosos empiezan por quitar una.
 - **La mayoría no son bugs, son decisiones**: `--privileged`, el socket de Docker montado, una imagen que nadie miró.
 - Y hay una excepción que conviene saber: cuando el agujero está en el **kernel**, ninguna de las cuatro capas te salva, porque el kernel es de todos.
 
@@ -39,6 +39,10 @@ docker run --rm --cap-drop ALL alpine:3.20 grep CapEff /proc/self/status
 **Deberías ver:** primero `00000000a80425fb`, y después `0000000000000000`. Ese número es una **máscara de bits**: cada bit encendido es un permiso de superusuario que el proceso conserva. El `root` de adentro no es el `root` completo del host — arranca ya con la mayoría de los bits apagados, y `--cap-drop ALL` apaga los que quedaban.
 
 Las otras dos capas no se ven en un número, pero están: un perfil de **seccomp** que filtra qué `syscall` puede pedirle el proceso al kernel —de las [[anatomia-de-docker-run|syscalls]] de la sesión 1— y un perfil de **AppArmor** (o SELinux, según tu distribución) que restringe qué archivos y qué operaciones toca.
+
+Ésas son tres. **La cuarta no es gratis y por eso va aparte: quién eres adentro.** El `root` recortado de arriba sigue siendo `root`, y la imagen puede pedir otra cosa con un `USER` en su `Dockerfile` —el mismo de [[el-dockerfile-por-dentro|la página 5 de la sección 2]]—. Es la única de las cuatro que depende de quien construyó la imagen y no de tu `docker run`, y la que decide **con qué privilegio sale quien se escape**, que es el segundo eje de [[kata-y-el-espectro|la página que sigue]].
+
+Y una que **no** es una capa aunque se le parezca: el **cgroup**. Un cgroup mide cuánto puede usar el proceso, no qué puede alcanzar; contra un escape no defiende nada. En esta página aparece del otro lado, como **vector**: el `release_agent` de las dos filas de cgroups v1 de la tabla de abajo es exactamente un cgroup usado para ejecutar algo en el host.
 
 ## Quitar una capa se ve así
 
