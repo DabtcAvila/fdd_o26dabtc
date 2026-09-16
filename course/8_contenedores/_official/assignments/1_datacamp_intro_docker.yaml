@@ -25,8 +25,9 @@ content:
     Para esta entrega deben quedar dos archivos. El primero es certificaciones
     punto md, que es la plantilla que copiaste, con la sección de Introduction to
     Docker llena: la fecha en que lo terminaste y la URL del Statement of
-    Accomplishment, que es la que se verifica en un clic. Las otras dos secciones
-    del archivo las dejas vacías, que son para las dos entregas siguientes. El
+    Accomplishment, que es la que se verifica en un clic. Las otras tres secciones
+    del archivo las dejas vacías: dos son para las dos entregas siguientes, y la
+    última, la de algo que aprendiste y no sabías, se llena hasta la tercera. El
     segundo archivo es la captura, llamada introduccion guion a guion docker
     punto png, con ese nombre exacto porque la plantilla ya la enlaza. Si te sale
     en jpg en vez de png no pasa nada, pero entonces corriges el enlace dentro
