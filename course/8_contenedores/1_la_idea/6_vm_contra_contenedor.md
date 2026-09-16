@@ -62,11 +62,9 @@ De ahí salen consecuencias que se tocan con la mano en la sesión 2 y que no so
 
 ## El aislamiento no es una línea
 
-::: figure {#cont-espectro title="El aislamiento no es una línea: dos ejes que se componen"}
 ![Rejilla de dos ejes que ordena las opciones de aislamiento. El eje horizontal pregunta dónde aterriza la syscall que no controlas y va de izquierda a derecha: proceso suelto y contenedor, que la mandan directo al kernel del host; gVisor, que la manda a un núcleo en espacio de usuario que reimplementa la interfaz de syscalls de Linux; Kata, que la manda a un segundo kernel real dentro de una VM ligera; y la VM completa, que la manda a un kernel invitado detrás del hipervisor. El eje vertical pregunta qué privilegio tiene quien se escapa, y va de root en el host abajo a un usuario sin privilegios con su rango de subuid arriba. Contenedor rootful y contenedor rootless ocupan la misma columna y sólo se separan en el eje vertical, con una flecha corta que marca que rootless mueve un eje y no el otro; gVisor aparece dos veces, una a cada altura, porque tiene su propio modo rootless. Al pie, la conclusión: rootless no añade ninguna frontera, mismo kernel y misma superficie de syscalls, y los dos ejes se componen en vez de ordenarse](../_assets/cont-espectro.svg)
-:::
 
-Entre «contenedor» y «máquina virtual» hay cosas en medio, y una de ellas aparece aquí por primera vez: **gVisor**, que no pone un kernel real ni renuncia a poner uno, sino que **reimplementa la interfaz de syscalls de Linux en espacio de usuario** y atiende ahí las llamadas de tu proceso. La @cont-espectro es la que se desarma entera en la sesión 3; por ahora quédate con que no es una recta de «poco» a «mucho» aislamiento, sino dos preguntas distintas que se responden por separado.
+Entre «contenedor» y «máquina virtual» hay cosas en medio, y una de ellas aparece aquí por primera vez: **gVisor**, que no pone un kernel real ni renuncia a poner uno, sino que **reimplementa la interfaz de syscalls de Linux en espacio de usuario** y atiende ahí las llamadas de tu proceso. Este mismo dibujo vuelve en la sesión 3 y ahí se desarma entero —es la @cont-s3p5-espectro, y por eso aquí va sin número—; por ahora quédate con que no es una recta de «poco» a «mucho» aislamiento, sino dos preguntas distintas que se responden por separado.
 
 ::: problem {#cont-p6-si-fuera-vm title="Lo mismo, pero en una VM"}
 Este comando arranca un contenedor que sirve una página web:
