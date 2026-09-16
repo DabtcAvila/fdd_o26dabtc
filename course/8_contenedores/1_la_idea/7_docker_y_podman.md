@@ -16,13 +16,13 @@ prerequisites: [vm-contra-contenedor]
 Meta: entender que la diferencia entre los dos es arquitectónica, y qué compra exactamente no tener daemon.
 
 ::: figure {#cont-docker-vs-podman title="Las dos cadenas, y qué compra exactamente no tener daemon"}
-![Las dos cadenas dibujadas una sobre otra. Arriba, Docker: el CLI que tecleas habla por el socket /var/run/docker.sock con dockerd, rotulado como root y siempre encendido y marcado como proceso privilegiado; de ahí sale containerd, de ahí un containerd-shim-runc-v2 que hace de supervisor, y al final runc, que crea y se va. El proceso del contenedor cuelga del shim. Abajo, Podman sin daemon y rootless: podman es tu propio proceso y hace fork-exec de conmon, que es el supervisor equivalente al shim, y conmon hace fork-exec de crun o de runc, que también crea y se va; el rótulo dice que no queda nada permanente y el proceso cuelga de conmon. Al costado, un recuadro con lo que rootless sí necesita: un rango propio en /etc/subuid y /etc/subgid y los binarios newuidmap y newgidmap, que en Debian y Ubuntu vienen en el paquete uidmap, que es Recommends y falta en instalaciones mínimas, y el error que sale sin eso, cannot find UID in /etc/subuid. Abajo del todo, el mito del 2x desarmado fijando todo menos el runtime: podman con crun 193 ms, docker con runc 330 ms y podman con runc 363 ms, con la conclusión de que con el runtime igualado Podman rootless sale unos 10 por ciento más lento, y que lo que compra la ausencia de daemon no es velocidad sino rootless, integración con systemd y ningún proceso privilegiado siempre encendido](../_assets/cont-docker-vs-podman.svg)
+![Las dos cadenas dibujadas una sobre otra. Arriba, Docker: el CLI que tecleas habla por el socket /var/run/docker.sock con dockerd, rotulado como root y siempre encendido y marcado como proceso privilegiado; de ahí sale containerd, de ahí un containerd-shim-runc-v2 que hace de supervisor, y al final runc, que crea y se va. El proceso del contenedor cuelga del shim. Abajo, Podman sin daemon y rootless: podman es tu propio proceso y hace fork-exec de conmon, que es el supervisor equivalente al shim, y conmon hace fork-exec de crun o de runc, que también crea y se va; el rótulo dice que no queda nada permanente y el proceso cuelga de conmon. Al costado, un recuadro con lo que rootless sí necesita: un rango propio en /etc/subuid y /etc/subgid y los binarios newuidmap y newgidmap, que en Debian y Ubuntu vienen en el paquete uidmap, que es Recommends y falta en instalaciones mínimas, y el error que sale sin eso, cannot find UID in /etc/subuid. Abajo del todo, el mito del 2x desarmado fijando todo menos el runtime: podman con crun 215 ms, docker con runc 361 ms y podman con runc 373 ms, con la conclusión de que con el runtime igualado Podman rootless no gana sino que sale unos 3 por ciento detrás de Docker, y que lo que compra la ausencia de daemon no es velocidad sino rootless, integración con systemd y ningún proceso privilegiado siempre encendido](../_assets/cont-docker-vs-podman.svg)
 :::
 
 ## En corto
 
 - Docker es un cliente que le habla por un socket a un **daemon que corre como `root` y nunca se apaga**; Podman hace `fork` y `exec` de sus propios procesos y no deja nada permanente encendido.
-- Lo que compra la ausencia de daemon **no es velocidad**: con el runtime igualado, Podman rootless sale ~10 % más lento.
+- Lo que compra la ausencia de daemon **no es velocidad**: con el runtime igualado, Podman rootless ni siquiera gana — sale ~3 % **detrás** de Docker.
 - Lo que sí compra es otra cosa, y es la que importa: rootless, integración con systemd y ningún proceso privilegiado siempre encendido.
 
 ## Los cuatro problemas del daemon
@@ -79,15 +79,21 @@ Mientras tanto, el hecho práctico: los dos CLI son compatibles comando por coma
 
 ## Lo que la ausencia de daemon no compra
 
-Circula que Podman arranca al doble de velocidad. El número existe —213 ms contra 428 ms— pero la explicación es falsa, y la forma de verlo es fijar todo menos la pieza sospechosa:
+Circula que Podman arranca al doble de velocidad. El número existe —213 ms contra 428 ms, de los benchmarks de arranque que documenta [[lo-que-cuesta|la página 9]]— pero la explicación es falsa, y la forma de verlo es fijar todo menos la pieza sospechosa.
+
+Para eso hay una medición aparte, hecha a propósito para esta pregunta: misma máquina, misma tanda, misma imagen `ubuntu:24.04`, mismo `echo ok`, 20 repeticiones por brazo más un warm-up descartado. Lo único que cambia entre los tres brazos es el runtime OCI.
 
 | Qué se midió | Mediana |
 |---|---:|
-| `podman --runtime crun` | 193 ms |
-| `docker` (usa `runc`) | 330 ms |
-| `podman --runtime runc` | 363 ms |
+| `podman --runtime crun` | 215 ms |
+| `docker` (usa `runc`) | 361 ms |
+| `podman --runtime runc` | 373 ms |
 
-Leído en orden: lo que compra la mitad del tiempo es **`crun`, que es el runtime por defecto de Podman y está escrito en C**, no la ausencia del daemon. Con el runtime igualado —`runc` de los dos lados— **Podman rootless sale ~10 % más lento que Docker**, porque el mapeo de usuarios y la red en espacio de usuario cuestan algo.
+> **El pie de estos tres números: Docker 29.6.0 · Podman 4.6.2 (rootless) · `crun` y `runc` del sistema · Linux 6.17.9 · imagen `ubuntu:24.04` · comando `echo ok` · mediana de 20 repeticiones más un warm-up descartado por brazo. Script y datos: `_assets/benchmarks/bench_oci.sh` y `results/exp5_oci.csv`.**
+
+No es la tanda de la que salen las cuatro gráficas de la unidad —ésas son Linux 6.12 y Docker 28.4.0—, así que **estos tres se comparan entre sí y con ninguno de los otros números de la unidad**, ni con los 213 ms del párrafo de arriba. Decirlo no es un trámite: es la regla que la página 9 enseña con nombre y apellido, aplicada a la tabla que la tiene enfrente.
+
+Leído en orden: lo que compra la mitad del tiempo es **`crun`, que es el runtime por defecto de Podman y está escrito en C**, no la ausencia del daemon. Y con el runtime igualado —`runc` de los dos lados— pasa algo más fuerte que un empate: **Podman rootless no gana, sale detrás**. 373 ms contra 361, un **~3 % más lento**, porque el mapeo de usuarios y la red en espacio de usuario cuestan algo. Ese 3 % está dentro de la dispersión de la tanda y no sirve para presumir; lo que sirve es el signo, que es el contrario del que promete el mito.
 
 Así que la frase honesta es: no tener daemon no te hace más rápido. Te da rootless, te deja tratar un contenedor como una unidad de systemd y te quita un proceso `root` encendido las veinticuatro horas. Con eso basta para elegirlo; el 2× no hacía falta y encima era mentira.
 
@@ -126,4 +132,4 @@ Las dos correcciones son la misma pregunta hecha dos veces: **¿estoy contando l
 Sigue con [[capas-y-cache]], que explica por qué un `build` a veces tarda tres segundos y a veces tres minutos.
 
 > [!NOTE]
-> **Si sólo recuerdas una cosa:** Podman no es Docker más rápido; es Docker sin un proceso `root` siempre encendido, y eso se paga con ~10 % de arranque, no se cobra.
+> **Si sólo recuerdas una cosa:** Podman no es Docker más rápido; es Docker sin un proceso `root` siempre encendido, y con el runtime igualado eso ni siquiera se cobra en velocidad — se paga, un ~3 %.

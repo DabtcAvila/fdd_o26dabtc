@@ -814,16 +814,17 @@ def cont_docker_vs_podman():
 
     p.append(caja(50, 580, 1180, 118, PANEL, AMBAR))
     p.append(texto(70, 608, "El mito del 2×, desarmado: fijando todo menos el runtime", AMBAR, 14.5, anclaje="start", peso="600"))
-    barras = (("podman --runtime crun", 193, ACENTO),
-              ("docker (runtime runc)", 330, CIAN),
-              ("podman --runtime runc", 363, ROJO))
+    barras = (("podman --runtime crun", 215, ACENTO),
+              ("docker (runtime runc)", 361, CIAN),
+              ("podman --runtime runc", 373, ROJO))
+    tope = max(ms for _, ms, _ in barras)
     for k, (etiqueta, ms, color) in enumerate(barras):
         y = 626 + k * 24
         p.append(teclado(70, y + 4, etiqueta, SUAVE, 12, anclaje="start", peso="normal"))
-        p.append(relleno(310, y - 9, ms / 363 * 700, 17, color, radio=4))
-        p.append(texto(320 + ms / 363 * 700, y + 4, f"{ms} ms", color, 12.5, anclaje="start", peso="600"))
+        p.append(relleno(310, y - 9, ms / tope * 700, 17, color, radio=4))
+        p.append(texto(320 + ms / tope * 700, y + 4, f"{ms} ms", color, 12.5, anclaje="start", peso="600"))
 
-    p.append(texto(630, 722, "Con el runtime igualado, Podman rootless sale ~10 % más lento que Docker. Lo que compra la ausencia de daemon no es velocidad:", SUAVE, 13.5))
+    p.append(texto(630, 722, "Con el runtime igualado, Podman rootless no gana: sale ~3 % detrás de Docker. Lo que compra la ausencia de daemon no es velocidad:", SUAVE, 13.5))
     p.append(texto(630, 744, "es rootless, integración con systemd y ningún proceso privilegiado siempre encendido.", SUAVE, 13.5))
     p.append(cierre())
     return "".join(p)
