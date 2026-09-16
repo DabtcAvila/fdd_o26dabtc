@@ -53,6 +53,8 @@ La segunda es la que más cuesta aceptar y es la que más paga. Configuración p
 
 La tercera ya la contestaste con la mano en [[donde-vive-cada-byte]]: todo lo que el proceso escriba fuera de un volumen vive en la capa de escritura del contenedor y se va con él.
 
+**Y ahí está la palabra que la unidad viene prometiendo.** Un **microservicio** no es «un servicio chico» y no se mide en líneas de código: es un servicio cuyo contrato cabe en esos tres renglones, de modo que quien lo usa no necesita leer su código para usarlo ni enterarse de que cambió por dentro. El «micro» no mide el programa, mide el contrato — y por eso un Postgres entero, que son cientos de miles de líneas, califica sin problema.
+
 ## Con estado y sin estado
 
 Ésta es la línea que decide casi todo lo que viene en la página siguiente. Un servicio **sin estado** no guarda nada entre una petición y la siguiente: puedes correr cinco copias iguales y a nadie le importa en cuál cayó — son las [[escalamiento-y-orquestacion|réplicas]] de la sesión 1. Un servicio **con estado** guarda algo que espera volver a leer, y por eso no se multiplica alegremente: dos copias de una base de datos sobre el mismo volumen no son dos réplicas, son dos programas peleándose por los mismos archivos.

@@ -56,6 +56,8 @@ Si el proceso del contenedor está en la misma tabla que todos los demás, ¿có
 
 :::
 
+Una palabra de esa tabla se usa aquí antes de tiempo, así que por ahora basta con esto: un **`puerto`** es el número que dice a cuál de los programas de una máquina va un paquete —el 5432 de Postgres, el 80 de un servidor web—. Que cada contenedor tenga su propio juego completo, y qué decides cuando abres uno al host, es [[la-red-y-el-nombre|la primera página de la sesión 3]].
+
 ## Ocho tipos, diez enlaces
 
 Los que faltan para llegar a ocho son `cgroup` —que Docker activa por defecto sobre cgroups v2 desde la 20.10, y que le oculta al proceso en qué parte de la jerarquía de cgroups vive— y `time`, que permite correr con otro reloj monótono.

@@ -82,5 +82,6 @@ Varias páginas abren una pregunta y la dejan abierta a propósito. No es descui
 | Que Docker no active user namespaces | 1/2 | 2/9 y 3/4 |
 | `CMD` contra `ENTRYPOINT` | 1/3 | 2/5 |
 | El arranque no descomprime la imagen | 1/4 | 1/9 |
+| `puerto`, con su definición completa | 1/2 | 3/1 |
 | `pods` | 1/5 | 3/1 |
 | **Kubernetes como herramienta** | 1/5 | **no se paga en este curso, a propósito** |
