@@ -53,11 +53,11 @@ Esas dos palabras son el corazón de la página, y cada una explica una de las f
 
 Y por eso, también, la pregunta que deja abierta esta página es **dónde va lo que sí quieres conservar**. Si la despensa se tira con el plato, tus datos no pueden vivir en el plato. Eso es la sesión 2 entera.
 
-## Lo que esta página deja fuera a propósito
+## ¿Y qué corre cuando se sirve el plato?
 
-Un Dockerfile tiene unas ocho instrucciones que vas a usar de verdad. **Aquí no va la tabla de las ocho**: eso es referencia, se consulta y no se memoriza, y por eso vive en la chuleta de la unidad. Aquí vive la analogía, que es lo que sí se memoriza.
+Es la pregunta que sigue, y ya tienes media respuesta: lo dice la receta. La otra mitad es que hay **dos** formas de escribirlo —`CMD` y `ENTRYPOINT`—, y que la diferencia entre ellas sólo se asoma cuando le pasas argumentos a `docker run`: una se deja reemplazar y la otra no. Esa frase, leída, no se queda; escrita de las dos formas, corrida y comparada, no se olvida. Por eso vive en la clase del martes, donde hay teclado, y no aquí.
 
-Y falta una distinción que seguro te vas a encontrar buscando por tu cuenta: la diferencia entre `CMD` y `ENTRYPOINT`, las dos formas de decir qué se ejecuta al servir el plato. **Tampoco va aquí**, y no por falta de espacio: va en la sesión 2, en la página donde puedes escribir las dos, correrlas y ver la diferencia con tus ojos. El curso pasado explicaba los volúmenes en dos páginas distintas y el resultado fue que ninguna de las dos quedaba completa; una distinción que no puedes ejecutar es una distinción que no puedes comprobar.
+Por la misma razón, las ocho instrucciones de Dockerfile que de verdad vas a usar viven en la chuleta de la unidad: eso es referencia, se consulta y no se memoriza. Lo que esta página quiere que cargues es la analogía.
 
 ::: problem {#cont-p3-tijeras title="Recorta el Dockerfile en dos montones"}
 Se reparte impreso este Dockerfile, una línea por tira de papel:

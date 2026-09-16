@@ -41,7 +41,7 @@ Un **`PID`** (*process id*) es el número con el que el kernel identifica a cada
 
 ## Namespaces: qué puede ver
 
-Un *namespace* es una vista recortada de un recurso del kernel. El proceso pide ver «los procesos» o «la red» y el kernel le contesta con su recorte, no con el todo. No hay copia, no hay emulación y no hay costo: es el mismo kernel contestando distinto según quién pregunta.
+Si el proceso del contenedor está en la misma tabla que todos los demás, ¿cómo es que un `ps` **desde adentro** lista dos renglones y no los trescientos de tu máquina? No porque el kernel le esconda una copia: porque le contesta distinto. Un *namespace* es una vista recortada de un recurso del kernel — el proceso pregunta por «los procesos» o «la red» y recibe su recorte, no el todo. No hay copia, no hay emulación y no hay costo: es el mismo kernel contestando otra cosa según quién pregunta.
 
 ::: table {#cont-tabla-ns title="Los seis namespaces que vas a notar"}
 
@@ -72,7 +72,7 @@ Namespaces y cgroups son **ortogonales** y separables. Un contenedor típico usa
 
 Aquí va la verdad que la mitad de internet dice al revés: **Docker no activa user namespaces por defecto.** Sin ese namespace, el UID 0 de adentro **es** el UID 0 del host; no hay traducción. El proceso está recortado por todos los demás namespaces y confinado por *capabilities*, seccomp y AppArmor, pero su usuario no está mapeado a otro.
 
-Se puede activar, con `userns-remap` en la configuración del daemon, y Podman *rootless* lo hace siempre: ahí el root de adentro se mapea a **tu** usuario. La consecuencia práctica de no tenerlo se toca con la mano en la sesión 2, cuando un archivo escrito desde el contenedor aparezca en tu carpeta siendo de `root`.
+Se puede activar, con `userns-remap` en la configuración de Docker, y Podman *rootless* lo hace siempre: ahí el root de adentro se mapea a **tu** usuario. La consecuencia práctica de no tenerlo se toca con la mano en la sesión 2, cuando un archivo escrito desde el contenedor aparezca en tu carpeta siendo de `root`.
 
 Y si el kernel es uno solo y compartido, queda una pregunta abierta: **¿qué haces cuando no quieres compartirlo?** Se llama **Kata Containers**, y es lo último de esta unidad, en la sesión 3.
 
