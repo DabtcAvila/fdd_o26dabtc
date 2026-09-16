@@ -97,10 +97,12 @@ Leído en orden: lo que compra la mitad del tiempo es **`crun`, que es el runtim
 
 Así que la frase honesta es: no tener daemon no te hace más rápido. Te da rootless, te deja tratar un contenedor como una unidad de systemd y te quita un proceso `root` encendido las veinticuatro horas. Con eso basta para elegirlo; el 2× no hacía falta y encima era mentira.
 
+::: figure {#cont-bench-escala title="Escala de 1 a 20 contenedores, con la memoria del supervisor tal como la midió el script"}
 ![Dos paneles del experimento de escala, de 1 a 20 contenedores. El izquierdo, tiempo de arranque: Docker sube de 0.35 a 5.52 segundos y Podman de 0.19 a 2.74. El derecho, memoria del supervisor en MiB tal como la midió el script y sin corregir nada: la línea casi plana del RSS de dockerd, alrededor de 179 a 184 MiB, contra la suma del RSS de todos los conmon de Podman, que sube de 1.7 a 35.8 MiB y parece que va a cruzarla. Una nota al pie advierte que ésta es la medición cruda: el script mide sólo el RSS de dockerd y nunca cuenta los containerd-shim, uno por contenedor, y del lado de Podman suma el RSS de procesos que comparten páginas entre sí](../_assets/cont-bench-escala.svg)
+:::
 
 ::: problem {#cont-p7-el-cruce title="El cruce que no existe"}
-La gráfica de arriba es la medición cruda de un script que mide la memoria del supervisor al pasar de 1 a 20 contenedores. Dibujada así, las dos líneas parecen ir a cruzarse: el RSS de `dockerd` se queda casi plano —179 MiB con un contenedor, 184 MiB con veinte— y la suma del RSS de los `conmon` de Podman sube de 1.7 a 35.8 MiB. De ahí salió la conclusión que circula: «a partir de unos 100 contenedores, Docker usa menos memoria».
+La figura 2 es la medición cruda de un script que mide la memoria del supervisor al pasar de 1 a 20 contenedores. Dibujada así, las dos líneas parecen ir a cruzarse: el RSS de `dockerd` se queda casi plano —179 MiB con un contenedor, 184 MiB con veinte— y la suma del RSS de los `conmon` de Podman sube de 1.7 a 35.8 MiB. De ahí salió la conclusión que circula: «a partir de unos 100 contenedores, Docker usa menos memoria».
 
 El script tiene **dos errores**, y los dos datos que faltan son éstos:
 
