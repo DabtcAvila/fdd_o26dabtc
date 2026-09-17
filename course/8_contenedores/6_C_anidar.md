@@ -97,6 +97,8 @@ docker rm -f dind testigo
 
 **Deberías ver:** las dos listas **vacías**. Ni tu `testigo` ni ninguna de las seis imágenes del prepull: ese daemon nació sin nada y su almacén no es el tuyo. Ésa es la diferencia entre anidar y tener hermanos, en dos comandos.
 
+![Un módulo de carga abierto de par en par en un muelle nocturno, en violeta eléctrico y ámbar de sodio: dentro no hay mercancía sino otro patio de maniobras completo, con su propia grúa y sus propios módulos más pequeños, y uno de ésos está abierto y contiene otro patio más, así hacia dentro hasta perderse en un túnel de repeticiones. Una figura de espaldas, en silueta contra la boca del módulo, alumbra con una linterna cuyo haz se apaga antes de llegar al fondo.](_assets/ilus-contenedores-anidados.jpg)
+
 ## Qué cuesta, medido
 
 ::: figure {#cont-anexoc-bench title="Anidar: qué cuesta un contenedor dentro de otro"}

@@ -43,6 +43,8 @@ Las dos se disuelven solas en cuanto las tres cosas dejan de ser una.
 
 :::
 
+![Cocina industrial vacía de madrugada vista a lo largo del pase, en azul hielo a la izquierda y ámbar cálido a la derecha: una ficha escrita a mano cuelga de un riel de acero, al centro un bloque sellado y opaco duerme cubierto de escarcha tras el cristal de un arcón, y bajo las lámparas cálidas tres platos servidos exactamente iguales humean alineados; una figura de espaldas, en silueta, mira los tres platos.](../_assets/ilus-contenedores-receta.jpg)
+
 ## Inmutable de un lado, efímero del otro
 
 Esas dos palabras son el corazón de la página, y cada una explica una de las fallas de arriba.
