@@ -63,6 +63,14 @@ La versión limpia —rootless dentro de rootless— es posible y tiene requisit
 
 La fila del `-v` es la que muerde en la vida real y casi nadie la predice. Cuando escribes `-v ./datos:/datos` **dentro** del contenedor con el socket montado, quien interpreta `./datos` es el daemon del host, que no tiene ni idea de qué hay dentro de tu contenedor: monta **la ruta del host**. Si no existe, la inventa vacía —exactamente lo de [[rutas-en-docker]]—, y tu trabajo corre sobre un directorio que no es el que creías.
 
+## La cuarta manera: no anidar nada
+
+Las tres de arriba contestan la misma pregunta —cómo meto un daemon, o un almacén, dentro de un contenedor—, y por eso las tres cobran algo. Pero antes de contestarla conviene comprobar que haga falta, porque el trabajo que de verdad manda a anidar en integración continua casi siempre es uno solo: **construir una imagen**. Y para construir no hace falta ningún daemon, ni el de adentro ni el de afuera. Un `Dockerfile` es una receta, y ejecutarla es desempacar capas, correr comandos y volver a empacar: eso lo hace un programa normal, sin `--privileged` y sin socket.
+
+**Buildah** es el que está vivo, y además ya lo tienes instalado sin saberlo: **`podman build` *es* Buildah**, usado como librería. Construye imágenes OCI sin daemon y, con el rootless que montaste en la sesión 2, sin privilegios. **Kaniko** es el otro nombre que vas a encontrar, y hay que saber leerlo más que usarlo: fue durante años la forma estándar de construir dentro de un clúster de Kubernetes, así que aparece en miles de `.gitlab-ci.yml` heredados. **Google archivó el repositorio el 3 de junio de 2025**; lo que queda son forks de terceros. Si lo heredas, funciona; si lo eliges hoy, estás eligiendo un proyecto archivado.
+
+Lo que esta familia compra es justo la columna que más duele de la tabla de arriba: **no entrega nada**. Lo que no compra es ejecutar — construir no es correr, y un pipeline que además tiene que levantar una base de datos de prueba vuelve a tener el problema de las tres maneras.
+
 ## Con las manos
 
 **Haz:** monta el socket y pregúntale a ese CLI qué contenedores ve.
