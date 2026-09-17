@@ -792,6 +792,14 @@ CIFRAS = [
     ("lo-que-cuesta", "5.52", lambda: f"{_mediana('exp2_scale.csv', 'launch_time_s', runtime='docker', count='20'):.2f}"),
     ("escalamiento-y-orquestacion", "5.5", lambda: f"{_mediana('exp2_scale.csv', 'launch_time_s', runtime='docker', count='20'):.1f}"),
     ("escalamiento-y-orquestacion", "2.7", lambda: f"{_mediana('exp2_scale.csv', 'launch_time_s', runtime='podman', count='20'):.1f}"),
+    # Escritura, tanda 1 (io.csv): el brazo bueno y el brazo imposible, en
+    # el mismo archivo. Los 1700 MB/s se publican **como artefacto**, así
+    # que también son una cifra que tiene que seguir saliendo del CSV: el
+    # día que alguien lo vuelva a medir bien, la página cambia de tesis.
+    ("lo-que-cuesta", "458", lambda: f"{_mediana('io.csv', 'mb_per_sec', runtime='bare', mode='direct'):.0f}"),
+    ("lo-que-cuesta", "380", lambda: f"{_mediana('io.csv', 'mb_per_sec', runtime='docker', mode='overlay'):.0f}"),
+    ("lo-que-cuesta", "510", lambda: f"{_mediana('io.csv', 'mb_per_sec', runtime='docker', mode='volume'):.0f}"),
+    ("lo-que-cuesta", "1700", lambda: f"{_mediana('io.csv', 'mb_per_sec', runtime='podman', mode='overlay'):.0f}"),
     # Runtimes OCI, tanda 2 (exp5_oci.csv): los tres brazos del mito del 2×.
     ("docker-y-podman", "215", lambda: f"{_mediana('exp5_oci.csv', 'startup_ms', brazo='podman-crun'):.0f}"),
     ("docker-y-podman", "361", lambda: f"{_mediana('exp5_oci.csv', 'startup_ms', brazo='docker-runc'):.0f}"),

@@ -27,9 +27,9 @@ Meta: tener números propios de lo que cuesta un contenedor, y saber leerlos.
 
 ## Los pies, porque no hay una sola tanda
 
-Lo cómodo sería decir que todos los números de esta unidad salen de la misma máquina y de la misma corrida. No es cierto, y decirlo aquí es el mejor ejemplo que esta página puede dar de lo que enseña: **el pie no es un trámite que se pega al final del número, es parte del número**. Son dos tandas, con **dos** excepciones dentro de la primera, y las cuatro se dicen.
+Lo cómodo sería decir que todos los números de esta unidad salen de la misma máquina y de la misma corrida. No es cierto, y decirlo aquí es el mejor ejemplo que esta página puede dar de lo que enseña: **el pie no es un trámite que se pega al final del número, es parte del número**. Son dos tandas, con **tres** excepciones dentro de la primera, y las cinco se dicen.
 
-**Tanda 1 — los cuatro experimentos de benchmark.** De aquí salen la gráfica de arranque, la de escala, la de ejecución y la del contenedor anidado, y con ellas los números que citan la página 5 y la 7. Éste es el pie que hay que arrastrar cada vez que alguien repita uno de ellos fuera de contexto:
+**Tanda 1 — los cinco experimentos de benchmark.** De aquí salen la gráfica de arranque, la de escala, la de ejecución, la del contenedor anidado y la de escritura, y con ellas los números que citan la página 5 y la 7. Éste es el pie que hay que arrastrar cada vez que alguien repita uno de ellos fuera de contexto:
 
 > **Intel Core i7-7700HQ · Linux 6.12 · Docker 28.4.0 · Podman 4.6.2 (rootless, runtime `crun`) · imágenes `ubuntu:24.04` y `alpine` · GNU coreutils 8.32 en el host y 9.4 dentro de la imagen · mediana de 10 repeticiones en arranque y de 5 en ejecución, más un warm-up descartado.**
 
@@ -37,13 +37,15 @@ Lo cómodo sería decir que todos los números de esta unidad salen de la misma 
 
 **La segunda excepción: el experimento de anidamiento son cuatro repeticiones, no diez.** `exp4_nested.csv` trae cuatro por serie, y ese «mediana de 10» del pie tampoco lo cubre. Cuatro es poco para afinar un número y suficiente para lo que ese experimento afirma, que es un **signo**: anidar cuesta algo, y ese algo no es cero. Cuánto, con esas cuatro repeticiones, sólo se puede decir con la mano abierta: el arranque de Docker dentro de Docker sale **+8 %** sobre Docker a secas, y el de Podman anidado **+45 %** sobre Podman. Escribir «un orden de magnitud» habría sido exagerar diez veces con cuatro mediciones, que es exactamente lo que esta página existe para no hacer. La regla que sale de aquí es la misma de arriba, y es la que conviene llevarse: **un pie que aplica a casi todos los números de una página no aplica a ninguno**. O lo cubre entero, o dice de qué se excluye.
 
+**La tercera excepción: la prueba de escritura son tres repeticiones, y de ella no sobrevivió el script.** `io.csv` trae tres corridas por brazo —no diez—, así que ese «mediana de 10» tampoco la cubre; y es el único experimento del que se publica el resultado sin la receta para repetirlo, cosa que también hay que decir en vez de dejar que se note. Con tres repeticiones no se afina una cifra: se sostiene un **signo** y un orden de magnitud, que es exactamente lo que se usa más abajo —escribir en un volumen rinde más que escribir en la capa overlay— y nada más fino que eso.
+
 **Tanda 2 — la comparación de runtimes OCI de la página 7.** Los 215 / 361 / 373 ms que desarman el mito del 2× **no son de la tanda 1**. Se midieron después, en otra máquina y con otras versiones, a propósito para esa pregunta:
 
 > **Docker 29.6.0 · Podman 4.6.2 (rootless) · `crun` y `runc` del sistema · Linux 6.17.9 · imagen `ubuntu:24.04` · comando `echo ok` · mediana de 20 repeticiones más un warm-up descartado por brazo.**
 
 Esos tres brazos se comparan **entre sí** —para eso se midieron juntos, en la misma tanda y fijando todo menos el runtime— y con ningún número de la tanda 1. Poner los 215 ms de Podman con `crun` al lado de los 212.7 ms de la gráfica de arranque y concluir cualquier cosa sería justo el error que esta página existe para evitar: son otro kernel, otro Docker y otra máquina.
 
-Los scripts y los CSV de las dos tandas están publicados en `_assets/benchmarks/`, para que puedas rehacerlo.
+Los scripts y los CSV de las dos tandas están publicados en `_assets/benchmarks/` —todos menos el script de la prueba de escritura, del que sólo quedó su CSV— para que puedas rehacerlo.
 
 ## LAUNCH y RUNNING
 
@@ -86,13 +88,21 @@ Docker tarda **~428 ms** y Podman **~213 ms** en tener un contenedor corriendo. 
 
 > **El pie de los dos números medidos aquí:** Docker 29.6.0 · Podman 4.6.2 (rootless) · Linux 6.17.9 —las mismas versiones de la tanda 2—, `free -m -s 1 -c 90` contra `docker stats --no-stream` y `podman stats --no-stream` sobre un `ubuntu:24.04` corriendo `sleep`.
 
-## Lo que esta página no midió, y por qué hay clase el martes
+## Escribir: el resultado que sí salió, y la trampa que venía al lado
 
-Escribir sí tiene un costo, y es **cualitativo** hasta que alguien lo mida bien. El `overlay` paga **copy-up**: la primera vez que tu proceso escribe sobre un archivo que vive en una capa inferior de sólo lectura, el kernel **copia el archivo entero** a la capa de escritura antes de dejarte tocarlo. Un archivo de 2 GB al que le cambias un byte se copia completo, una vez.
+::: figure {#cont-bench-io title="Escribir desde un contenedor: cuatro mediciones y un artefacto, en el mismo CSV"}
+![Gráfica de barras horizontales del rendimiento de escritura en megabytes por segundo, con la mediana de tres repeticiones por brazo. Cuatro barras sólidas: el disco a pelo da 458 MB/s, Docker escribe 380 en su capa overlay y 510 en un volumen, y Podman escribe 512 en un volumen; un corchete entre las dos barras de Docker marca el 34 por ciento que se gana al salir del overlay, y una línea punteada vertical marca dónde está el disco a pelo. La quinta barra, la de Podman sobre su capa overlay, está dibujada distinto a propósito: va hueca, con el contorno punteado en rojo, se sale del eje por la derecha y termina en un corte de sierra en vez de en un extremo, con la leyenda adentro de que sus 1700 MB/s no son una medición de disco. Al pie, la nota dice que es 3.7 veces el disco a pelo, que lo que midió fue el page cache y que por eso esa barra no se puede leer en la escala, más la máquina, el kernel y las versiones de la tanda 1](../_assets/cont-bench-io.svg)
+:::
 
-La cifra que circulaba —«el overlay escribe ~20 % más lento»— **no se publica aquí**, y vale la pena decir por qué: su propio CSV reporta a Podman **3.7× más rápido que bare metal** en la misma prueba. Nadie escribe casi cuatro veces más rápido dentro de un contenedor; lo que midió fue el **page cache**. Un resultado imposible en la misma tabla invalida la tabla entera, no sólo ese renglón.
+Escribir también se midió, y `io.csv` es el mejor ejemplo que tiene esta página, porque trae las dos cosas en el mismo archivo.
 
-El copy-up, en cambio, es mecanismo y no ruido, y es media razón de ser de la sesión del martes: si escribir dentro de la capa del contenedor se paga y además se pierde al borrarlo, los datos tienen que vivir en otro lado.
+**El resultado.** En Docker, escribir en un **volumen** rinde **510 MB/s** y escribir en la **capa overlay** del contenedor rinde **380**: un **34 %** de diferencia a favor del volumen, mismo disco y misma máquina. Y tiene mecanismo, que es lo que separa un dato de una casualidad: el `overlay` paga **copy-up** —la primera vez que tu proceso escribe sobre un archivo que vive en una capa inferior de sólo lectura, el kernel **copia el archivo entero** a la capa de escritura antes de dejarte tocarlo, así que un archivo de 2 GB al que le cambias un byte se copia completo, una vez— y un volumen no pasa por ahí: sus bytes van al sistema de archivos del host como los de cualquier otro proceso.
+
+**El artefacto.** El mismo archivo dice que Podman, sobre su capa overlay, escribe **1700 MB/s**: **3.7×** los **458 MB/s** que da este disco a pelo. Eso no es un número rápido, es un número **imposible** — nadie escribe más rápido que su disco. Lo que `fuse-overlayfs` reportó ahí fue el **page cache**: bytes aceptados en memoria, no bytes en el plato. Por eso en la gráfica esa barra no es una barra: va hueca, se sale del eje y termina rota. Está dibujada como lo que es, no como lo que dice.
+
+**Y de ahí sale la lección, que es la de toda la página.** Ese renglón imposible sirvió para tirar el experimento **entero**, y al tirarlo se fue con él el brazo de Docker, que estaba bien medido. Las dos salidas cómodas son malas: publicar los 1700 como si fueran un resultado, o esconderlos y quedarse sin la tabla. La buena es decidir **brazo por brazo**, y aquí la prueba es física: 380 y 510 caben debajo de lo que da el disco a pelo y su diferencia tiene un mecanismo que la explica; 1700 rompe el techo del disco y no hay mecanismo que lo salve. **Un brazo que viola un límite físico se tira solo; los que no lo violan no se tiran con él** — se publican diciendo al lado por qué se tiró el otro, que es justo lo que hace esa gráfica.
+
+Y el copy-up es media razón de ser de la sesión del martes: si escribir dentro de la capa del contenedor se paga —y ahora sabes cuánto— y además se pierde al borrar el contenedor, los datos tienen que vivir en otro lado.
 
 ## Repítelo
 
