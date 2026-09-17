@@ -51,7 +51,7 @@ Lo que sí lo explica es lo que viene después de sellar el artefacto.
 
 :::
 
-Esas dos cifras salen de una medición propia, con su máquina, su kernel y sus versiones anotadas; el pie completo vive una sola vez en la unidad, en «Lo que cuesta», que es la página 9 de esta sección. Un número de benchmark sin su pie no vale nada, y ése es medio contenido de aquella página.
+Esas dos cifras salen de una medición propia, con su máquina, su kernel y sus versiones anotadas; el pie completo vive una sola vez en la unidad, en [[lo-que-cuesta|«Lo que cuesta»]], que es la página 9 de esta sección. Un número de benchmark sin su pie no vale nada, y ése es medio contenido de aquella página.
 
 ## El precio, dicho en concreto
 
