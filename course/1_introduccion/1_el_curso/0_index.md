@@ -64,8 +64,7 @@ Cómo se vuelve reproducible y colaborable lo que haces.
 |:-:|---|---|
 | 7 | Git | Control de versiones, commits, ramas, merges |
 | 8 | GitHub | Colaboración, pull requests, revisión de código, CI/CD |
-| 9 | Docker I | Contenedores, imágenes, Dockerfile |
-| 10 | Docker II | Docker Compose, redes, volúmenes, orquestación básica |
+| 9–10 | Contenedores | Tres sesiones: qué es un contenedor de verdad, imágenes y `Dockerfile`, volúmenes y redes, y cómo se reparte un sistema en servicios sin romper el aislamiento |
 
 ### Fase 3 — Python profesional
 

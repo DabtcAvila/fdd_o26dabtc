@@ -44,10 +44,47 @@ jobs:
           RAMA: ${{ github.event.pull_request.head.ref }}
           RAMA_DEFAULT: ${{ github.event.pull_request.head.repo.default_branch }}
           MANTENEDORES: uumami
-          # La regla de la branch solo AVISA hasta esta fecha, y a partir de
-          # ella rechaza. Existe porque el grupo ya tenia pull requests
-          # abiertos desde main cuando la regla entro. Cubre la entrega del
-          # 10 de septiembre y la de DataCamp del 17. Para endurecerla ya,
-          # borra esta linea.
+          # Mapa branch -> carpeta de cada entrega. El script lo lee de aqui y
+          # nunca del arbol de trabajo: con pull_request_target, leer el repo
+          # seria darle al pull request una via para reescribir sus propias
+          # reglas. Cada unidad agrega sus lineas.
+          TAREAS: >-
+            tarea-08-datacamp-intro=docker,
+            tarea-08-imagen=08_contenedores,
+            tarea-08-datacamp-inter-1=docker,
+            tarea-08-datacamp-inter-2=docker
+          # La regla de la branch (no entregar desde main) solo AVISA hasta
+          # esta fecha, y a partir de ella rechaza. Existe porque el grupo ya
+          # tenia pull requests abiertos desde main cuando la regla entro.
+          # Cubre la entrega del 10 de septiembre y la de DataCamp del 17.
+          # Para endurecerla ya, borra esta linea. NO es la misma fecha que
+          # BRANCH_NOMBRE_ESTRICTO_DESDE: esta politica ya estaba vigente y
+          # nadie pidio relajarla, asi que su fecha no se mueve.
           BRANCH_ESTRICTA_DESDE: "2026-09-18"
+          # La regla del nombre de la branch (tarea-NN-nombre) solo AVISA
+          # hasta esta fecha, y a partir de ella rechaza. Es una variable
+          # propia, distinta de BRANCH_ESTRICTA_DESDE de arriba: a las tareas
+          # de la unidad 7 nunca se les pidio un nombre de branch, asi que
+          # nadie hizo nada mal al inventarse uno. El 22 de septiembre es la
+          # primera entrega de la unidad 8, cuando ya existiran tareas que si
+          # nombran su branch. Para endurecerla ya, borra esta linea.
+          BRANCH_NOMBRE_ESTRICTO_DESDE: "2026-09-22"
         run: python3 .github/scripts/revisa_entrega.py
+
+      # Segundo paso, separado a proposito: el de arriba juzga la FORMA (donde
+      # viven los archivos, como se llama la branch, que no haya basura) y este
+      # el CONTENIDO MINIMO (que esten los archivos que la tarea pidio y que no
+      # sean la plantilla sin tocar). Separarlos hace que el mensaje de error
+      # diga de una cual de las dos cosas fallo.
+      #
+      # Una branch que no este en el catalogo del script sale en verde sin
+      # decir nada: las tareas de la unidad 7 nunca declararon nombre de
+      # branch, asi que no hay forma de saber que tarea es.
+      - name: Revisar el contenido minimo
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ github.event.pull_request.number }}
+          AUTOR: ${{ github.event.pull_request.user.login }}
+          RAMA: ${{ github.event.pull_request.head.ref }}
+          MANTENEDORES: uumami
+        run: python3 .github/scripts/revisa_contenido.py

@@ -32,3 +32,12 @@ El nombre de la subcarpeta no se inventa ni se traduce. Si aquí se llama
 `07_git`, en tu carpeta se llama `07_git`.
 
 Todo esto está explicado en la unidad: https://rayalucaria.org/fdd_o26/git-y-github/github/el-flujo-del-curso/
+
+## Las carpetas
+
+| Carpeta | Unidad | Qué contiene |
+|---|---|---|
+| `07_git/` | 07 — Git | Ejemplo y bitácora de la unidad de Git. |
+| `github/` | 07 — GitHub | Certificaciones de Git y GitHub, de acumulación por entrega. |
+| `08_contenedores/` | 08 — Contenedores | Laboratorios e imagen propia de la unidad. Ojo: el nombre lleva el cero adelante. |
+| `docker/` | 08 — Contenedores | Certificaciones de Docker, de acumulación por entrega. |

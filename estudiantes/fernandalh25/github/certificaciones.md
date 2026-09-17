@@ -10,21 +10,18 @@ Llena este archivo en **tu copia**, dentro de `estudiantes/<tu-login>/github/`.
 
 ## Introduction to Git
 
-Fecha en que lo terminaste: 20 septiembre 2025
+Fecha en que lo terminaste: 10 septiembre 2026
 
 ![Captura del curso Introduction to Git terminado](./introduction_a_git.png)
 
 ## Intermediate Git
 
-Fecha en que lo terminaste:
+Fecha en que lo terminaste: 16 septiembre 2026
 
 ![Captura del curso Intermediate Git terminado](./git-intermedio.png)
 
 ## Una cosa que aprendiste y no sabías
+Los cursos me ayudaron a entender mejor conceptos vistos rápido en clase como parent commits, fast-forwdard y merges entre ramas. Pero sobre todo la práctica me hizo entender mejor el flujo de github, además de los remotes.
 
-Dos o tres líneas. Algo concreto que salió en alguno de los dos cursos y que
-no habías visto en clase, o que en clase entendiste a medias y ahí se te
-acomodó. Si sientes que no aprendiste nada nuevo, dilo y explica qué parte de
-los cursos te pareció repetida.
 
 
