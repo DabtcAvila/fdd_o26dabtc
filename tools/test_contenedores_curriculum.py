@@ -861,6 +861,36 @@ def test_los_incrementos_del_anexo_de_anidamiento_salen_de_su_CSV():
     )
 
 
+def test_los_derivados_de_la_prueba_de_escritura_salen_de_su_CSV():
+    """El 34 % y el 3.7× son los dos números que se citan fuera de la gráfica.
+
+    Uno es el resultado que la unidad sí publica —salir del overlay— y el otro
+    es la prueba de que el brazo de Podman midió page cache y no disco. Los dos
+    son cocientes, así que ninguna de las dos guardas de arriba los cubre: un
+    dedazo en cualquiera de ellos pasaría en verde citando cifras correctas.
+    """
+    overlay = _mediana("io.csv", "mb_per_sec", runtime="docker", mode="overlay")
+    volumen = _mediana("io.csv", "mb_per_sec", runtime="docker", mode="volume")
+    a_pelo = _mediana("io.csv", "mb_per_sec", runtime="bare", mode="direct")
+    fantasma = _mediana("io.csv", "mb_per_sec", runtime="podman", mode="overlay")
+
+    mejora = f"{round((volumen / overlay - 1) * 100)} %"
+    for identificador in ("lo-que-cuesta", "donde-vive-cada-byte"):
+        assert mejora in lee(_POR_ID[identificador]), (
+            f"{identificador} ya no dice que salir del overlay son {mejora} "
+            "más rápido, que es lo que da io.csv"
+        )
+
+    assert f"{fantasma / a_pelo:.1f}×" in lee(_POR_ID["lo-que-cuesta"]), (
+        "lo-que-cuesta perdió el cociente que delata al artefacto: el brazo de "
+        "Podman reporta más veces el disco a pelo de lo que la página dice"
+    )
+    assert "1700" not in lee(_POR_ID["donde-vive-cada-byte"]), (
+        "2/7 publica el brazo descartado; ahí no hay espacio para explicar por "
+        "qué está mal, y un número malo sin su explicación es peor que ninguno"
+    )
+
+
 _MEDICION = re.compile(r"\bmediana\b|medición propia|\bMedido con\b|\d+(?:\.\d+)?\s*ms\b")
 
 
