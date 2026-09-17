@@ -45,7 +45,7 @@ Así que los contenedores que crees desde adentro no nacen dentro de nada: nacen
 
 Podman sí puede correr dentro de Podman, y es su argumento favorito: sin daemon, el problema deja de ser «cómo meto un servicio privilegiado adentro» y pasa a ser «cómo le doy almacenamiento a un proceso mío». La imagen es `quay.io/podman/stable`.
 
-La versión limpia —rootless dentro de rootless— es posible y tiene requisitos propios: un volumen de verdad para el almacén de adentro, `--device /dev/fuse` para que `fuse-overlayfs` funcione, y el usuario `podman` de la imagen en vez de `root`. **Los números de abajo no midieron esa versión**: midieron la privilegiada, que es la que sale en un renglón. Dicho para que nadie cite la cifra como si fuera la del camino recomendado.
+La versión limpia —rootless dentro de rootless— es posible y tiene requisitos propios: un volumen de verdad para el almacén de adentro, `--device /dev/fuse` para que `fuse-overlayfs` funcione, y el usuario `podman` de la imagen en vez de `root`. **Los números de abajo no midieron esa versión**: midieron la privilegiada, que es la que sale en un renglón y la que se teclea en «Con las manos». Dicho para que nadie cite la cifra como si fuera la del camino recomendado.
 
 ::: table {#cont-anexoc-tres-formas title="Las tres maneras, y qué entrega cada una"}
 
@@ -104,6 +104,26 @@ docker rm -f dind testigo
 ```
 
 **Deberías ver:** las dos listas **vacías**. Ni tu `testigo` ni ninguna de las seis imágenes del prepull: ese daemon nació sin nada y su almacén no es el tuyo. Ésa es la diferencia entre anidar y tener hermanos, en dos comandos.
+
+**Haz:** lo mismo con Podman, que es donde el anidamiento tiene su mejor argumento. Éste es el atajo privilegiado —el que midió la gráfica de abajo—, no el camino limpio de la sección 3.
+
+```bash
+podman run -d --privileged --name podman-nest quay.io/podman/stable sleep 600
+podman exec podman-nest podman images
+podman exec podman-nest podman run --rm alpine:3.20 echo "hola desde el nivel 2"
+```
+
+**Deberías ver:** la lista de imágenes **vacía** —sólo el encabezado—, aunque en tu host `alpine:3.20` esté bajada desde hace rato; y después el `podman run` **volviéndola a bajar**, con su `Trying to pull docker.io/library/alpine:3.20...`, antes de imprimir el saludo. Ahí está en dos renglones el «segundo almacén» de la tabla: sin daemon, el problema no es meter un servicio privilegiado adentro, es que hay un almacén nuevo y está vacío.
+
+**Haz:** el tercer nivel. Un Podman, dentro de un Podman, dentro del tuyo.
+
+```bash
+podman exec podman-nest podman run --privileged --rm quay.io/podman/stable \
+  podman run --rm alpine:3.20 echo "nivel 3"
+podman rm -f podman-nest
+```
+
+**Deberías ver:** que **funciona** —imprime `nivel 3`—, y que antes de imprimirlo baja **dos** imágenes más: `quay.io/podman/stable` en el almacén del nivel 2 y `alpine:3.20` en el del nivel 3. No hay un tope arquitectónico: el anidamiento tiene fondo, y lo que se multiplica por nivel no es lo que mide la gráfica de abajo, es el almacén. Fíjate además en lo que le pasa al nivel 3, que corre con `--rm`: **su caché nunca se calienta**, porque muere con él. Cada corrida vuelve a bajarlo todo, y por eso el tercer nivel se siente lento aunque el arranque no lo explique.
 
 ![Un módulo de carga abierto de par en par en un muelle nocturno, en violeta eléctrico y ámbar de sodio: dentro no hay mercancía sino otro patio de maniobras completo, con su propia grúa y sus propios módulos más pequeños, y uno de ésos está abierto y contiene otro patio más, así hacia dentro hasta perderse en un túnel de repeticiones. Una figura de espaldas, en silueta contra la boca del módulo, alumbra con una linterna cuyo haz se apaga antes de llegar al fondo.](_assets/ilus-contenedores-anidados.jpg)
 
