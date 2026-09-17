@@ -26,11 +26,4 @@ Fecha en que lo terminaste:
 
 ## Una cosa que aprendiste y no sabías
 
-Se llena en la **segunda** entrega, cuando ya hiciste los dos cursos.
-
-Dos o tres líneas. Algo concreto que salió en alguno de los dos cursos y que
-no habías visto en clase, o que en clase entendiste a medias y ahí se te
-acomodó. Si sientes que no aprendiste nada nuevo, dilo y explica qué parte de
-los cursos te pareció repetida.
-
-
+Aprendí los fundamentos de git y Github, por un lado su diferencia, como funcionan y sus comandos básicos. También aprendí a revisar los errores y como resolverlos. 
