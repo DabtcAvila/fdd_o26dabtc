@@ -135,6 +135,23 @@ Las dos correcciones son la misma pregunta hecha dos veces: **¿estoy contando l
 **4. La regla.** Un benchmark no compara herramientas: compara **lo que mediste** de cada una. Antes de publicar un número, dilo en voz alta —«medí el RSS del daemon contra la suma de los RSS de los supervisores»— y la mitad de los errores se caen solos. Y la segunda mitad: si vas a sumar una métrica, asegúrate de que sea aditiva.
 :::
 
+## Entonces, ¿cuál corro?
+
+Con el argumento en la mano, la pregunta práctica tiene respuesta corta y depende de dónde vas a correr, no de cuál es mejor:
+
+| Si tu caso es | Corre | Por qué |
+|---|---|---|
+| Aprender contenedores | cualquiera de los dos | los comandos son los mismos y lo que aprendes se transfiere entero |
+| Tu laptop en este curso | el que se te instale sin pelear | está dicho sin rodeos en [[planes-b-de-instalacion|los planes B de la sesión 2]] |
+| Desarrollo local en equipo | Docker | `compose` integrado, y la mitad de lo que vas a leer supone Docker |
+| Un servidor de producción | Podman | no deja un proceso `root` encendido, y cada contenedor puede ser una unidad de `systemd` |
+| Integración continua sin privilegios | Podman, o sólo Buildah si nada más construyes | no hay daemon que levantar ni `root` que pedir — [[contenedores-anidados|anexo C]] |
+| Un equipo que ya usa Docker | Docker | lo que cuesta cambiar son herramientas y costumbres, no arquitectura |
+| Ir hacia Kubernetes | Podman | el `pod` es la unidad de Kubernetes, y aquí viene de fábrica |
+| Una máquina con varios usuarios | Podman | cada quien corre lo suyo con su usuario; en Docker, estar en el grupo `docker` **es** `root` |
+
+Lo que **no** es un criterio, aunque se cite como si lo fuera, es la velocidad de arranque: eso ya se desarmó arriba. Y lo que la tabla no dice porque atraviesa las ocho filas: **saber uno es saber el otro**.
+
 Sigue con [[capas-y-cache]], que explica por qué un `build` a veces tarda tres segundos y a veces tres minutos.
 
 > [!NOTE]
