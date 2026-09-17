@@ -74,13 +74,17 @@ Docker tarda **~428 ms** y Podman **~213 ms** en tener un contenedor corriendo. 
 > [!NOTE]
 > Sí existe un costo real de VFS: resolver una ruta a través de un `overlay` de varias capas cuesta un poco más que en un sistema de archivos plano. Pero es de microsegundos por apertura, y ninguno de estos dos workloads abre archivos: abren uno y trabajan un segundo. El VFS no explica nada de lo que se ve arriba.
 
-## Tres conclusiones
+## Cuatro conclusiones
 
 **1. Arrancar cuesta, y el número es de cientos de milisegundos.** Si tu diseño arranca miles de contenedores cortos, ése es tu costo y hay que sumarlo. Si arranca unos cuantos y los deja corriendo, es irrelevante.
 
 **2. Ejecutar dentro no cuesta.** Es la tesis de la unidad y estos números la sostienen: el margen del `sort` es de centésimas sobre segundos, y el del `hash` salió al revés. Cuando alguien mida una diferencia grande, la explicación casi nunca es «el contenedor».
 
 **3. Un número sin su pie no vale nada.** Las dos sorpresas de esta página —el `hash` a favor del contenedor y el baseline de 1.8 ms— eran lo mismo: estar midiendo otra cosa y no haberlo dicho.
+
+**4. Antes de «qué contaste» va «con qué lo mediste».** Es el error que se comete primero, porque `free -m` es lo que ya sabes usar: pesar una carta en la báscula del baño en vez de en la postal. Lo que `free -m` reporta es la memoria de **toda la máquina**, y se mueve sola aunque tú no hagas nada —el kernel recicla *page cache*, libera *buffers*, compacta *slab*—: muestreada una vez por segundo durante minuto y medio, **sin tocar un solo contenedor**, se movió **358 MB**. En esa misma máquina y en ese mismo rato, un `ubuntu:24.04` con un `sleep` adentro pesa **2.3 MiB** en Docker y **98 kB** en Podman, leídos por el cgroup que le toca a ese contenedor: eso es lo que hacen `docker stats` y `podman stats`, leer `memory.current` del cgroup y de nadie más. La señal está dos o tres órdenes de magnitud por debajo del ruido, así que con `free -m` no la habrías visto nunca — y peor, habrías visto *algo*, porque el ruido no está en blanco. La prueba de que el cgroup sí es el instrumento correcto está en `exp2_scale.csv`: los KB por contenedor **no se mueven** al pasar de 1 a 20 contenedores —434, 438, 441, 437 en Docker; 102, 98, 97, 97 en Podman—, que es exactamente lo que se le pide a un instrumento, dar la misma respuesta a la misma pregunta. Y ojo con la tentación de comparar esos 437 KB con los 2.3 MiB de arriba: son otra máquina, otra versión de Docker y otra imagen. **La cifra absoluta se mueve; la estabilidad no.** De aquí sale la regla, que no es de contenedores y por eso vale la pena llevársela entera: **usa siempre el instrumento más específico que tengas**, y si sólo tienes uno grueso, di de qué tamaño es su ruido antes de publicar la señal.
+
+> **El pie de los dos números medidos aquí:** Docker 29.6.0 · Podman 4.6.2 (rootless) · Linux 6.17.9 —las mismas versiones de la tanda 2—, `free -m -s 1 -c 90` contra `docker stats --no-stream` y `podman stats --no-stream` sobre un `ubuntu:24.04` corriendo `sleep`.
 
 ## Lo que esta página no midió, y por qué hay clase el martes
 
@@ -124,7 +128,7 @@ Multiplica antes de opinar. Y para la 4: pregúntate cuántas veces se paga cada
 **4.** Estás pagando **LAUNCH**, 500 veces. RUNNING no lo estás pagando: los 1000 s de cómputo cuestan lo mismo adentro que afuera. El rediseño no es acelerar el trabajo —es el mismo— sino **arrancar menos veces**: agrupar los archivos en, digamos, 20 contenedores de 50 cada uno baja el arranque de 214 s a 8.6 s, menos del 1 %. Y ojo con la salida fácil: arrancarlos en paralelo reparte esos 214 s entre los núcleos, pero no los borra, y encima le sumas contención. La pregunta correcta no es «¿cómo arranco más rápido?», es **«¿por qué estoy arrancando 500 veces?»**.
 :::
 
-Con esto cierra la sección. Lo que sigue es la sesión del martes, con teclado: instalar los dos runtimes y averiguar dónde vive cada byte que escribe un contenedor.
+Con esto cierra la sección. Sigue con [[contenedores-con-las-manos]], la sesión del martes, con teclado: instalar los dos runtimes y averiguar dónde vive cada byte que escribe un contenedor.
 
 > [!NOTE]
 > **Si sólo recuerdas una cosa:** crear un contenedor cuesta cientos de milisegundos y correr adentro no cuesta; cualquier número que diga otra cosa está midiendo algo que no dijo.

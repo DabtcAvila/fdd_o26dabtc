@@ -64,9 +64,11 @@ Los que faltan para llegar a ocho son `cgroup` —que Docker activa por defecto 
 
 Pero si cuentas los enlaces de `ls /proc/<pid>/ns/` vas a obtener **diez**, no ocho, y no es que esta página te haya mentido: `pid` y `time` aparecen **dos veces cada uno**, en su forma normal y en su variante `_for_children`. La segunda no es el namespace del proceso, es el que **heredarán sus hijos**. Son diez enlaces sobre ocho tipos.
 
+![Nave de servidores nocturna en verde de monitor y gris de acero: en primer plano una cabina de vidrio iluminada sólo por sus propias pantallas, donde una figura de espaldas trabaja absorta y rodeada de sus herramientas; el vidrio refleja hacia dentro, de modo que desde la cabina no se ve nada más, mientras fuera la nave se extiende enorme y en penumbra, llena de cabinas idénticas apagadas que se pierden en la distancia.](../_assets/ilus-contenedores-aislamiento.jpg)
+
 ## Cgroups: cuánto puede usar
 
-Los namespaces no limitan nada: un proceso que sólo se ve a sí mismo puede seguir comiéndose toda la RAM de la máquina. Eso lo pone el otro mecanismo, los *control groups*: un árbol de grupos donde cada nodo tiene cuotas de CPU, de memoria y de número de procesos, y el kernel contabiliza lo que consumen todos sus miembros.
+Los namespaces no limitan nada: un proceso que sólo se ve a sí mismo puede seguir comiéndose toda la RAM de la máquina. Eso lo pone el otro mecanismo, los *control groups*: un árbol de grupos donde cada nodo tiene cuotas de CPU, de memoria y de número de procesos, y el kernel contabiliza lo que consumen todos sus miembros. Hay un cuarto controlador que la figura no dibuja y que conviene saber que existe, porque es el que importa cuando lo que compite no es el CPU sino el disco: el de **I/O**, que limita el ancho de banda de lectura y escritura de cada grupo.
 
 Namespaces y cgroups son **ortogonales** y separables. Un contenedor típico usa los dos, pero puedes tener recorte de vista sin cuota, o cuota sin recorte de vista — de hecho, tu propia sesión de escritorio ya vive dentro de un cgroup.
 

@@ -1,15 +1,15 @@
 ---
 id: prompts-contenedores
-title: "Ocho prompts"
+title: "Nueve prompts"
 nav_title: "Prompts"
-summary: "Ocho preguntas para hacerle a un modelo de lenguaje cuando esta unidad se acabe, seis cosas que te va a contestar mal, y dónde está la documentación que gana la discusión."
+summary: "Nueve preguntas para hacerle a un modelo de lenguaje cuando esta unidad se acabe, seis cosas que te va a contestar mal, y dónde está la documentación que gana la discusión."
 status: ready
 estimated_time: 12m
 tags: [prompts, llm, diagnostico, docker, podman, kata, referencia]
 prerequisites: [contenedores]
 ---
 
-# Ocho prompts
+# Nueve prompts
 
 **Anexo B** · para consultar, no para memorizar
 
@@ -36,7 +36,7 @@ No son hipótesis: son las seis afirmaciones que esta unidad desarmó una por un
 
 Las seis tienen la misma forma, y por eso vale la pena verlas juntas: **son explicaciones plausibles de hechos reales**. El número de Podman existe, `alpine` sí es más chica, el socket sí se arregla con ese `chmod`. Lo que está mal es el mecanismo, y el mecanismo es justo lo que un modelo interpola cuando no lo tiene medido.
 
-## Los ocho prompts
+## Los nueve prompts
 
 Están escritos para copiarse y rellenarse. Los corchetes son tuyos: si no los sustituyes, la respuesta va a ser genérica y no te va a servir.
 
@@ -81,6 +81,14 @@ La lista de preguntas de ese prompt no es genérica: es, una por una, la de los 
 ### 8 · Lo que sigue cuando el kernel compartido no alcanza
 
 > **Prompt:** «Tengo que correr `[describe el código y de quién viene]` y no confío en él. Compárame cuatro opciones —contenedor normal, contenedor rootless con `--cap-drop ALL`, gVisor y Kata Containers— contestando dos preguntas **por separado** para cada una: dónde aterriza una `syscall` que ese código haga, y con qué privilegio saldría quien se escape. No las ordenes de menos a más seguro, porque son dos preguntas distintas. Dime además qué necesita cada opción de mi máquina para siquiera arrancar, y cuáles no existen en mi sistema operativo, que es `[el tuyo]`.»
+
+### 9 · El pipeline que construye imágenes dentro de un contenedor
+
+El caso del [[contenedores-anidados|anexo C]], hecho sobre tu sistema y no sobre el ejemplo del curso.
+
+> **Prompt:** «Tengo un trabajo de integración continua que corre **dentro** de un contenedor y que necesita dos cosas distintas: construir la imagen de mi aplicación y levantar contenedores de prueba `[los que sean: Postgres, Redis, …]`. Mi runtime es `[Docker / Podman]` y mi CI es `[GitHub Actions / GitLab CI / Jenkins / otro]`. Antes de escribirme ninguna configuración: compárame las cuatro opciones —Docker dentro de Docker, montar el socket del host, Podman anidado y construir sin daemon con Buildah— y para cada una dime **qué le estoy entregando exactamente a lo que corra ahí adentro**, no qué gano. Dime también cuál de mis dos necesidades cubre cada una, porque construir no es ejecutar. Sólo después escribe la configuración del runner para la que elijas, señala **qué línea concede el privilegio** y dime qué tendría que ser cierto de la máquina que corre el trabajo para que esa concesión sea aceptable. Si alguna de las cuatro no aplica a mi CI, dilo en vez de adaptarla.»
+
+Fíjate en lo que este prompt **no** pide: una estimación del sobrecosto. Si se la pides, te la va a dar, y no tiene de dónde sacarla. Ese número se mide —el anexo C dice con qué y con cuántas repeticiones— o no se publica.
 
 ## La documentación que gana la discusión
 

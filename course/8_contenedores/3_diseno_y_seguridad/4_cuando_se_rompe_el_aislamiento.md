@@ -92,6 +92,8 @@ Lee la columna del medio de corrido. **Cinco de las siete no son fallas del aisl
 
 Y la fila de **CVE-2022-0492** es la que mejor sostiene la tesis de la página, por eso el `unshare` de arriba: el bug del kernel existía, era explotable sin privilegios, y **la configuración por omisión lo tapaba de todos modos**. Quien había copiado un `--privileged` de una respuesta de internet no estaba tapado.
 
+![Un mamparo de acero remachado visto de frente y muy de cerca, en gris hierro y ceniza, ocupando casi todo el cuadro: una grieta finísima lo recorre de arriba abajo y por ella escapa una línea de luz roja incandescente que ilumina el vapor del aire. Todo lo demás está intacto y en orden; el fallo es del grosor de un cabello. Abajo a la izquierda, pequeña y de espaldas, una figura en silueta acaba de notarlo y ha detenido el paso.](../_assets/ilus-contenedores-fuga.jpg)
+
 ## Las seis defensas, en orden de cuánto pagas por ellas
 
 ::: table {#cont-s3p4-tabla-defensas title="Qué poner, qué compra, qué cuesta"}

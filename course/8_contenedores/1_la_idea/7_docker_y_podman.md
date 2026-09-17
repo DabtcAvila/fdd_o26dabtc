@@ -57,6 +57,8 @@ De ahí sale algo que sorprende la primera vez: `podman ps` no le pregunta a nad
 
 **Los binarios `newuidmap` y `newgidmap`.** Son los que escriben ese mapeo, y son `setuid` porque escribirlo es justamente lo que un usuario normal no puede hacer solo. Vienen en el paquete **`uidmap`**, que en Debian y Ubuntu es **`Recommends`, no `Depends`**: una imagen base, un contenedor, un servidor instalado con `--no-install-recommends` o un WSL recién creado **no lo traen**, y Podman falla sin decir que le falta un paquete.
 
+Y una aclaración que casi nadie hace, porque el mito es más cómodo: **Docker también corre rootless.** No viene así por defecto —se instala aparte, con `dockerd-rootless-setuptool.sh`, y deja un daemon **por usuario** en lugar de uno del sistema—, y necesita exactamente lo mismo que acabas de leer: tu rango en `/etc/subuid` y los `newuidmap`. Rootless no es una marca de Podman: es una función del kernel de Linux y los dos la usan. Lo que los separa es **cuál es el default**, y el default es lo que de verdad decide qué está corriendo en la mayoría de las máquinas.
+
 Ése es el porqué. El **procedimiento** —qué escribir, en qué orden, qué instalar— vive en la primera página de la sección 2, «Instalar Docker y Podman», y está escrito para copiarse.
 
 Y un matiz que ya viste en la figura del espectro de la página 6: **rootless no añade ninguna frontera**. El kernel sigue siendo el mismo y la superficie de `syscall` es idéntica. Lo que cambia es con qué privilegio sale quien se escape.
@@ -132,6 +134,23 @@ Las dos correcciones son la misma pregunta hecha dos veces: **¿estoy contando l
 
 **4. La regla.** Un benchmark no compara herramientas: compara **lo que mediste** de cada una. Antes de publicar un número, dilo en voz alta —«medí el RSS del daemon contra la suma de los RSS de los supervisores»— y la mitad de los errores se caen solos. Y la segunda mitad: si vas a sumar una métrica, asegúrate de que sea aditiva.
 :::
+
+## Entonces, ¿cuál corro?
+
+Con el argumento en la mano, la pregunta práctica tiene respuesta corta y depende de dónde vas a correr, no de cuál es mejor:
+
+| Si tu caso es | Corre | Por qué |
+|---|---|---|
+| Aprender contenedores | cualquiera de los dos | los comandos son los mismos y lo que aprendes se transfiere entero |
+| Tu laptop en este curso | el que se te instale sin pelear | está dicho sin rodeos en [[planes-b-de-instalacion|los planes B de la sesión 2]] |
+| Desarrollo local en equipo | Docker | `compose` integrado, y la mitad de lo que vas a leer supone Docker |
+| Un servidor de producción | Podman | no deja un proceso `root` encendido, y cada contenedor puede ser una unidad de `systemd` |
+| Integración continua sin privilegios | Podman, o sólo Buildah si nada más construyes | no hay daemon que levantar ni `root` que pedir — [[contenedores-anidados|anexo C]] |
+| Un equipo que ya usa Docker | Docker | lo que cuesta cambiar son herramientas y costumbres, no arquitectura |
+| Ir hacia Kubernetes | Podman | el `pod` es la unidad de Kubernetes, y aquí viene de fábrica |
+| Una máquina con varios usuarios | Podman | cada quien corre lo suyo con su usuario; en Docker, estar en el grupo `docker` **es** `root` |
+
+Lo que **no** es un criterio, aunque se cite como si lo fuera, es la velocidad de arranque: eso ya se desarmó arriba. Y lo que la tabla no dice porque atraviesa las ocho filas: **saber uno es saber el otro**.
 
 Sigue con [[capas-y-cache]], que explica por qué un `build` a veces tarda tres segundos y a veces tres minutos.
 

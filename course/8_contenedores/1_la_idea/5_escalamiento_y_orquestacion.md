@@ -51,7 +51,7 @@ Lo que sí lo explica es lo que viene después de sellar el artefacto.
 
 :::
 
-Esas dos cifras salen de una medición propia, con su máquina, su kernel y sus versiones anotadas; el pie completo vive una sola vez en la unidad, en «Lo que cuesta», que es la página 9 de esta sección. Un número de benchmark sin su pie no vale nada, y ése es medio contenido de aquella página.
+Esas dos cifras salen de una medición propia, con su máquina, su kernel y sus versiones anotadas; el pie completo vive una sola vez en la unidad, en [[lo-que-cuesta|«Lo que cuesta»]], que es la página 9 de esta sección. Un número de benchmark sin su pie no vale nada, y ése es medio contenido de aquella página.
 
 ## El precio, dicho en concreto
 
@@ -60,6 +60,8 @@ Imagina un servicio que guarda las sesiones de sus usuarios en un archivo, `sesi
 Arranca cuatro copias más y el servicio se rompe sin que ninguna falle. Cada réplica tiene **su propia** capa de escritura, así que cada una tiene su propio `sesiones.db`, vacío al nacer. La primera petición del usuario cae en la réplica 2 y ahí queda su sesión; la segunda cae en la réplica 4, que no lo conoce, y lo manda a iniciar sesión otra vez. No hay error en los logs. Nada crashea. Simplemente el sistema se comporta al azar, y qué tan mal se comporta depende de la suerte con la que se repartió el tráfico.
 
 La regla que sale de ahí es corta y es la mitad de esta unidad: **si el estado vive adentro del contenedor, las réplicas dejan de ser intercambiables, y si dejan de ser intercambiables no puedes escalar.** Sacarlo afuera —a una base de datos, a un caché compartido, a un volumen— es lo que las vuelve desechables de verdad.
+
+![Vista aérea nocturna de un patio de maniobras en teal frío y blanco de reflector: cientos de módulos idénticos, todos del mismo molde, dispuestos en rejilla perfecta hasta donde alcanza la vista, con grúas pórtico moviéndose entre las filas. Al borde se alza una torre de control estrecha con una sola ventana encendida, y de ella sale un haz que barre filas enteras de golpe; la torre es diminuta frente al patio que gobierna.](../_assets/ilus-contenedores-escala.jpg)
 
 ## Quién decide: el orquestador
 

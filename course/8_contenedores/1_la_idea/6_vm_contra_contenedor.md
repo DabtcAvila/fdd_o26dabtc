@@ -52,6 +52,14 @@ Las primeras seis filas son el argumento a favor del contenedor y son las que to
 
 **3. Necesitas un kernel distinto.** Correr Windows sobre Linux, probar contra un kernel viejo, usar una característica que tu host no tiene. No hay truco posible: el kernel del contenedor **es** el del host. Lo que se necesita es una VM, y de hecho es justo lo que hacen Docker Desktop y `podman machine` — que es la siguiente sección de esta página.
 
+## Y dos veces en que puedes, pero no vale la pena
+
+Los tres de arriba son «no puedes»: hay algo que el contenedor no sabe hacer, y la alternativa tiene nombre. Los dos que siguen son de otra clase, y son los que te vas a encontrar antes — porque no fallan. Funcionan perfecto, y aun así son la decisión equivocada.
+
+**4. Es un script y ya.** Treinta líneas de `bash`, o un `.py` que sólo usa la biblioteca estándar. Meterlo en un contenedor te obliga a escribir un `Dockerfile`, construir una imagen, versionarla, publicarla y acordarte de montar la carpeta con los datos cada vez — todo para resolver un problema de dependencias que no tenías. El criterio no es el tamaño del programa: es **cuántas cosas tienen que estar instaladas para que corra**. Si la respuesta es «ninguna», el contenedor no está reproduciendo nada, está cobrando.
+
+**5. Estado persistente complicado.** Una base de datos en un contenedor se puede, y de hecho vas a levantar una en [[named-volumes-y-postgres|la sesión 2]]. Pero mira lo que cuesta: el dato **no puede** quedarse en la capa de escritura, así que hay que decidir en qué volumen vive, cómo se respalda, cómo se restaura y qué pasa cuando cambie la versión de la imagen — y una pregunta mal contestada ahí no da un error, da una pérdida silenciosa. Para desarrollar en tu laptop sale barato. Para los datos de alguien más, la pregunta deja de ser «¿puedo?» y pasa a ser «¿quién administra este volumen a las tres de la mañana?».
+
 ## En macOS y en Windows siempre hay una VM de por medio
 
 Este hecho sostiene tres páginas de la sesión 2, así que vale la pena decirlo despacio: **los contenedores son una función del kernel de Linux.** Namespaces y cgroups son código de Linux; no existen en el kernel de macOS ni en el de Windows.

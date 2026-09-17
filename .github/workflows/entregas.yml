@@ -70,3 +70,21 @@ jobs:
           # nombran su branch. Para endurecerla ya, borra esta linea.
           BRANCH_NOMBRE_ESTRICTO_DESDE: "2026-09-22"
         run: python3 .github/scripts/revisa_entrega.py
+
+      # Segundo paso, separado a proposito: el de arriba juzga la FORMA (donde
+      # viven los archivos, como se llama la branch, que no haya basura) y este
+      # el CONTENIDO MINIMO (que esten los archivos que la tarea pidio y que no
+      # sean la plantilla sin tocar). Separarlos hace que el mensaje de error
+      # diga de una cual de las dos cosas fallo.
+      #
+      # Una branch que no este en el catalogo del script sale en verde sin
+      # decir nada: las tareas de la unidad 7 nunca declararon nombre de
+      # branch, asi que no hay forma de saber que tarea es.
+      - name: Revisar el contenido minimo
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ github.event.pull_request.number }}
+          AUTOR: ${{ github.event.pull_request.user.login }}
+          RAMA: ${{ github.event.pull_request.head.ref }}
+          MANTENEDORES: uumami
+        run: python3 .github/scripts/revisa_contenido.py
