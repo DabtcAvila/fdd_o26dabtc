@@ -2304,7 +2304,7 @@ def cont_red_y_pod():
     """La misma pareja de contenedores, en tres redes distintas."""
     ancho, alto = 1360, 720
     aria = (
-        "Tres escenarios con la misma pareja de contenedores, una API y una "
+        "Tres escenarios con la misma pareja de contenedores, un servicio web y una "
         "base. En la red bridge por omision se alcanzan por IP pero no hay "
         "resolucion por nombre, y el intento por nombre aparece tachado. En "
         "una red creada por ti se alcanzan por nombre, y la IP va tachada "
@@ -2378,7 +2378,7 @@ def cont_red_y_pod():
     p.append(texto(1250, 416, "superficie expuesta,", SUAVE, 11))
     p.append(texto(1250, 434, "y decisión de diseño", SUAVE, 11))
 
-    p.append(texto(680, 660, "Publicar un puerto no es «conectar»: los tres escenarios ya conectan la API con la base sin publicar nada.", SUAVE, 13.5))
+    p.append(texto(680, 660, "Publicar un puerto no es «conectar»: los tres escenarios ya conectan el servicio con la base sin publicar nada.", SUAVE, 13.5))
     p.append(texto(680, 684, "Un -p abre la base al resto de tu red local, y eso se decide a propósito o no se decide.", SUAVE, 13.5))
     p.append(cierre())
     return "".join(p)
