@@ -236,3 +236,4 @@ desktop.ini
 node_modules/
 *.class
 *.o
+examenes/*
