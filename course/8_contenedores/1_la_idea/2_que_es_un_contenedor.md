@@ -68,7 +68,7 @@ Pero si cuentas los enlaces de `ls /proc/<pid>/ns/` vas a obtener **diez**, no o
 
 ## Cgroups: cuánto puede usar
 
-Los namespaces no limitan nada: un proceso que sólo se ve a sí mismo puede seguir comiéndose toda la RAM de la máquina. Eso lo pone el otro mecanismo, los *control groups*: un árbol de grupos donde cada nodo tiene cuotas de CPU, de memoria y de número de procesos, y el kernel contabiliza lo que consumen todos sus miembros.
+Los namespaces no limitan nada: un proceso que sólo se ve a sí mismo puede seguir comiéndose toda la RAM de la máquina. Eso lo pone el otro mecanismo, los *control groups*: un árbol de grupos donde cada nodo tiene cuotas de CPU, de memoria y de número de procesos, y el kernel contabiliza lo que consumen todos sus miembros. Hay un cuarto controlador que la figura no dibuja y que conviene saber que existe, porque es el que importa cuando lo que compite no es el CPU sino el disco: el de **I/O**, que limita el ancho de banda de lectura y escritura de cada grupo.
 
 Namespaces y cgroups son **ortogonales** y separables. Un contenedor típico usa los dos, pero puedes tener recorte de vista sin cuota, o cuota sin recorte de vista — de hecho, tu propia sesión de escritorio ya vive dentro de un cgroup.
 

@@ -39,6 +39,8 @@ Un **bind mount** toma un directorio de tu disco y lo hace aparecer en una ruta 
 
 Un **named volume** es un directorio que administra el propio Docker, guardado en su área (`/var/lib/docker/volumes/`), con un nombre en vez de una ruta. Lo escribe el contenedor, sobrevive a `docker rm` y sólo muere cuando tú se lo pides con `docker volume rm`.
 
+Que los dos **se salten el overlay** no es sólo una regla de persistencia: es también una regla de diseño. Si tu programa escribe mucho —una base de datos, un log que crece, un archivo grande que se reescribe—, **monta un volumen**, y no únicamente para que los datos sobrevivan. Al escribir sobre un montaje no hay capas apiladas de por medio ni hay **copy-up**: los bytes van al sistema de archivos del host, como los de cualquier otro proceso. Cuánto se recupera con eso, esta unidad **no lo publica**: la cifra que circula —«el overlay escribe ~20 % más lento»— no sobrevive a su propio CSV, y [[lo-que-cuesta]] explica por qué. El mecanismo es sólido y el número no, así que la regla se queda cualitativa: si tu carga es de escritura intensiva, mídelo **en tu disco**, no cites el 20 %.
+
 ::: table {#cont-tabla-bytes title="Las cuatro respuestas, con su dueño y su comando"}
 
 | Dónde vive el byte | Quién lo escribe | Qué lo borra | ¿Sobrevive a `docker rm`? |
