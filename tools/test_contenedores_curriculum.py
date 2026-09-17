@@ -202,12 +202,16 @@ def test_cada_leccion_abre_con_su_posicion_meta_y_figura(pagina):
 
     meta = re.search(r"^Meta: (.+)$", texto, re.M)
     assert meta, f"{pagina.name} no abre con una línea 'Meta:'"
-    # «De una línea» es la regla, y una línea de prosa son ~200 caracteres. El
+    # «De una línea» es la regla, y una línea de prosa son ~160 caracteres. El
     # tope no es decorativo: la meta se lee antes que nada y compite con la
-    # figura por la primera pantalla. Hoy la más larga de la unidad es la de
-    # `ciclo-de-vida-de-un-contenedor`, con 194, que son dos frases y sobra
-    # una; todas las demás están en 154 o menos.
-    assert len(meta.group(1)) <= 200, (
+    # figura por la primera pantalla.
+    #
+    # Este tope estuvo en 200 durante unas horas, para acomodar la meta de
+    # `ciclo-de-vida-de-un-contenedor`, que medía 194 porque tenía dos frases
+    # y sobraba una. Aflojar el número era tratar el síntoma: la segunda frase
+    # se movió al cuerpo, que es donde el lector la necesita, y el tope volvió
+    # a donde tenía que estar. La más larga hoy mide 159.
+    assert len(meta.group(1)) <= 160, (
         f"{pagina.name}: la meta mide {len(meta.group(1))} caracteres y debe "
         "caber en una línea; si necesita dos frases, la segunda es cuerpo"
     )
