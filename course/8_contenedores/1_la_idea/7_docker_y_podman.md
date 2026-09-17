@@ -57,6 +57,8 @@ De ahí sale algo que sorprende la primera vez: `podman ps` no le pregunta a nad
 
 **Los binarios `newuidmap` y `newgidmap`.** Son los que escriben ese mapeo, y son `setuid` porque escribirlo es justamente lo que un usuario normal no puede hacer solo. Vienen en el paquete **`uidmap`**, que en Debian y Ubuntu es **`Recommends`, no `Depends`**: una imagen base, un contenedor, un servidor instalado con `--no-install-recommends` o un WSL recién creado **no lo traen**, y Podman falla sin decir que le falta un paquete.
 
+Y una aclaración que casi nadie hace, porque el mito es más cómodo: **Docker también corre rootless.** No viene así por defecto —se instala aparte, con `dockerd-rootless-setuptool.sh`, y deja un daemon **por usuario** en lugar de uno del sistema—, y necesita exactamente lo mismo que acabas de leer: tu rango en `/etc/subuid` y los `newuidmap`. Rootless no es una marca de Podman: es una función del kernel de Linux y los dos la usan. Lo que los separa es **cuál es el default**, y el default es lo que de verdad decide qué está corriendo en la mayoría de las máquinas.
+
 Ése es el porqué. El **procedimiento** —qué escribir, en qué orden, qué instalar— vive en la primera página de la sección 2, «Instalar Docker y Podman», y está escrito para copiarse.
 
 Y un matiz que ya viste en la figura del espectro de la página 6: **rootless no añade ninguna frontera**. El kernel sigue siendo el mismo y la superficie de `syscall` es idéntica. Lo que cambia es con qué privilegio sale quien se escape.
