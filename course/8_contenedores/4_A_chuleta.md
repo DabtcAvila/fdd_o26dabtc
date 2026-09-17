@@ -238,10 +238,12 @@ Las tres que **no** se escriben, y que la unidad desarma una por una: `--privile
 | Registro por omisión | `docker.io`, implícito | se configura en `registries.conf`; conviene el nombre completo |
 | Red | bridge por omisión sin DNS; redes propias con DNS | igual, pero en rootless la red corre **en espacio de usuario** |
 | Volúmenes | idénticos comando por comando | idénticos, más el sufijo `:U` para arreglar el dueño |
-| Varios contenedores juntos | Compose, integrado como `docker compose` | **pods**, de fábrica — la unidad de Kubernetes |
+| Varios contenedores juntos | Compose, integrado como `docker compose` | **pods**, de fábrica — la unidad de Kubernetes; para Compose, `podman-compose` |
 | Arrancar con la máquina | `systemd` levanta el daemon | cada contenedor puede ser su propia unidad de `systemd` |
 
 :::
+
+El `docker compose` de DataCamp no se queda sin traducción: **`podman-compose`** es un paquete aparte —`pip install podman-compose`, o el de tu distribución— que lee el mismo `docker-compose.yml` y no necesita ningún socket. Desde **Podman 4.7** existe además **`podman compose`**, que no implementa nada: delega en el Compose que tengas instalado, y si el que encuentra es el de Docker, hace falta el socket de Podman encendido (`systemctl --user start podman.socket`). Comprueba cuál tienes con `podman --version` antes de teclear el que no es.
 
 Lo que **no** compra la ausencia de daemon es velocidad: con el runtime igualado, Podman rootless sale ~3 % **detrás** de Docker. Los números y su pie están en [[docker-y-podman|la página 7 de la sección 1]].
 
