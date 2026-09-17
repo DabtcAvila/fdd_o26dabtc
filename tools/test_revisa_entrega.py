@@ -45,13 +45,15 @@ def _f(path, status="added", previa=""):
 
 def _correr(mod, monkeypatch, archivos, autor="ana", rama="tarea-07-git",
             mantenedores="uumami", rama_default="main", declarado=None,
-            estricta_desde=""):
+            estricta_desde="", nombre_estricto_desde="", tareas=""):
     monkeypatch.setenv("AUTOR", autor)
     monkeypatch.setenv("RAMA", rama)
     monkeypatch.setenv("RAMA_DEFAULT", rama_default)
     monkeypatch.setenv("PR", "1")
     monkeypatch.setenv("MANTENEDORES", mantenedores)
     monkeypatch.setenv("BRANCH_ESTRICTA_DESDE", estricta_desde)
+    monkeypatch.setenv("BRANCH_NOMBRE_ESTRICTO_DESDE", nombre_estricto_desde)
+    monkeypatch.setenv("TAREAS", tareas)
     monkeypatch.setenv("GITHUB_REPOSITORY", "raya-lucaria/fdd_o26")
     monkeypatch.setattr(mod, "archivos_del_pr", lambda pr: archivos)
     n = len(archivos) if declarado is None else declarado
@@ -139,6 +141,19 @@ def test_el_workflow_declara_la_fecha_de_corte(wf):
     )
 
 
+def test_el_workflow_declara_la_fecha_de_corte_del_nombre_de_branch(wf):
+    """Es una variable propia, distinta de BRANCH_ESTRICTA_DESDE: las dos
+    fechas se tienen que poder mover por separado."""
+    env = wf["jobs"]["revision"]["steps"][-1]["env"]
+    assert "BRANCH_NOMBRE_ESTRICTO_DESDE" in env, (
+        "sin la fecha la regla del nombre de la branch es estricta; si eso "
+        "es lo que se quiere, borra tambien esta prueba"
+    )
+    assert env["BRANCH_NOMBRE_ESTRICTO_DESDE"] != env["BRANCH_ESTRICTA_DESDE"], (
+        "las dos fechas de gracia deben poder moverse por separado"
+    )
+
+
 def test_el_mantenedor_queda_exento(mod, monkeypatch):
     archivos = [_f("course/7_git_y_github/2_github/1_github_en_corto.md", "modified"),
                 _f("codigo/07_git/ejemplo.sh", "modified")]
@@ -152,6 +167,214 @@ def test_un_archivo_llamado_env_no_es_dotenv(mod, monkeypatch):
                "estudiantes/ana/07_git/notas__pycache__.txt",
                "estudiantes/ana/07_git/como-borrar-DS_Store.md"):
         assert _correr(mod, monkeypatch, [_f(ok)]) == 0, ok
+
+
+# --- regla 5: el nombre de la branch ----------------------------------------
+
+MAPA = ("tarea-08-datacamp-intro=docker,"
+        "tarea-08-imagen=08_contenedores,"
+        "tarea-08-datacamp-inter-1=docker,"
+        "tarea-08-datacamp-inter-2=docker")
+
+
+def test_branch_sin_nombre_de_tarea_falla(mod, monkeypatch):
+    """Hoy una branch llamada 'x' pasa en verde: nadie mira el nombre."""
+    archivos = [_f("estudiantes/ana/08_contenedores/bitacora.md")]
+    assert _correr(mod, monkeypatch, archivos, rama="x", tareas=MAPA) == 1
+
+
+def test_branch_con_nombre_de_tarea_pasa(mod, monkeypatch):
+    archivos = [_f("estudiantes/ana/08_contenedores/bitacora.md")]
+    assert _correr(mod, monkeypatch, archivos,
+                   rama="tarea-08-imagen", tareas=MAPA) == 0
+
+
+def test_el_mensaje_de_branch_lista_los_nombres_validos(mod, monkeypatch, capsys):
+    archivos = [_f("estudiantes/ana/08_contenedores/bitacora.md")]
+    _correr(mod, monkeypatch, archivos, rama="mi-branch", tareas=MAPA)
+    salida = capsys.readouterr().out
+    assert "tarea-08-imagen" in salida
+
+
+def test_la_branch_de_la_unidad_7_sigue_pasando(mod, monkeypatch):
+    """No romper hacia atras: tarea-07-git casa con el patron."""
+    archivos = [_f("estudiantes/ana/07_git/bitacora.md")]
+    assert _correr(mod, monkeypatch, archivos, rama="tarea-07-git") == 0
+
+
+def test_desde_main_no_reporta_dos_veces_la_branch(mod, monkeypatch, capsys):
+    """La regla 1 ya cubre main; la 5 no debe duplicar el fallo."""
+    archivos = [_f("estudiantes/ana/08_contenedores/bitacora.md")]
+    _correr(mod, monkeypatch, archivos, rama="main", tareas=MAPA)
+    salida = capsys.readouterr().out
+    assert salida.count("BRANCH:") == 1
+
+
+def test_el_mensaje_separa_la_forma_del_catalogo(mod, monkeypatch, capsys):
+    """Sin mapa (las tareas de la unidad 8 todavia no existen), el mensaje no
+    puede prometer un nombre exacto: cae a la forma generica tarea-NN-nombre,
+    no a una lista vacia."""
+    archivos = [_f("estudiantes/ana/x/a.md")]
+    _correr(mod, monkeypatch, archivos, rama="mi-branch", tareas="")
+    salida = capsys.readouterr().out
+    assert "tarea-NN-nombre" in salida
+
+
+# --- regla 5: periodo de gracia del nombre de la branch ----------------------
+
+def test_la_regla_de_nombre_avisa_antes_de_la_fecha_de_corte(mod, monkeypatch, capsys):
+    """A las tareas de la unidad 7 nunca se les pidio un nombre de branch:
+    hasta la fecha de corte, un nombre inventado solo avisa."""
+    archivos = [_f("estudiantes/ana/08_contenedores/bitacora.md")]
+    assert _correr(mod, monkeypatch, archivos, rama="mi-branch", tareas=MAPA,
+                   nombre_estricto_desde="2099-01-01") == 0
+    salida = capsys.readouterr().out
+    assert "AVISO" in salida and "2099-01-01" in salida
+
+
+def test_la_regla_de_nombre_rechaza_pasada_la_fecha(mod, monkeypatch):
+    archivos = [_f("estudiantes/ana/08_contenedores/bitacora.md")]
+    assert _correr(mod, monkeypatch, archivos, rama="mi-branch", tareas=MAPA,
+                   nombre_estricto_desde="2000-01-01") == 1
+
+
+def test_sin_fecha_la_regla_de_nombre_es_estricta(mod, monkeypatch):
+    """Borrar la variable del workflow endurece la regla, no la apaga."""
+    archivos = [_f("estudiantes/ana/08_contenedores/bitacora.md")]
+    assert _correr(mod, monkeypatch, archivos, rama="mi-branch", tareas=MAPA,
+                   nombre_estricto_desde="") == 1
+
+
+def test_las_dos_fechas_de_gracia_son_independientes(mod, monkeypatch, capsys):
+    """BRANCH_ESTRICTA_DESDE gobierna la regla 1 (no entregar desde main) y
+    BRANCH_NOMBRE_ESTRICTO_DESDE gobierna la regla 5 (nombre de la branch).
+    Mover una no debe mover la otra."""
+    archivos = [_f("estudiantes/ana/08_contenedores/bitacora.md")]
+
+    # Desde main: la regla 1 esta en gracia (pasa con aviso) sin importar que
+    # la fecha de la regla 5 ya haya pasado, porque desde la branch default
+    # la regla 5 ni se evalua.
+    assert _correr(mod, monkeypatch, archivos, rama="main", tareas=MAPA,
+                   estricta_desde="2099-01-01",
+                   nombre_estricto_desde="2000-01-01") == 0
+
+    # Con una branch propia sin nombre de tarea: la regla 5 esta en gracia
+    # (pasa con aviso) sin importar que la fecha de la regla 1 ya haya
+    # pasado, porque esa branch no es la default.
+    assert _correr(mod, monkeypatch, archivos, rama="mi-branch", tareas=MAPA,
+                   estricta_desde="2000-01-01",
+                   nombre_estricto_desde="2099-01-01") == 0
+
+
+def test_hoy_una_branch_inventada_solo_avisa(mod, monkeypatch, capsys):
+    """La comprobacion de la revision final: con la fecha de hoy
+    (2026-09-15), una branch inventada que toca una sola carpeta propia pasa
+    con aviso, no con fallo. BRANCH_NOMBRE_ESTRICTO_DESDE = 2026-09-22, tal
+    como lo declara entregas.yml."""
+    archivos = [_f("estudiantes/ana/docker/certificaciones.md")]
+    assert _correr(mod, monkeypatch, archivos,
+                   rama="entrega-datacamp-git-intermedio", tareas=MAPA,
+                   nombre_estricto_desde="2026-09-22") == 0
+    salida = capsys.readouterr().out
+    assert "AVISO" in salida
+
+
+# --- regla 6: una entrega, una carpeta --------------------------------------
+
+def test_dos_carpetas_en_un_pull_request_falla(mod, monkeypatch):
+    """Las dos entregas del 22 en una sola branch salen hoy en verde."""
+    archivos = [_f("estudiantes/ana/docker/certificaciones.md"),
+                _f("estudiantes/ana/08_contenedores/bitacora.md")]
+    assert _correr(mod, monkeypatch, archivos,
+                   rama="tarea-08-imagen", tareas=MAPA) == 1
+
+
+def test_una_sola_carpeta_pasa(mod, monkeypatch):
+    archivos = [_f("estudiantes/ana/08_contenedores/bitacora.md"),
+                _f("estudiantes/ana/08_contenedores/roto/Dockerfile")]
+    assert _correr(mod, monkeypatch, archivos,
+                   rama="tarea-08-imagen", tareas=MAPA) == 0
+
+
+def test_archivo_suelto_en_la_raiz_no_cuenta_como_carpeta(mod, monkeypatch):
+    """El .gitkeep de la primera entrega no debe invalidar nada."""
+    archivos = [_f("estudiantes/ana/.gitkeep"),
+                _f("estudiantes/ana/docker/certificaciones.md")]
+    assert _correr(mod, monkeypatch, archivos,
+                   rama="tarea-08-datacamp-intro", tareas=MAPA) == 0
+
+
+def test_la_carpeta_no_corresponde_a_la_branch_falla(mod, monkeypatch):
+    """Branch de la imagen tocando la carpeta de DataCamp."""
+    archivos = [_f("estudiantes/ana/docker/certificaciones.md")]
+    assert _correr(mod, monkeypatch, archivos,
+                   rama="tarea-08-imagen", tareas=MAPA) == 1
+
+
+def test_el_mensaje_dice_que_carpeta_esperaba(mod, monkeypatch, capsys):
+    archivos = [_f("estudiantes/ana/docker/certificaciones.md")]
+    _correr(mod, monkeypatch, archivos, rama="tarea-08-imagen", tareas=MAPA)
+    salida = capsys.readouterr().out
+    assert "08_contenedores" in salida
+
+
+def test_el_mensaje_de_carpeta_no_correspondida_sugiere_dos_pull_requests(
+    mod, monkeypatch, capsys
+):
+    """Un archivo movido de una carpeta a otra sale rc=1 o rc=0 segun la
+    heuristica de renames de GitHub, y eso no lo controla el alumno; el
+    mensaje al menos le dice como resolverlo sin depender de ella."""
+    archivos = [_f("estudiantes/ana/docker/certificaciones.md")]
+    _correr(mod, monkeypatch, archivos, rama="tarea-08-imagen", tareas=MAPA)
+    salida = capsys.readouterr().out
+    assert "dos pull requests" in salida
+
+
+def test_el_mensaje_de_dos_carpetas_sin_mapa_sugiere_dos_pull_requests(
+    mod, monkeypatch, capsys
+):
+    """La otra mitad del mensaje de CARPETA: sin branch en el mapa, la
+    variante que dispara es la de 'toca mas de una carpeta'."""
+    archivos = [_f("estudiantes/ana/docker/certificaciones.md"),
+                _f("estudiantes/ana/08_contenedores/bitacora.md")]
+    _correr(mod, monkeypatch, archivos, rama="tarea-07-git")
+    salida = capsys.readouterr().out
+    assert "dos pull requests" in salida
+
+
+def test_sin_mapa_basta_con_una_carpeta(mod, monkeypatch):
+    """Una branch que el mapa no conoce solo tiene que tocar una carpeta."""
+    archivos = [_f("estudiantes/ana/07_git/bitacora.md")]
+    assert _correr(mod, monkeypatch, archivos, rama="tarea-07-git") == 0
+
+
+def test_un_rename_entre_carpetas_falla(mod, monkeypatch):
+    """Mover de una entrega a otra toca dos carpetas y cuenta como dos."""
+    archivos = [_f("estudiantes/ana/08_contenedores/notas.md",
+                   status="renamed", previa="estudiantes/ana/docker/notas.md")]
+    assert _correr(mod, monkeypatch, archivos,
+                   rama="tarea-08-imagen", tareas=MAPA) == 1
+
+
+def test_borrar_en_dos_carpetas_pasa(mod, monkeypatch):
+    """Borrar es lo correcto: la regla de basura ya trata los borrados asi
+    (ver test_borrar_basura_no_falla), y la de carpeta no debe penalizar a
+    quien limpia sobras en docker/ y en 08_contenedores/ en el mismo pull
+    request."""
+    archivos = [_f("estudiantes/ana/docker/sobra.md", status="removed"),
+                _f("estudiantes/ana/08_contenedores/vieja.md", status="removed")]
+    assert _correr(mod, monkeypatch, archivos,
+                   rama="tarea-08-imagen", tareas=MAPA) == 0
+
+
+def test_un_valor_del_mapa_con_mas_de_un_nivel_se_normaliza(mod, monkeypatch):
+    """subcarpeta() solo devuelve el primer segmento; si un futuro
+    tarea-09-x=09_sql/ejercicios entrara tal cual al mapa, la comparacion no
+    cerraria nunca y rechazaria toda entrega correcta de esa tarea."""
+    tareas = "tarea-09-x=09_sql/ejercicios"
+    archivos = [_f("estudiantes/ana/09_sql/ejercicios/consulta.sql")]
+    assert _correr(mod, monkeypatch, archivos, rama="tarea-09-x",
+                   tareas=tareas) == 0
 
 
 # --- hallazgos de la revision adversarial ------------------------------------
@@ -253,7 +476,8 @@ def test_permisos_de_solo_lectura(wf):
 
 def test_el_workflow_exporta_lo_que_el_script_lee(wf, mod):
     env = wf["jobs"]["revision"]["steps"][-1]["env"]
-    for clave in ("GH_TOKEN", "PR", "AUTOR", "RAMA", "RAMA_DEFAULT", "MANTENEDORES"):
+    for clave in ("GH_TOKEN", "PR", "AUTOR", "RAMA", "RAMA_DEFAULT", "MANTENEDORES",
+                  "TAREAS"):
         assert clave in env, f"el workflow no exporta {clave}"
 
 
