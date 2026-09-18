@@ -33,40 +33,55 @@ Meta: que "proceso aislado" deje de ser una frase hecha, y que `docker run` deje
 | 8 | [[capas-y-cache]] | Por qué un `build` a veces tarda tres segundos y a veces tres minutos | 15 | lectura |
 | 9 | [[lo-que-cuesta]] | Números propios de arranque y ejecución, y cómo leerlos sin engañarte | 15 | lectura |
 
-Los 60 minutos de la sesión, repartidos:
+## Los 60 minutos de la sesión
 
-- **3 min** — llegada y encuadre.
-- **8 min** — página 1, *En mi máquina sí funciona*.
-- **18 min** — página 2, *Qué es un contenedor*, con el ejercicio de las hojas de `ls -l /proc/1/ns/`.
-- **22 min** — página 4, *Qué pasa cuando escribes `docker run`*, con el ejercicio de la cadena de pie.
-- **5 min** — cierre y qué queda de tarea.
+| Cuánto | Qué | Con qué |
+|---:|---|---|
+| **3 min** | llegada y encuadre | |
+| **8 min** | página 1, *En mi máquina sí funciona* | proyector |
+| **18 min** | página 2, *Qué es un contenedor* | **papel**: el ejercicio de las hojas de `ls -la /proc/1/ns/` |
+| **22 min** | página 4, *Qué pasa cuando escribes `docker run`* | **papel**: el ejercicio de la cadena de pie |
+| **5 min** | cierre y qué queda de tarea | |
 
-Suman **56**, no 60. Los cuatro minutos de diferencia son colchón a propósito: los dos ejercicios son de pie y con papel en las manos, y eso siempre se desborda.
-
-Los números de esta sección vienen de tres tandas de medición distintas —los benchmarks de arranque, escala, ejecución y anidamiento son del semestre pasado; la comparación de runtimes OCI de la página 7 se midió aparte, en otra máquina; los inodos de namespaces se midieron ahora—, y cada una lleva su propio pie con la máquina y las versiones con que se obtuvo. No es un descuido: es la regla que la página 9 enseña con nombre y apellido.
+> [!NOTE]
+> Suman **56**, no 60. Los cuatro minutos de diferencia son colchón **a propósito**: los dos ejercicios son de pie y con papel en las manos, y eso siempre se desborda.
 
 ## Antes de empezar
 
-Nada que instalar. Esta sección corre entera sin terminal: instalar Docker y Podman es la primera página de la sección siguiente.
+**Nada que instalar.** Esta sección corre entera sin terminal: instalar Docker y Podman es la primera página de la sección siguiente.
 
 ## Lo que se reparte en clase
 
-Nada que instalar no quiere decir nada que preparar: dos de los tres bloques de clase se hacen con papel en las manos, y el papel hay que llevarlo impreso. Esto es a la vez el aviso al grupo y la lista de quien imprime.
+Nada que instalar no quiere decir nada que preparar: dos de los tres bloques de clase se hacen con papel en las manos, **y el papel hay que llevarlo impreso**. Esto es a la vez el aviso al grupo y la lista de quien imprime.
 
-- **Unas 15 hojas** con la salida de `ls -l /proc/1/ns/` del host y la del contenedor, una junto a la otra, para compararlas a mano. Es el ejercicio de la página 2.
-- **Seis hojas rotuladas**: una por eslabón —`docker CLI`, `dockerd`, `containerd`, `shim`, `runc`— y una sexta que dice `proceso del contenedor`. Es el ejercicio de la página 4.
+| Material | Cuánto | Para qué |
+|---|---|---|
+| La salida de `ls -la /proc/1/ns/` del host y la del contenedor, una junto a la otra | unas **15 hojas** | compararlas a mano — el ejercicio de la página 2 |
+| Hojas rotuladas: `docker CLI`, `dockerd`, `containerd`, `shim`, `runc`, y una sexta que dice `proceso del contenedor` | **6 hojas** | la cadena de pie — el ejercicio de la página 4 |
 
-Eso es todo. La página 3 no pide nada impreso: se fue a lectura, y su ejercicio se hace a solas, con una hoja o con el editor abierto.
+La página 3 no pide nada impreso: se fue a lectura, y su ejercicio se hace a solas, con una hoja o con el editor abierto.
 
 ## Qué te llevas
 
-- Un modelo mental de qué es un contenedor, no una definición de memoria.
-- La cadena completa de lo que pasa al escribir `docker run`, y qué queda vivo cuando matas cada pieza.
-- Números propios de cuánto cuesta arrancar y correr dentro de un contenedor.
+- Un modelo mental de qué es un contenedor, **no una definición de memoria**.
+- La cadena completa de lo que pasa al escribir `docker run`, y **qué queda vivo** cuando matas cada pieza.
+- **Números propios** de cuánto cuesta arrancar y correr dentro de un contenedor.
+
+## De dónde salen los números
+
+Los números de esta sección vienen de **tres tandas de medición distintas**, y cada una lleva su propio pie con la máquina y las versiones con que se obtuvo:
+
+| Tanda de medición | Qué contiene |
+|---|---|
+| Los benchmarks de arranque, escala, ejecución, anidamiento y escritura | del semestre pasado |
+| La comparación de runtimes OCI de la página 7 | medida aparte, en otra máquina |
+| Los inodos de namespaces de la página 2 | medidos ahora |
+
+**No es un descuido: es la regla que la página 9 enseña con nombre y apellido.**
 
 ## Lo que esta sección te debe
 
-Varias páginas abren una pregunta y la dejan abierta a propósito. No es descuido y no hace falta perseguirlas: cada una se paga en una página concreta, y aquí está dónde.
+Varias páginas abren una pregunta y **la dejan abierta a propósito**. No es descuido y no hace falta perseguirlas: cada una se paga en una página concreta, y aquí está dónde.
 
 | Lo que queda abierto | Se abre en | Se paga en |
 |---|---|---|
@@ -83,5 +98,5 @@ Varias páginas abren una pregunta y la dejan abierta a propósito. No es descui
 | `CMD` contra `ENTRYPOINT` | 1/3 | 2/5 |
 | El arranque no descomprime la imagen | 1/4 | 1/9 |
 | `puerto`, con su definición completa | 1/2 | 3/1 |
-| `pods` | 1/5 | 3/1 |
+| `pods` | 1/7 | 3/1 |
 | **Kubernetes como herramienta** | 1/5 | **no se paga en este curso, a propósito** |

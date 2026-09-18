@@ -51,11 +51,22 @@ docker CLI  →  dockerd  →  containerd  →  containerd-shim-runc-v2  →  ru
 
 ## Tres cosas que casi todo el material enseña mal
 
-**El rootfs ya está en disco desde el `pull`.** Arrancar un contenedor no descomprime la imagen: cuando hiciste `docker pull` cada capa se desplegó en disco, y lo único que falta al arrancar es apilarlas. Quien las apila —quien monta el `overlay`— es **`dockerd`** con su graphdriver `overlay2`, que es lo que vas a tener instalado, o el shim cuando se usa el *image store* de containerd. **Nunca `runc`**, que lo recibe ya montado. Qué es exactamente ese `overlay` es la sesión 2; aquí basta con saber quién lo monta y cuándo.
+**1. El rootfs ya está en disco desde el `pull`.** Arrancar un contenedor **no descomprime la imagen**: cuando hiciste `docker pull` cada capa se desplegó en disco, y lo único que falta al arrancar es apilarlas.
 
-**El cgroup lo crea systemd, no `runc`.** Sobre cgroups v2 el *cgroup driver* por defecto es `systemd`, así que `runc` no escribe el árbol de cgroups a mano: le pide a systemd por D-Bus una **unidad `scope` transitoria**, y sólo después escribe los ajustes que systemd no expone. Se ve sin adivinar, con `systemctl list-units --type=scope`, donde la descripción de la unidad dice literalmente `libcontainer container <id>`.
+Quien las apila —quien monta el `overlay`— es **`dockerd`** con su graphdriver `overlay2`, que es lo que vas a tener instalado, o el shim cuando se usa el *image store* de containerd. **Nunca `runc`**, que lo recibe ya montado. Qué es exactamente ese `overlay` es la sesión 2; aquí basta con saber quién lo monta y cuándo.
 
-**El orden es proceso → cgroup → namespaces.** Suena al revés y no lo es: `runc` primero hace `fork` y `exec` de un `runc init`, después **mete ese PID al cgroup** —el comentario del código dice que hay que hacerlo antes de sincronizar con el hijo, para que ningún hijo escape del cgroup— y **sólo entonces** se crean los namespaces. Si los namespaces fueran primero, un proceso podría nacer fuera de la cuota.
+**2. El cgroup lo crea systemd, no `runc`.** Sobre cgroups v2 el *cgroup driver* por defecto es `systemd`, así que `runc` no escribe el árbol de cgroups a mano: le pide a systemd por D-Bus una **unidad `scope` transitoria**, y sólo después escribe los ajustes que systemd no expone.
+
+> [!TIP]
+> Se ve sin adivinar, con `systemctl list-units --type=scope`: la descripción de la unidad dice literalmente `libcontainer container <id>`.
+
+**3. El orden es proceso → cgroup → namespaces.** Suena al revés y no lo es:
+
+1. `runc` primero hace `fork` y `exec` de un `runc init`;
+2. después **mete ese PID al cgroup** —el comentario del código dice que hay que hacerlo antes de sincronizar con el hijo, para que ningún hijo escape del cgroup—;
+3. y **sólo entonces** se crean los namespaces.
+
+**Si los namespaces fueran primero, un proceso podría nacer fuera de la cuota.**
 
 ## `runc` corre dos veces, y sale las dos
 
@@ -69,11 +80,13 @@ systemd
    └─ sleep 300
 ```
 
-Ni `dockerd` ni `containerd` aparecen ahí. Y de eso salen dos cosas más: la cadena de Podman es `podman → conmon → crun/runc`, o sea que **se salta el daemon, no el runtime** —eso es la página 7—; y cuando quieras que el kernel tampoco sea compartido, la pieza que se sustituye es justamente la última, `runc`, por otra que arranca una VM ligera: **Kata**, en la sesión 3.
+**Ni `dockerd` ni `containerd` aparecen ahí.** Y de eso salen dos cosas más:
 
-## Dos avisos para la demo en vivo
+- la cadena de Podman es `podman → conmon → crun/runc`, o sea que **se salta el daemon, no el runtime** — eso es la página 7;
+- cuando quieras que el kernel tampoco sea compartido, la pieza que se sustituye es justamente la última, `runc`, por otra que arranca una VM ligera: **Kata**, en la sesión 3.
 
-`systemctl stop docker` **no apaga Docker**: `docker.socket` sigue escuchando y el siguiente `docker ps` reactiva el daemon. Hay que parar los dos, `systemctl stop docker.socket docker.service`. Y parar `docker.service` **no para `containerd`**: la relación entre las dos unidades es `Wants=`, no una dependencia dura.
+> [!WARNING]
+> **Dos avisos para la demo en vivo.** `systemctl stop docker` **no apaga Docker**: `docker.socket` sigue escuchando y el siguiente `docker ps` reactiva el daemon — hay que parar los dos, `systemctl stop docker.socket docker.service`. Y parar `docker.service` **no para `containerd`**: la relación entre las dos unidades es `Wants=`, no una dependencia dura.
 
 ## Entonces, ¿queda algo de Docker en medio?
 
@@ -81,9 +94,9 @@ Ni `dockerd` ni `containerd` aparecen ahí. Y de eso salen dos cosas más: la ca
 Una **`syscall`** (*system call*) es la única forma que tiene un programa de pedirle algo al kernel: abrir un archivo, reservar memoria, mandar un paquete por la red. Tu código no toca el disco ni la tarjeta de red — pide, y el kernel lo hace por él.
 :::
 
-En el **camino de ejecución**, no: cuando tu programa pide memoria o abre un archivo, esa `syscall` va directo al kernel del host, sin pasar por `dockerd`, por `containerd` ni por `runc`. Ahí está la mitad de la tesis de la unidad — ejecutar dentro de un contenedor no cuesta.
+**En el camino de ejecución, no.** Cuando tu programa pide memoria o abre un archivo, esa `syscall` va directo al kernel del host, sin pasar por `dockerd`, por `containerd` ni por `runc`. Ahí está la mitad de la tesis de la unidad — **ejecutar dentro de un contenedor no cuesta**.
 
-Pero decir «ya no hay nada de Docker en medio» a secas es falso, y por eso el matiz importa: **queda un supervisor**. El shim está ahí, sosteniendo la salida estándar de tu proceso para que `docker logs` tenga qué enseñarte y esperando su código de salida para que `docker ps -a` pueda decir `exited (0)`. No está en el camino de los datos; está sosteniendo el contrato.
+**Pero decir «ya no hay nada de Docker en medio» a secas es falso: queda un supervisor.** El shim está ahí, sosteniendo la salida estándar de tu proceso para que `docker logs` tenga qué enseñarte y esperando su código de salida para que `docker ps -a` pueda decir `exited (0)`. **No está en el camino de los datos; está sosteniendo el contrato.**
 
 ::: problem {#cont-p4-la-cadena title="La cadena, de pie"}
 **Caja de tiempo: 12 minutos.** Se hace de pie, y son seis voluntarios. Los cinco primeros reciben una hoja con su nombre y se forman en este orden, de izquierda a derecha:
@@ -94,11 +107,14 @@ docker CLI    dockerd    containerd    shim    runc
 
 El sexto recibe la hoja que dice `proceso del contenedor` y espera **sentado, detrás del shim**: todavía no existe.
 
-**La regla, antes de empezar: sentarse es morirse.** Quien se sienta deja de existir, y ya no se vuelve a levantar.
+Las dos reglas, antes de empezar:
 
-**La segunda regla: el proceso se sostiene de una sola mano.** Cuando el sexto voluntario se ponga de pie, apoya la mano en el hombro del shim — **sólo** en el del shim, de nadie más. Si el shim se sienta, la mano se queda sin hombro y el proceso se sienta con él. No hay que discutirlo: se ve.
+1. **Sentarse es morirse.** Quien se sienta deja de existir, y ya no se vuelve a levantar.
+2. **El proceso se sostiene de una sola mano.** Cuando el sexto voluntario se ponga de pie, apoya la mano en el hombro del shim — **sólo** en el del shim, de nadie más. Si el shim se sienta, la mano se queda sin hombro y el proceso se sienta con él. No hay que discutirlo: se ve.
 
 **La predicción, también antes de empezar.** Apúntala ahora, antes de que nadie se mueva: de las cuatro sentadas que vienen —`runc`, `dockerd`, `containerd`, el shim—, ¿cuál crees que tira al proceso?
+
+Entonces:
 
 1. Se pasa un papelito que dice `corre ubuntu` por la cadena, de mano en mano, de izquierda a derecha.
 2. Cuando le llega a `runc`, `runc` **se lo entrega al sexto voluntario**. Ésa es su señal de entrada: el proceso del contenedor se pone de pie y **apoya la mano en el hombro del shim**. Y entonces `runc` **se sienta**.
@@ -108,21 +124,24 @@ Después de cada quien que se sienta, la pregunta para toda la sala es la misma:
 :::
 
 ::: hint {of="cont-p4-la-cadena"}
-Mira otra vez el árbol de procesos de arriba y pregúntate de quién cuelga el proceso del contenedor. Lo que decide si el proceso cae no es quién arrancó la cadena, es quién lo está sosteniendo **ahora** — y la mano en el hombro ya te está señalando a quién.
+Mira otra vez el árbol de procesos de arriba y pregúntate de quién cuelga el proceso del contenedor. Lo que decide si el proceso cae no es quién arrancó la cadena, es **quién lo está sosteniendo ahora** — y la mano en el hombro ya te está señalando a quién.
 :::
 
 ::: answer {of="cont-p4-la-cadena"}
-**`runc` se sienta y no pasa nada.** Ya había salido. En la máquina real `runc` se ejecuta **dos veces** —una en `create` y otra en `start`— y termina las dos; la coreografía lo simplifica a una sola sentada porque lo que el ejercicio pregunta es qué queda vivo cuando el contenedor ya corre, y ahí la respuesta es la misma con una salida que con dos: **ningún `runc`**. Sentarse sólo hace visible lo que ya era cierto antes de que empezara la ronda.
+| Se sienta | ¿El proceso sigue de pie? | Por qué |
+|---|---|---|
+| `runc` | **sí** | ya había salido: sentarse sólo hace visible lo que ya era cierto antes de empezar la ronda |
+| `dockerd` | **sí** | un `kill -9` al daemon **no** mata a los contenedores: el daemon no los está sosteniendo |
+| `containerd` | **sí** | por la misma razón |
+| el shim | **NO** | es el único de los cuatro que lo sostiene |
 
-**`dockerd` se sienta y el proceso sigue de pie.** Un `kill -9` al daemon no mata a los contenedores: el daemon no los está sosteniendo. El shim sí.
+**Sobre `runc`:** en la máquina real se ejecuta **dos veces** —una en `create` y otra en `start`— y termina las dos. La coreografía lo simplifica a una sola sentada porque lo que el ejercicio pregunta es qué queda vivo cuando el contenedor ya corre, y ahí la respuesta es la misma con una salida que con dos: **ningún `runc`**.
 
-**`containerd` se sienta y el proceso sigue de pie**, por la misma razón.
+**Sobre el shim:** cuando cae, el proceso no se cae solo. containerd detecta que el shim murió y corre `cleanupAfterDeadShim`, que acaba en un `runc delete --force`.
 
-**El shim se sienta y ahí sí se cae el proceso.** Es el único de los cuatro que lo sostiene. Y no se cae solo: cuando containerd detecta que el shim murió corre `cleanupAfterDeadShim`, que acaba en un `runc delete --force`.
+**Y la cuarta pieza, la que el ejercicio no puede actuar: el daemon que vuelve.** Los contenedores sobrevivieron al `kill -9` de `dockerd`, pero **no sobreviven a que `dockerd` regrese**. Con el valor por defecto `live-restore: false`, al arrancar el daemon recorre lo que quedó vivo y lo **mata**:
 
-**La cuarta pieza, la que el ejercicio no puede actuar: el daemon que vuelve.** Los contenedores sobrevivieron al `kill -9` de `dockerd`, pero no sobreviven a que `dockerd` **regrese**. Con el valor por defecto `live-restore: false`, al arrancar el daemon recorre lo que quedó vivo y lo **mata**:
-
-| | Con `live-restore: false` (el defecto) | Con `live-restore: true` |
+| Qué haces | Con `live-restore: false` (el defecto) | Con `live-restore: true` |
 |---|---|---|
 | `systemctl stop docker.socket docker.service` | siguen corriendo | siguen corriendo |
 | `systemctl restart docker` | **mueren** al volver el daemon | siguen corriendo, y el daemon los readopta |

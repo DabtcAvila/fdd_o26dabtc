@@ -27,11 +27,18 @@ Meta: que «proceso aislado» deje de ser una frase hecha.
 
 ## El modelo mental equivocado sale caro
 
-Casi todo el mundo llega pensando que un contenedor es una máquina virtual chiquita, y esa creencia hace predicciones falsas: que tarda medio minuto en arrancar, que tiene su propio kernel, que sigue prendido aunque su programa termine. Las tres son falsas, y de la tercera se cuelga la pregunta número uno del principiante en la sesión 2.
+Casi todo el mundo llega pensando que un contenedor es **una máquina virtual chiquita**, y esa creencia hace tres predicciones falsas:
 
-La forma más rápida de tirar la creencia es mirar desde afuera. Si el contenedor fuera una máquina, el host no vería sus procesos, igual que tu laptop no ve los procesos de una máquina virtual. Pero los ve: un `ps` en el host lista el proceso del contenedor con su PID del host, como cualquier otro. Está ahí, en la misma tabla de procesos, corriendo sobre el mismo kernel.
+- que tarda medio minuto en arrancar,
+- que tiene su propio kernel,
+- que sigue prendido aunque su programa termine.
 
-**Un contenedor no es una máquina pequeña: es un proceso de Linux con la vista recortada y la despensa medida.**
+De la tercera se cuelga la pregunta número uno del principiante en la sesión 2.
+
+**La forma más rápida de tirar la creencia es mirar desde afuera.** Si el contenedor fuera una máquina, el host no vería sus procesos, igual que tu laptop no ve los procesos de una máquina virtual. Pero los ve: un `ps` en el host lista el proceso del contenedor con su PID del host, como cualquier otro. Está ahí, en la misma tabla de procesos, corriendo sobre el mismo kernel.
+
+> [!NOTE]
+> **Un contenedor no es una máquina pequeña: es un proceso de Linux con la vista recortada y la despensa medida.**
 
 ::: definition {#cont-def-pid title="`PID` y `/proc`"}
 Un **`PID`** (*process id*) es el número con el que el kernel identifica a cada proceso vivo; el primero que arranca es el `PID` 1 y es el antepasado de todos los demás.
@@ -41,7 +48,12 @@ Un **`PID`** (*process id*) es el número con el que el kernel identifica a cada
 
 ## Namespaces: qué puede ver
 
-Si el proceso del contenedor está en la misma tabla que todos los demás, ¿cómo es que un `ps` **desde adentro** lista dos renglones y no los trescientos de tu máquina? No porque el kernel le esconda una copia: porque le contesta distinto. Un *namespace* es una vista recortada de un recurso del kernel — el proceso pregunta por «los procesos» o «la red» y recibe su recorte, no el todo. No hay copia, no hay emulación y no hay costo: es el mismo kernel contestando otra cosa según quién pregunta.
+Si el proceso del contenedor está en la misma tabla que todos los demás, ¿cómo es que un `ps` **desde adentro** lista dos renglones y no los trescientos de tu máquina?
+
+No porque el kernel le esconda una copia: **porque le contesta distinto.** Un *namespace* es una vista recortada de un recurso del kernel — el proceso pregunta por «los procesos» o «la red» y recibe su recorte, no el todo.
+
+> [!TIP]
+> No hay copia, no hay emulación y **no hay costo**: es el mismo kernel contestando otra cosa según quién pregunta.
 
 ::: table {#cont-tabla-ns title="Los seis namespaces que vas a notar"}
 
@@ -60,23 +72,36 @@ Una palabra de esa tabla se usa aquí antes de tiempo, así que por ahora basta 
 
 ## Ocho tipos, diez enlaces
 
-Los que faltan para llegar a ocho son `cgroup` —que Docker activa por defecto sobre cgroups v2 desde la 20.10, y que le oculta al proceso en qué parte de la jerarquía de cgroups vive— y `time`, que permite correr con otro reloj monótono.
+Los dos que faltan para llegar a ocho:
 
-Pero si cuentas los enlaces de `ls /proc/<pid>/ns/` vas a obtener **diez**, no ocho, y no es que esta página te haya mentido: `pid` y `time` aparecen **dos veces cada uno**, en su forma normal y en su variante `_for_children`. La segunda no es el namespace del proceso, es el que **heredarán sus hijos**. Son diez enlaces sobre ocho tipos.
+- **`cgroup`**, que Docker activa por defecto sobre cgroups v2 desde la 20.10, y que le oculta al proceso en qué parte de la jerarquía de cgroups vive;
+- **`time`**, que permite correr con otro reloj monótono.
+
+Pero si cuentas los enlaces de `ls /proc/<pid>/ns/` vas a obtener **diez**, no ocho, y no es que esta página te haya mentido: **`pid` y `time` aparecen dos veces cada uno**, en su forma normal y en su variante `_for_children`. La segunda no es el namespace del proceso, es el que **heredarán sus hijos**. Son diez enlaces sobre ocho tipos.
 
 ![Nave de servidores nocturna en verde de monitor y gris de acero: en primer plano una cabina de vidrio iluminada sólo por sus propias pantallas, donde una figura de espaldas trabaja absorta y rodeada de sus herramientas; el vidrio refleja hacia dentro, de modo que desde la cabina no se ve nada más, mientras fuera la nave se extiende enorme y en penumbra, llena de cabinas idénticas apagadas que se pierden en la distancia.](../_assets/ilus-contenedores-aislamiento.jpg)
 
 ## Cgroups: cuánto puede usar
 
-Los namespaces no limitan nada: un proceso que sólo se ve a sí mismo puede seguir comiéndose toda la RAM de la máquina. Eso lo pone el otro mecanismo, los *control groups*: un árbol de grupos donde cada nodo tiene cuotas de CPU, de memoria y de número de procesos, y el kernel contabiliza lo que consumen todos sus miembros. Hay un cuarto controlador que la figura no dibuja y que conviene saber que existe, porque es el que importa cuando lo que compite no es el CPU sino el disco: el de **I/O**, que limita el ancho de banda de lectura y escritura de cada grupo.
+**Los namespaces no limitan nada:** un proceso que sólo se ve a sí mismo puede seguir comiéndose toda la RAM de la máquina.
 
-Namespaces y cgroups son **ortogonales** y separables. Un contenedor típico usa los dos, pero puedes tener recorte de vista sin cuota, o cuota sin recorte de vista — de hecho, tu propia sesión de escritorio ya vive dentro de un cgroup.
+Eso lo pone el otro mecanismo, los *control groups*: un árbol de grupos donde cada nodo tiene cuotas de CPU, de memoria y de número de procesos, y el kernel contabiliza lo que consumen todos sus miembros.
+
+> [!TIP]
+> Hay un cuarto controlador que la figura no dibuja y que conviene saber que existe, porque es el que importa cuando lo que compite no es el CPU sino el disco: el de **I/O**, que limita el ancho de banda de lectura y escritura de cada grupo.
+
+**Namespaces y cgroups son ortogonales y separables.** Un contenedor típico usa los dos, pero puedes tener recorte de vista sin cuota, o cuota sin recorte de vista — de hecho, tu propia sesión de escritorio ya vive dentro de un cgroup.
 
 ## La fila incómoda: `user`
 
-Aquí va la verdad que la mitad de internet dice al revés: **Docker no activa user namespaces por defecto.** Sin ese namespace, el UID 0 de adentro **es** el UID 0 del host; no hay traducción. El proceso está recortado por todos los demás namespaces y confinado por *capabilities*, seccomp y AppArmor, pero su usuario no está mapeado a otro.
+Aquí va la verdad que la mitad de internet dice al revés: **Docker no activa user namespaces por defecto.**
 
-Se puede activar, con `userns-remap` en la configuración de Docker, y Podman *rootless* lo hace siempre: ahí el root de adentro se mapea a **tu** usuario. La consecuencia práctica de no tenerlo se toca con la mano en la sesión 2, cuando un archivo escrito desde el contenedor aparezca en tu carpeta siendo de `root`.
+Sin ese namespace, el UID 0 de adentro **es** el UID 0 del host; no hay traducción. El proceso está recortado por todos los demás namespaces y confinado por *capabilities*, seccomp y AppArmor, pero **su usuario no está mapeado a otro**.
+
+Se puede activar, con `userns-remap` en la configuración de Docker, y Podman *rootless* lo hace siempre: ahí el root de adentro se mapea a **tu** usuario.
+
+> [!WARNING]
+> La consecuencia práctica de no tenerlo se toca con la mano en la sesión 2, cuando **un archivo escrito desde el contenedor aparezca en tu carpeta siendo de `root`**.
 
 Y si el kernel es uno solo y compartido, queda una pregunta abierta: **¿qué haces cuando no quieres compartirlo?** Se llama **Kata Containers**, y es lo último de esta unidad, en la sesión 3.
 
@@ -109,9 +134,9 @@ Ese número es el inodo del namespace: si las dos columnas traen el mismo númer
 ::: answer {of="cont-p2-diez-enlaces"}
 **Difieren nueve. El único que coincide es `user`.**
 
-El contenedor tiene su propia tabla de procesos, su propia red, su propio árbol de archivos, su propio nombre de máquina — todo eso son inodos nuevos. Pero comparte el user namespace del host, porque **Docker no lo activa por defecto**.
+El contenedor tiene su propia tabla de procesos, su propia red, su propio árbol de archivos, su propio nombre de máquina — todo eso son inodos nuevos. Pero **comparte el user namespace del host**, porque Docker no lo activa por defecto.
 
-Y ésa es toda la explicación de algo que te va a pasar en el laboratorio de la sesión 2: cuando el contenedor escriba un archivo en una carpeta tuya, el archivo va a salir siendo de **`root`**. No es un bug ni un permiso mal puesto: el UID 0 de adentro es el UID 0 de afuera, porque nadie los separó.
+Y ésa es toda la explicación de algo que te va a pasar en el laboratorio de la sesión 2: cuando el contenedor escriba un archivo en una carpeta tuya, el archivo va a salir siendo de **`root`**. **No es un bug ni un permiso mal puesto:** el UID 0 de adentro es el UID 0 de afuera, porque nadie los separó.
 :::
 
 Sigue con [[receta-imagen-contenedor]], que separa las tres cosas que todo el mundo confunde.
