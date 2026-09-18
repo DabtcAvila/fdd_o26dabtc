@@ -22,7 +22,7 @@ Se llena en la **segunda** entrega.
 
 Fecha en que lo terminaste: 06/09/2026
 
-![Captura del curso Intermediate Git terminado](./git-intermedio.png)
+[Captura del curso Intermediate Git terminado](./git-intermedio.pdf)
 
 ## Una cosa que aprendiste y no sabías
 
