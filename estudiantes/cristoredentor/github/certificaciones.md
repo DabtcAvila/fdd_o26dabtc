@@ -4,7 +4,7 @@ Llena este archivo en **tu copia**, dentro de `estudiantes/<tu-login>/github/`.
 
 ## Quién soy
 
-- Nombre: Cristopher Góngora 
+- Nombre: Cristopher
 - Usuario de GitHub: cristoredentor
 - Correo con el que entraste a DataCamp: cgongor1@itam.mx
 
@@ -12,15 +12,15 @@ Llena este archivo en **tu copia**, dentro de `estudiantes/<tu-login>/github/`.
 
 Se llena en la **primera** entrega.
 
-Fecha en que lo terminaste: 2026/09/10
+Fecha en que lo terminaste: 2026/09/11
 
-![Captura del curso Introduction to Git terminado](./vertificate.pdf)
+![Captura del curso Introduction to Git terminado](./introduccion-a-git.png)
 
 ## Intermediate Git
 
 Se llena en la **segunda** entrega.
 
-Fecha en que lo terminaste:
+Fecha en que lo terminaste: 2026/09/11
 
 ![Captura del curso Intermediate Git terminado](./git-intermedio.png)
 
@@ -33,4 +33,6 @@ no habías visto en clase, o que en clase entendiste a medias y ahí se te
 acomodó. Si sientes que no aprendiste nada nuevo, dilo y explica qué parte de
 los cursos te pareció repetida.
 
+
+No había entendido que debiamos copiar el contenido de la carpeta de código pero no la carpeta como tal. No habia entendido bien esa parte del ritual.
 
