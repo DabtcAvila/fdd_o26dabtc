@@ -16,7 +16,7 @@ prerequisites: [limpieza-de-docker]
 Meta: que dos contenedores se hablen, y entender quién más los oye.
 
 ::: figure {#cont-red-y-pod title="Tres formas de que dos contenedores se alcancen, y la única flecha que cruza al host"}
-![Tres escenarios con la misma pareja de contenedores, una API y una base. En la red bridge por omisión se alcanzan por IP pero no hay resolución por nombre, y el intento por nombre aparece tachado. En una red creada por ti se alcanzan por nombre, y la IP va tachada porque cambia en cada arranque. En un pod de Podman comparten localhost y se hablan por puerto, sin nombre de por medio. Alrededor de los tres, la línea del host, con la única flecha que la atraviesa rotulada -p 5432:5432 y etiquetada como lo que es: superficie expuesta y decisión de diseño](../_assets/cont-red-y-pod.svg)
+![Tres escenarios con la misma pareja de contenedores, un servicio web y una base. En la red bridge por omisión se alcanzan por IP pero no hay resolución por nombre, y el intento por nombre aparece tachado. En una red creada por ti se alcanzan por nombre, y la IP va tachada porque cambia en cada arranque. En un pod de Podman comparten localhost y se hablan por puerto, sin nombre de por medio. Alrededor de los tres, la línea del host, con la única flecha que la atraviesa rotulada -p 5432:5432 y etiquetada como lo que es: superficie expuesta y decisión de diseño](../_assets/cont-red-y-pod.svg)
 :::
 
 ## En corto

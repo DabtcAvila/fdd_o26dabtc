@@ -39,6 +39,20 @@ def wf():
     return d
 
 
+def _paso_de_forma(wf):
+    """El paso que corre `revisa_entrega.py`, buscado por lo que corre.
+
+    Antes esto era `steps[-1]`. Dejo de usar la posicion a proposito: el
+    workflow ya tiene un segundo paso (`revisa_contenido.py`) y buscar por
+    indice hizo que estas pruebas apuntaran al paso equivocado en cuanto se
+    agrego. Si manana entra un tercero, esto sigue siendo correcto.
+    """
+    for paso in wf["jobs"]["revision"]["steps"]:
+        if "revisa_entrega.py" in paso.get("run", ""):
+            return paso
+    raise AssertionError("el workflow ya no corre revisa_entrega.py")
+
+
 def _f(path, status="added", previa=""):
     return {"path": path, "status": status, "previa": previa}
 
@@ -134,7 +148,7 @@ def test_el_aviso_no_tapa_los_otros_fallos(mod, monkeypatch):
 
 
 def test_el_workflow_declara_la_fecha_de_corte(wf):
-    env = wf["jobs"]["revision"]["steps"][-1]["env"]
+    env = _paso_de_forma(wf)["env"]
     assert "BRANCH_ESTRICTA_DESDE" in env, (
         "sin la fecha la regla es estricta; si eso es lo que se quiere, "
         "borra tambien esta prueba"
@@ -144,7 +158,7 @@ def test_el_workflow_declara_la_fecha_de_corte(wf):
 def test_el_workflow_declara_la_fecha_de_corte_del_nombre_de_branch(wf):
     """Es una variable propia, distinta de BRANCH_ESTRICTA_DESDE: las dos
     fechas se tienen que poder mover por separado."""
-    env = wf["jobs"]["revision"]["steps"][-1]["env"]
+    env = _paso_de_forma(wf)["env"]
     assert "BRANCH_NOMBRE_ESTRICTO_DESDE" in env, (
         "sin la fecha la regla del nombre de la branch es estricta; si eso "
         "es lo que se quiere, borra tambien esta prueba"
@@ -475,7 +489,7 @@ def test_permisos_de_solo_lectura(wf):
 
 
 def test_el_workflow_exporta_lo_que_el_script_lee(wf, mod):
-    env = wf["jobs"]["revision"]["steps"][-1]["env"]
+    env = _paso_de_forma(wf)["env"]
     for clave in ("GH_TOKEN", "PR", "AUTOR", "RAMA", "RAMA_DEFAULT", "MANTENEDORES",
                   "TAREAS"):
         assert clave in env, f"el workflow no exporta {clave}"

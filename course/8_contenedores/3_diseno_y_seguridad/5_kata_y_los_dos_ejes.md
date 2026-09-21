@@ -109,7 +109,7 @@ Antes de elegir, contesta para cada uno: **¿quién escribió el código que voy
 Lee las cuatro respuestas juntas: **en tres de los cuatro escenarios el eje A no se movió.** El segundo kernel no es el final de un camino que todos deban recorrer; es la respuesta a una pregunta concreta —*¿de quién es el código?*— y cuando ésa no es tu pregunta, es puro costo.
 :::
 
-Con esto cierra la unidad: un contenedor es un proceso con la vista recortada, lo sabes construir y montar, sabes repartir un sistema en servicios con su contrato, y sabes por dónde se rompe el aislamiento y qué hay del otro lado. Sigue con los cuatro anexos —la chuleta de comandos, los prompts para seguir preguntando, los contenedores anidados y el tablero de entregas—: son referencia, no lectura corrida, y están para volver a ellos.
+Con esto cierra la unidad: un contenedor es un proceso con la vista recortada, lo sabes construir y montar, sabes repartir un sistema en servicios con su contrato, y sabes por dónde se rompe el aislamiento y qué hay del otro lado. Sigue con [[chuleta-contenedores|la chuleta de comandos]], [[prompts-contenedores|los prompts para seguir preguntando]], [[contenedores-anidados|los contenedores anidados]] y [[entregas-contenedores|el tablero de entregas]]: son referencia, no lectura corrida, y están para volver a ellos.
 
 > [!NOTE]
 > **Si sólo recuerdas una cosa:** rootless cambia con qué privilegio sales, Kata cambia a qué kernel le hablas, y son preguntas distintas — sólo la segunda se resuelve con un segundo kernel.

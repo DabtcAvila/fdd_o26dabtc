@@ -27,19 +27,22 @@ Meta: entender por qué el mismo `docker build` tarda tres segundos o tres minut
 
 ## Cada instrucción es una capa
 
-En la página 3 quedó que la imagen es un sistema de archivos ya armado y de sólo lectura. Ahora la letra chica: **no es un bloque**. Es una pila de capas, y cada instrucción del Dockerfile que toca el sistema de archivos agrega una.
+En la página 3 quedó que la imagen es un sistema de archivos ya armado y de sólo lectura. Ahora la letra chica: **no es un bloque.** Es una pila de capas, y cada instrucción del Dockerfile que toca el sistema de archivos agrega una.
 
-Una capa no guarda «lo que cambió» como una lista de instrucciones: guarda el **estado del sistema de archivos después de esa instrucción**, y de ese contenido sale su hash SHA-256. El hash no es un número de serie que alguien asignó, es el contenido resumido: dos capas con exactamente los mismos bytes tienen el mismo hash, siempre, en cualquier máquina del mundo.
+Una capa no guarda «lo que cambió» como una lista de instrucciones: guarda el **estado del sistema de archivos después de esa instrucción**, y de ese contenido sale su hash SHA-256.
+
+> [!NOTE]
+> **El hash no es un número de serie que alguien asignó: es el contenido resumido.** Dos capas con exactamente los mismos bytes tienen el mismo hash, siempre, en cualquier máquina del mundo.
 
 Eso es lo que hace que bajar una imagen sea barato. Si ya tienes en disco la capa `sha256:6a2f…` de `python:3.12-slim`, **no se vuelve a descargar**, aunque venga dentro de otra imagen de otro proyecto: el registro te manda la lista de hashes, tú comparas con lo que tienes y pides sólo lo que falta.
 
 ## Esto ya lo viste, y se llamaba Git
 
-Si la frase «el hash sale del contenido» te suena, es porque es exactamente la de [[que-guarda-un-commit|la unidad 7]], y conviene ponerlas lado a lado porque el modelo mental se transfiere entero.
+Si la frase «el hash sale del contenido» te suena, es porque es exactamente la de [[que-guarda-un-commit|la unidad 7]], y conviene ponerlas lado a lado porque **el modelo mental se transfiere entero**.
 
 ::: table {#cont-tabla-git-docker title="La misma idea, dos herramientas"}
 
-| | Git | Docker |
+| Criterio | Git | Docker |
 |---|---|---|
 | La unidad | el **commit** | la **capa** |
 | Qué guarda | un **snapshot** completo del árbol, direccionado por contenido | un **snapshot** del sistema de archivos, direccionado por contenido |
@@ -50,21 +53,28 @@ Si la frase «el hash sale del contenido» te suena, es porque es exactamente la
 
 :::
 
-La segunda fila es la que hay que leer despacio, porque la versión que circula dice lo contrario: **ninguno de los dos guarda diffs.** Git no guarda parches y Docker no guarda listas de cambios; los dos guardan estados completos, direccionados por su contenido, y el «diff» es algo que se **calcula** después, al comparar dos de ellos. Que casi nunca se dupliquen bytes no viene de guardar diferencias: viene de que dos contenidos idénticos producen el mismo hash y por lo tanto son el mismo objeto.
+> [!WARNING]
+> **La segunda fila hay que leerla despacio, porque la versión que circula dice lo contrario: ninguno de los dos guarda diffs.** Git no guarda parches y Docker no guarda listas de cambios; los dos guardan **estados completos**, direccionados por su contenido. El «diff» es algo que se **calcula** después, al comparar dos de ellos. Que casi nunca se dupliquen bytes no viene de guardar diferencias: viene de que dos contenidos idénticos producen el mismo hash y por lo tanto **son el mismo objeto**.
 
-Donde se separan es en una sola cosa, y es la que importa para el resto de la página: en Git tú decides cuándo hacer un commit. En Docker no decides nada — **cada instrucción hace una capa**, te guste o no, y por eso el orden en que escribes el Dockerfile tiene consecuencias de minutos.
+Donde se separan es en una sola cosa, y es la que importa para el resto de la página: **en Git tú decides cuándo hacer un commit. En Docker no decides nada** — cada instrucción hace una capa, te guste o no, y por eso el orden en que escribes el Dockerfile tiene consecuencias de minutos.
 
 ## Qué decide si una capa se reusa
 
-Al construir, el `build` recorre las instrucciones de arriba abajo y, para cada una, arma una **clave de caché** con tres cosas: la capa de la que parte, la instrucción escrita tal cual, y —sólo para `COPY` y `ADD`— el hash del contenido de los archivos que se copian.
+Al construir, el `build` recorre las instrucciones de arriba abajo y, para cada una, arma una **clave de caché** con tres cosas:
+
+1. **la capa de la que parte**,
+2. **la instrucción escrita tal cual**,
+3. y —sólo para `COPY` y `ADD`— **el hash del contenido de los archivos que se copian**.
 
 Las consecuencias salen solas:
 
-- Cambiar un espacio en una línea del Dockerfile **es** un cambio: la instrucción se compara como texto.
-- Un `COPY` se invalida cuando cambia **lo que copia**, aunque la línea no se haya tocado.
-- Y la que duele: si la capa de la que parte cambió, **la clave cambió**, aunque tu instrucción sea idéntica.
+| Lo que pasa | Por qué |
+|---|---|
+| Cambiar **un espacio** en una línea del Dockerfile **es** un cambio | la instrucción se compara como texto |
+| Un `COPY` se invalida **aunque no toques la línea** | se invalida cuando cambia **lo que copia** |
+| **Y la que duele:** una instrucción idéntica se invalida igual | si **la capa de la que parte** cambió, la clave cambió |
 
-Esa tercera es todo el dominó.
+**Esa tercera es todo el dominó.**
 
 ## El dominó
 
@@ -78,11 +88,17 @@ RUN pip install -r requirements.txt
 CMD ["python", "app.py"]
 ```
 
-Tocas una línea de `app.py` —una sola, un `print`— y reconstruyes. `FROM` y `WORKDIR` salen del caché. El `COPY` no, porque lo que copia cambió. Y a partir de ahí **ya no hay caché para nadie**: el `RUN pip install` parte de una capa distinta a la de la vez pasada, así que su clave es distinta, así que se ejecuta. `pip` vuelve a resolver, a bajar y a instalar todo, **sin que `requirements.txt` haya cambiado una coma**. Tres minutos, por un `print`.
+Tocas una línea de `app.py` —una sola, un `print`— y reconstruyes:
+
+- `FROM` y `WORKDIR` salen del caché.
+- El `COPY` **no**, porque lo que copia cambió.
+- Y a partir de ahí **ya no hay caché para nadie**: el `RUN pip install` parte de una capa distinta a la de la vez pasada, así que su clave es distinta, así que se ejecuta.
+
+`pip` vuelve a resolver, a bajar y a instalar todo, **sin que `requirements.txt` haya cambiado una coma**. Tres minutos, por un `print`.
 
 ## La regla, y por qué es una instrucción más
 
-La versión de abajo de la figura hace una cosa y sólo una: **parte el `COPY` en dos**.
+La versión de abajo de la figura hace una cosa y sólo una: **parte el `COPY` en dos.**
 
 ```dockerfile
 FROM python:3.12-slim
@@ -93,9 +109,12 @@ COPY . .
 CMD ["python", "app.py"]
 ```
 
-Ahora el `pip install` parte de una capa que sólo depende de `requirements.txt`. Mientras no toques ese archivo, esa capa se reusa y `pip` **no corre**: cambias `app.py` y sólo se rehacen las dos últimas. Tres segundos.
+Ahora el `pip install` parte de una capa que sólo depende de `requirements.txt`. Mientras no toques ese archivo, esa capa se reusa y **`pip` no corre**: cambias `app.py` y sólo se rehacen las dos últimas. **Tres segundos.**
 
-El Dockerfile tiene seis instrucciones en vez de cinco, y esa instrucción de más es el precio entero de la mejora. El orden no es estético: **ordena el archivo por frecuencia de cambio.** Las dependencias cambian una vez al mes; tu código, quince veces al día. Lo que cambia poco va arriba.
+El Dockerfile tiene seis instrucciones en vez de cinco, y esa instrucción de más es el precio entero de la mejora.
+
+> [!TIP]
+> **El orden no es estético: ordena el archivo por frecuencia de cambio.** Las dependencias cambian una vez al mes; tu código, quince veces al día. Lo que cambia poco va arriba.
 
 Y el corolario que tranquiliza: cuando **sí** cambias `requirements.txt`, `pip` vuelve a correr entero. Eso no es un fallo del orden, es lo correcto — cambió lo que instala.
 
@@ -120,13 +139,22 @@ El `RUN pip install` tarda 95 segundos y el `RUN python precalcula.py` tarda 40.
 :::
 
 ::: hint {of="cont-p8-capas-que-caen"}
-Para la 1, recuerda que la clave de caché de una instrucción incluye **la capa de la que parte**: no busques qué instrucciones cambiaron, busca la primera que cae y lee hacia abajo. Para la 3, la pregunta que ordena el archivo es «¿cada cuánto cambia esto?», y aquí hay **tres** frecuencias distintas, no dos.
+Para la 1, recuerda que la clave de caché de una instrucción incluye **la capa de la que parte**: no busques qué instrucciones cambiaron, busca **la primera que cae** y lee hacia abajo. Para la 3, la pregunta que ordena el archivo es «¿cada cuánto cambia esto?», y aquí hay **tres** frecuencias distintas, no dos.
 :::
 
 ::: answer {of="cont-p8-capas-que-caen"}
-**1.** `FROM` y `WORKDIR`, **CACHED** — no dependen de nada tuyo. `COPY . .`, **INVALIDADA**, porque `servidor.py` está entre lo que copia y su contenido cambió. `RUN pip install`, **INVALIDADA**: su instrucción es idéntica, pero parte de una capa nueva, así que su clave es otra. `RUN python precalcula.py`, **INVALIDADA**, por lo mismo. `CMD`, **INVALIDADA**, y es la única que no cuesta nada.
+**1.**
 
-**2.** **135 segundos**, los 95 de `pip` más los 40 de `precalcula.py`, por arreglar una falta de ortografía. Ninguno de los dos trabajos tenía razón para volver a correr.
+| Instrucción | | Por qué |
+|---|---|---|
+| `FROM python:3.12-slim` | **CACHED** | no depende de nada tuyo |
+| `WORKDIR /srv` | **CACHED** | tampoco |
+| `COPY . .` | **INVALIDADA** | `servidor.py` está entre lo que copia y su contenido cambió |
+| `RUN pip install` | **INVALIDADA** | su instrucción es idéntica, pero **parte de una capa nueva**: su clave es otra |
+| `RUN python precalcula.py` | **INVALIDADA** | por lo mismo |
+| `CMD [...]` | **INVALIDADA** | y es la única que no cuesta nada |
+
+**2. 135 segundos** —los 95 de `pip` más los 40 de `precalcula.py`— por arreglar una falta de ortografía. Ninguno de los dos trabajos tenía razón para volver a correr.
 
 **3.** Quedan **ocho** instrucciones en vez de seis, porque el `COPY` se parte en tres — una por cada frecuencia de cambio:
 
@@ -143,7 +171,12 @@ CMD ["python", "servidor.py"]
 
 Lo que importa no es el número: es que **cada `RUN` caro va inmediatamente después del `COPY` mínimo que lo alimenta**, y nada más. Cambiar `servidor.py` ahora sólo invalida el último `COPY` y el `CMD`: **cero segundos** de los dos `RUN`.
 
-**4.** Si tocas `requirements.txt`, cae todo desde ahí: los 95 s y los 40 s vuelven, porque `precalcula.py` corre sobre las librerías recién instaladas y ésas cambiaron. Si tocas `precalcula.py`, `pip` se reusa y sólo pagas los 40 s. Eso es exactamente lo que se quería: **el orden no evita el trabajo, evita el trabajo que no hacía falta.**
+**4.** Dos casos distintos, y los dos son correctos:
+
+- Tocas **`requirements.txt`** → cae todo desde ahí: vuelven los 95 s **y** los 40 s, porque `precalcula.py` corre sobre las librerías recién instaladas y ésas cambiaron.
+- Tocas **`precalcula.py`** → `pip` se reusa y sólo pagas los 40 s.
+
+Eso es exactamente lo que se quería: **el orden no evita el trabajo, evita el trabajo que no hacía falta.**
 :::
 
 Sigue con [[lo-que-cuesta]], que cierra la sección con números medidos y con cómo leerlos sin engañarte.

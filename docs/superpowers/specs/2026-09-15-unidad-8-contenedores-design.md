@@ -184,9 +184,23 @@ en ruidoso; la guarda las comprueba.
    207 con un solo runtime y sin tabla de errores; ésta lleva dos runtimes y ~28
    comandos normalizados. El tope de 160 viene de la unidad 6; la unidad 7 lo
    excede en once de sus dieciséis páginas, así que no es "la norma del curso".
+   **Exentas a 215 — las tres páginas estructuradas de la sección 1**:
+   `docker-y-podman`, `capas-y-cache`, `lo-que-cuesta`. El motivo es distinto al
+   de las de 260 y conviene no confundirlos: el techo cuenta **líneas de
+   fuente**, y aquí un párrafo ocupa una sola por largo que sea — el de 314
+   palabras de `lo-que-cuesta` costaba **1 línea**. Partir esos muros en tablas,
+   viñetas y avisos para lectores con ADHD **baja las palabras y sube las
+   líneas**: ese párrafo quedó en 90 palabras y 14 líneas. Medido en líneas la
+   mejora parece un empeoramiento, así que en estas tres el techo se subió en
+   vez de borrar contenido. Eso vale para `lo-que-cuesta` (144→205 líneas,
+   3613→3264 palabras) y `docker-y-podman` (158→187, 2930→2905); en
+   `capas-y-cache` (152→185, 1745→**1814**) el techo subió por otra razón y hay
+   que decirla: **se le añadió material**, no es reflow. Las otras **seis**
+   lecciones de la sección **siguen bajo 160** tras la misma reescritura, y
+   `anatomia-de-docker-run` cupo en 155.
 6. **Forma de página**: `Meta:` de una línea → `::: figure` → `## En corto` con
    **máximo tres viñetas** → cuerpo → **exactamente un `::: problem` con `hint` y
-   `answer`** → cierre `> [!NOTE] **Si sólo recuerdas una cosa:**`. Prohibido
+   `answer`** → cierre en **dos líneas** (`> [!NOTE]`, y en la siguiente `> **Si sólo recuerdas una cosa:** …`): con el cuerpo en la misma línea el marcador no casa `_CALLOUT_MARKER_RE` y **sale impreso como texto**, sin fallar el build. Lo vigila `tools/test_callouts.py`. Prohibido
    `::: note`. **Aplica a las 26 páginas de lección y a ninguna otra**: los
    cuatro índices y los cinco anexos sólo están sujetos al tope de líneas y a las
    reglas 1 a 4, como en la unidad 6.
@@ -556,7 +570,7 @@ hash **invierte el signo**.
 | Que Docker no active user namespaces | 1/2 | 2/9 y 3/4 | paga |
 | `CMD` contra `ENTRYPOINT` | 1/3, deuda explícita | 2/5 | paga |
 | El arranque no descomprime la imagen | 1/4 | 1/9 | paga |
-| `pods` | 1/5, deuda explícita | 3/1 | paga |
+| `pods` | 1/7, deuda explícita | 3/1 | paga |
 | **Kubernetes como herramienta** | 1/5 | — | **no se paga, a propósito** |
 
 ---

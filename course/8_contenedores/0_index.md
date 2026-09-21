@@ -37,7 +37,7 @@ No son lectura de una sesión: son las páginas que se consultan. La chuleta y e
 |---|---|---|---:|
 | [[chuleta-contenedores]] | Los comandos de Docker y Podman lado a lado, y 19 errores con su causa y su arreglo | En clase, y cada vez que algo truene | 8 |
 | [[entregas-contenedores]] | Las cinco entregas: qué vence cuándo, con qué branch y en qué carpeta | Antes de cada entrega | 9 |
-| [[prompts-contenedores]] | Ocho prompts para estudiar con un modelo, y las seis afirmaciones falsas que esta unidad desarma | Cuando estudies por tu cuenta | 12 |
+| [[prompts-contenedores]] | Nueve prompts para estudiar con un modelo, y las seis afirmaciones falsas que esta unidad desarma | Cuando estudies por tu cuenta | 12 |
 | [[contenedores-anidados]] | Docker dentro de Docker: qué se entrega a cambio, medido | Después de la sesión 3 | 15 |
 
 La primera sesión es **corta y sin computadora**: 60 minutos, no 90. Las páginas se proyectan y no se teclea nada; el teclado empieza en la sesión 2.

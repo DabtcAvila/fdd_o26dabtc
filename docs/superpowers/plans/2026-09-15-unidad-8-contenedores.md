@@ -22,7 +22,7 @@ Todo esto sale del spec y aplica a **cada** task. Un fallo aquí no se ve hasta 
 - **Nada de mermaid.** El renderizador lo rechaza; los diagramas son SVG propio.
 - **Cita cualquier valor de frontmatter que lleve dos puntos.** `summary: Datalake, warehouse: dos respuestas` es YAML inválido y tumba el build entero.
 - **Tope de 160 líneas** por página de lección. Exentas a 260: `instalar-docker-y-podman`, `planes-b-de-instalacion`, `cuando-se-rompe-el-aislamiento`, `B_prompts`, `C_anidar`, `D_entregas`. `A_chuleta` a 320.
-- **Forma de página**, sólo en las 26 de lección: línea de posición → `Meta:` de una línea → `::: figure` → `## En corto` con **máximo tres viñetas** → cuerpo → **exactamente un `::: problem` con `hint` y `answer`** → cierre `> [!NOTE] **Si sólo recuerdas una cosa:**`. Prohibido `::: note`.
+- **Forma de página**, sólo en las 26 de lección: línea de posición → `Meta:` de una línea → `::: figure` → `## En corto` con **máximo tres viñetas** → cuerpo → **exactamente un `::: problem` con `hint` y `answer`** → cierre en dos líneas (`> [!NOTE]` y, en la siguiente, `> **Si sólo recuerdas una cosa:** …`) — en una sola línea no renderiza. Prohibido `::: note`.
 - **`**Haz:** → **Deberías ver:**`** — toda página con bloques ejecutables lleva al menos tres tramos, ninguno de más de 15 líneas.
 - **Ids de objeto numerado únicos en TODO el curso**: prefijo `cont-` sin excepción. Una figura sólo se numera **una vez**; sus reapariciones van como imagen suelta `![alt](../_assets/x.svg)` sin directiva.
 - **Español en la prosa, inglés en los identificadores.** Se dice "contenedor", "imagen", "chuleta".
@@ -816,7 +816,7 @@ variante: lo que cambia entre una página y otra es el contrato de su tabla.**
   posición (`**Página N de M · sección S de 3**`, numerada **por sección**),
   `Meta:` de una línea, `::: figure` con su id, `## En corto` de tres viñetas,
   el cuerpo, **un** `::: problem` con `hint` y `answer`, y el cierre
-  `> [!NOTE] **Si sólo recuerdas una cosa:**`. La sustancia está en la sección
+  `> [!NOTE]` y, en la línea siguiente, `> **Si sólo recuerdas una cosa:**` — en una sola línea no renderiza. La sustancia está en la sección
   homónima del spec; esta tabla sólo fija lo verificable.
 
 - [ ] **Paso B — Agrega a la chuleta** todo comando `docker` o `podman` nuevo
