@@ -35,9 +35,9 @@ Una **`réplica`** es una de las N copias idénticas de la misma imagen que corr
 
 ## Por qué el mundo se movió
 
-En la página 1 el contenedor resolvía «en mi máquina sí funciona». Eso solo no explica por qué se movió la industria entera: el problema de la reproducibilidad ya tenía respuestas parciales, y ninguna arrastró a tanta gente.
+En la página 1 el contenedor resolvía «en mi máquina sí funciona». **Eso solo no explica por qué se movió la industria entera**: el problema de la reproducibilidad ya tenía respuestas parciales, y ninguna arrastró a tanta gente.
 
-Lo que sí lo explica es lo que viene después de sellar el artefacto.
+Lo que sí lo explica es lo que viene **después** de sellar el artefacto.
 
 ::: table {#cont-tabla-escalar title="Las cinco ideas que hacen escalable a un contenedor"}
 
@@ -51,28 +51,44 @@ Lo que sí lo explica es lo que viene después de sellar el artefacto.
 
 :::
 
-Esas dos cifras salen de una medición propia, con su máquina, su kernel y sus versiones anotadas; el pie completo vive una sola vez en la unidad, en [[lo-que-cuesta|«Lo que cuesta»]], que es la página 9 de esta sección. Un número de benchmark sin su pie no vale nada, y ése es medio contenido de aquella página.
+> [!WARNING]
+> Esas dos cifras salen de una medición propia, con su máquina, su kernel y sus versiones anotadas; el pie completo vive una sola vez en la unidad, en [[lo-que-cuesta|«Lo que cuesta»]], que es la página 9 de esta sección. Y una salvedad que aquella página exige decir cada vez: ese experimento es **una sola corrida por tamaño**, así que esos 2.7 y 5.5 s no son medianas y no sostienen un tiempo fino — sostienen el orden de magnitud. **Un número de benchmark sin su pie no vale nada**, y ése es medio contenido de aquella página.
 
 ## El precio, dicho en concreto
 
-Imagina un servicio que guarda las sesiones de sus usuarios en un archivo, `sesiones.db`, dentro del contenedor. Con una sola copia funciona perfecto: cada petición cae en el mismo proceso y encuentra el archivo donde lo dejó.
+Imagina un servicio que guarda las sesiones de sus usuarios en un archivo, `sesiones.db`, **dentro** del contenedor. Con una sola copia funciona perfecto: cada petición cae en el mismo proceso y encuentra el archivo donde lo dejó.
 
-Arranca cuatro copias más y el servicio se rompe sin que ninguna falle. Cada réplica tiene **su propia** capa de escritura, así que cada una tiene su propio `sesiones.db`, vacío al nacer. La primera petición del usuario cae en la réplica 2 y ahí queda su sesión; la segunda cae en la réplica 4, que no lo conoce, y lo manda a iniciar sesión otra vez. No hay error en los logs. Nada crashea. Simplemente el sistema se comporta al azar, y qué tan mal se comporta depende de la suerte con la que se repartió el tráfico.
+**Arranca cuatro copias más y el servicio se rompe sin que ninguna falle.** Cada réplica tiene **su propia** capa de escritura, así que cada una tiene su propio `sesiones.db`, vacío al nacer:
 
-La regla que sale de ahí es corta y es la mitad de esta unidad: **si el estado vive adentro del contenedor, las réplicas dejan de ser intercambiables, y si dejan de ser intercambiables no puedes escalar.** Sacarlo afuera —a una base de datos, a un caché compartido, a un volumen— es lo que las vuelve desechables de verdad.
+- la primera petición del usuario cae en la réplica 2 y ahí queda su sesión;
+- la segunda cae en la réplica 4, que no lo conoce, y lo manda a iniciar sesión otra vez.
+
+**No hay error en los logs. Nada crashea.** Simplemente el sistema se comporta al azar, y qué tan mal se comporta depende de la suerte con la que se repartió el tráfico.
+
+> [!NOTE]
+> **Es la mitad de esta unidad: si el estado vive adentro del contenedor, las réplicas dejan de ser intercambiables, y si dejan de ser intercambiables no puedes escalar.** Sacarlo afuera —a una base de datos, a un caché compartido, a un volumen— es lo que las vuelve desechables de verdad.
 
 ![Vista aérea nocturna de un patio de maniobras en teal frío y blanco de reflector: cientos de módulos idénticos, todos del mismo molde, dispuestos en rejilla perfecta hasta donde alcanza la vista, con grúas pórtico moviéndose entre las filas. Al borde se alza una torre de control estrecha con una sola ventana encendida, y de ella sale un haz que barre filas enteras de golpe; la torre es diminuta frente al patio que gobierna.](../_assets/ilus-contenedores-escala.jpg)
 
 ## Quién decide: el orquestador
 
-Con cinco réplicas puedes arrancarlas a mano. Con quinientas, repartidas en cuarenta máquinas, no: alguien tiene que decidir cuántas hay, en qué máquina cabe cada una, a cuál mandarle cada petición, qué hacer cuando una muere y cómo subir de la versión vieja a la nueva sin apagar el servicio. Ese trabajo tiene nombre —**orquestación**— y era la deuda que dejó abierta la página 1.
+Con cinco réplicas puedes arrancarlas a mano. Con quinientas, repartidas en cuarenta máquinas, no. Alguien tiene que decidir:
 
-La herramienta que ganó se llama **Kubernetes**, y aquí termina lo que este curso va a decir de ella. **Es una deuda que no se paga, a propósito.** Kubernetes es un curso entero, y aprenderlo sin entender antes qué es un contenedor produce gente que copia manifiestos de internet sin saber qué está pegando. Lo que sí te llevas es lo que hace falta para entrar por la puerta correcta el día que la necesites: qué problema resuelve un orquestador, y por qué ese problema sólo existe cuando las unidades son desechables e idénticas.
+- cuántas hay y en qué máquina cabe cada una,
+- a cuál mandarle cada petición,
+- qué hacer cuando una muere,
+- y cómo subir de la versión vieja a la nueva sin apagar el servicio.
+
+Ese trabajo tiene nombre —**orquestación**— y era la deuda que dejó abierta la página 1.
+
+La herramienta que ganó se llama **Kubernetes**, y aquí termina lo que este curso va a decir de ella. **Es una deuda que no se paga, a propósito.** Kubernetes es un curso entero, y aprenderlo sin entender antes qué es un contenedor produce gente que copia manifiestos de internet sin saber qué está pegando.
+
+Lo que sí te llevas es lo que hace falta para entrar por la puerta correcta el día que la necesites: **qué problema resuelve un orquestador, y por qué ese problema sólo existe cuando las unidades son desechables e idénticas.**
 
 ::: problem {#cont-p5-sesiones title="Tres copias y un archivo"}
 Un servicio web guarda la sesión de cada usuario en `/app/sesiones.db`, un archivo dentro del contenedor. Hoy corre una sola copia y funciona bien. Mañana el tráfico crece y arrancas **tres** copias de la misma imagen detrás de un repartidor de carga.
 
-1. ¿Qué se rompe, exactamente? Descríbelo desde el punto de vista de un usuario, no del servidor.
+1. ¿Qué se rompe, exactamente? Descríbelo desde el punto de vista de un **usuario**, no del servidor.
 2. ¿Cuántos archivos `sesiones.db` hay ahora, y qué tienen adentro?
 3. ¿Dónde debería vivir ese archivo para que las tres copias sirvan igual?
 4. Y la pregunta que no es obvia: si mañana matas una de las tres, ¿se pierde algo?
@@ -83,13 +99,20 @@ Vuelve a la página 3: cada contenedor arranca con **su propia** capa de escritu
 :::
 
 ::: answer {of="cont-p5-sesiones"}
-**1.** El usuario inicia sesión, navega dos páginas y de pronto el servicio le pide iniciar sesión otra vez. Recarga y vuelve a estar dentro. No hay error, no hay caída: el comportamiento depende de en qué réplica cayó cada petición. Eso es lo peor del bug — **se ve como intermitencia**, y se diagnostica tarde.
+**1.** El usuario inicia sesión, navega dos páginas y de pronto el servicio le pide iniciar sesión otra vez. Recarga y vuelve a estar dentro. No hay error, no hay caída: el comportamiento depende de en qué réplica cayó cada petición. **Eso es lo peor del bug — se ve como intermitencia, y se diagnostica tarde.**
 
 **2.** Hay **tres** archivos, uno por capa de escritura, y los tres tienen cosas distintas: cada uno sólo conoce las sesiones de las peticiones que cayeron en su réplica.
 
 **3.** Afuera de los tres contenedores, en un lugar que las tres réplicas vean igual: una base de datos, un caché de sesiones compartido, o —para el caso de un archivo— un volumen. Cuál de los tres y por qué es la decisión de la sesión 2.
 
-**4.** Con el archivo adentro: **sí**, se pierden las sesiones que esa réplica guardaba, y no hay forma de recuperarlas. Con el estado afuera: **no se pierde nada**, y ésa es exactamente la propiedad que buscas. Un contenedor es desechable sólo si tirarlo no tira información; mientras guarde estado adentro no es desechable, es frágil disfrazado de moderno.
+**4.** Depende de dónde esté el estado:
+
+| Dónde vive el estado | ¿Se pierde algo? |
+|---|---|
+| Con el archivo **adentro** | **sí**: se pierden las sesiones que esa réplica guardaba, y no hay forma de recuperarlas |
+| Con el estado **afuera** | **no se pierde nada** — y ésa es exactamente la propiedad que buscas |
+
+**Un contenedor es desechable sólo si tirarlo no tira información**; mientras guarde estado adentro no es desechable, es frágil disfrazado de moderno.
 :::
 
 Sigue con [[vm-contra-contenedor]], que dice dónde ocurre el aislamiento y cuándo el contenedor no es la respuesta.

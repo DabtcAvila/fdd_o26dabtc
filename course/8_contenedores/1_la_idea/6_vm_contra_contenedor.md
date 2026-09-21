@@ -29,7 +29,7 @@ Meta: entender dónde ocurre el aislamiento, y cuándo el contenedor no es la re
 
 ::: table {#cont-tabla-vm title="Máquina virtual contra contenedor"}
 
-| | Máquina virtual | Contenedor |
+| Criterio | Máquina virtual | Contenedor |
 |---|---|---|
 | Qué aísla | hardware virtual completo, con su hipervisor | vistas del kernel: namespaces y cgroups |
 | Kernel | uno **propio** por cada VM | el del host, **compartido** por todos |
@@ -42,37 +42,67 @@ Meta: entender dónde ocurre el aislamiento, y cuándo el contenedor no es la re
 
 :::
 
-Las primeras seis filas son el argumento a favor del contenedor y son las que todo el mundo cita. Las dos últimas son la letra chica, y son las que deciden los tres casos de abajo. **Las ocho filas salen de la misma causa**: no hay un segundo kernel. Por eso arranca rápido, por eso pesa poco, y por eso no te protege de un kernel roto.
+**Las primeras seis filas** son el argumento a favor del contenedor, y son las que todo el mundo cita. **Las dos últimas** son la letra chica, y son las que deciden los tres casos de abajo.
+
+> [!NOTE]
+> **Las ocho filas salen de la misma causa: no hay un segundo kernel.** Por eso arranca rápido, por eso pesa poco, y por eso no te protege de un kernel roto.
 
 ## Tres veces que el contenedor no es la respuesta
 
-**1. Necesitas hardware directo.** Un dispositivo que hay que manejar de verdad, un módulo de kernel propio, un driver que no está en el host. Un contenedor no tiene kernel, así que no tiene dónde cargar un módulo: lo que carga módulos es el kernel del host, y hacerlo desde adentro requiere romper el aislamiento por completo. Si tu programa necesita su propio kernel para hablar con el fierro, necesitas una máquina.
+Los tres son **«no puedes»**: hay algo que el contenedor no sabe hacer, y la alternativa tiene nombre.
 
-**2. Necesitas aislamiento máximo.** Vas a correr código que no escribiste tú y que podría ser hostil: la entrega de un alumno, el trabajo de un cliente, un binario que te llegó por correo. Un contenedor comparte el kernel, así que todo el kernel es superficie de ataque: una vulnerabilidad ahí se salta el aislamiento. **Ésta es una deuda que sí se paga**, y con una respuesta intermedia: hay runtimes que ponen un segundo kernel debajo del contenedor sin renunciar a la forma de trabajar con imágenes. Se llama **Kata**, y es lo último de la unidad, en la sesión 3.
+::: table {#cont-tabla-no-puedes title="Tres cosas que un contenedor no sabe hacer"}
 
-**3. Necesitas un kernel distinto.** Correr Windows sobre Linux, probar contra un kernel viejo, usar una característica que tu host no tiene. No hay truco posible: el kernel del contenedor **es** el del host. Lo que se necesita es una VM, y de hecho es justo lo que hacen Docker Desktop y `podman machine` — que es la siguiente sección de esta página.
+| # | Qué necesitas | Por qué el contenedor no puede | La alternativa |
+|---:|---|---|---|
+| **1** | **Hardware directo** — un dispositivo que hay que manejar de verdad, un módulo de kernel propio, un driver que no está en el host | un contenedor no tiene kernel, así que no tiene dónde cargar un módulo: quien los carga es el kernel del host, y hacerlo desde adentro requiere romper el aislamiento por completo | una máquina virtual |
+| **2** | **Aislamiento máximo** — código que no escribiste tú y podría ser hostil: la entrega de un alumno, el trabajo de un cliente, un binario que te llegó por correo | comparte el kernel, así que **todo el kernel es superficie de ataque**: una vulnerabilidad ahí se salta el aislamiento | **Kata**, que pone un segundo kernel debajo del contenedor sin renunciar a trabajar con imágenes. **Ésta es una deuda que sí se paga**, en la sesión 3 |
+| **3** | **Un kernel distinto** — correr Windows sobre Linux, probar contra un kernel viejo, usar una característica que tu host no tiene | no hay truco posible: el kernel del contenedor **es** el del host | una VM — y es justo lo que hacen Docker Desktop y `podman machine` |
+
+:::
 
 ## Y dos veces en que puedes, pero no vale la pena
 
-Los tres de arriba son «no puedes»: hay algo que el contenedor no sabe hacer, y la alternativa tiene nombre. Los dos que siguen son de otra clase, y son los que te vas a encontrar antes — porque no fallan. Funcionan perfecto, y aun así son la decisión equivocada.
+Los tres de arriba son «no puedes». Los dos que siguen son de otra clase, y son los que te vas a encontrar antes — **porque no fallan**. Funcionan perfecto, y aun así son la decisión equivocada.
 
-**4. Es un script y ya.** Treinta líneas de `bash`, o un `.py` que sólo usa la biblioteca estándar. Meterlo en un contenedor te obliga a escribir un `Dockerfile`, construir una imagen, versionarla, publicarla y acordarte de montar la carpeta con los datos cada vez — todo para resolver un problema de dependencias que no tenías. El criterio no es el tamaño del programa: es **cuántas cosas tienen que estar instaladas para que corra**. Si la respuesta es «ninguna», el contenedor no está reproduciendo nada, está cobrando.
+**4. Es un script y ya.** Treinta líneas de `bash`, o un `.py` que sólo usa la biblioteca estándar. Meterlo en un contenedor te obliga a escribir un `Dockerfile`, construir una imagen, versionarla, publicarla y acordarte de montar la carpeta con los datos cada vez — todo para resolver un problema de dependencias que no tenías.
 
-**5. Estado persistente complicado.** Una base de datos en un contenedor se puede, y de hecho vas a levantar una en [[named-volumes-y-postgres|la sesión 2]]. Pero mira lo que cuesta: el dato **no puede** quedarse en la capa de escritura, así que hay que decidir en qué volumen vive, cómo se respalda, cómo se restaura y qué pasa cuando cambie la versión de la imagen — y una pregunta mal contestada ahí no da un error, da una pérdida silenciosa. Para desarrollar en tu laptop sale barato. Para los datos de alguien más, la pregunta deja de ser «¿puedo?» y pasa a ser «¿quién administra este volumen a las tres de la mañana?».
+> [!TIP]
+> El criterio no es el tamaño del programa: es **cuántas cosas tienen que estar instaladas para que corra**. Si la respuesta es «ninguna», el contenedor no está reproduciendo nada: está cobrando.
+
+**5. Estado persistente complicado.** Una base de datos en un contenedor se puede, y de hecho vas a levantar una en [[named-volumes-y-postgres|la sesión 2]]. Pero mira lo que cuesta: el dato **no puede** quedarse en la capa de escritura, así que hay cuatro decisiones que tomar antes:
+
+- en qué volumen vive,
+- cómo se respalda,
+- cómo se restaura,
+- qué pasa cuando cambie la versión de la imagen.
+
+**Una pregunta mal contestada ahí no da un error: da una pérdida silenciosa.** Para desarrollar en tu laptop sale barato. Para los datos de alguien más, la pregunta deja de ser «¿puedo?» y pasa a ser «¿quién administra este volumen a las tres de la mañana?».
 
 ## En macOS y en Windows siempre hay una VM de por medio
 
 Este hecho sostiene tres páginas de la sesión 2, así que vale la pena decirlo despacio: **los contenedores son una función del kernel de Linux.** Namespaces y cgroups son código de Linux; no existen en el kernel de macOS ni en el de Windows.
 
-Entonces, ¿cómo corre `docker run` en una MacBook? Porque hay **una máquina virtual con Linux adentro**, encendida todo el tiempo. Docker Desktop la arranca por ti y la esconde bien; con Podman la arrancas explícitamente, con `podman machine init` y `podman machine start`, y por eso ahí el detalle no se puede ignorar. En Windows el papel lo hace WSL2, que también es una VM con un kernel de Linux real adentro. En los tres casos el contenedor sigue siendo un proceso de Linux sobre un kernel de Linux — sólo que ese kernel no es el de tu sistema operativo.
+Entonces, ¿cómo corre `docker run` en una MacBook? Porque hay **una máquina virtual con Linux adentro**, encendida todo el tiempo:
 
-De ahí salen consecuencias que se tocan con la mano en la sesión 2 y que no son curiosidades: montar una carpeta tuya dentro del contenedor **cruza la frontera de esa VM**, y eso lo hace más lento y hace que los permisos y el dueño de los archivos se comporten distinto que en Linux nativo. Si trabajas en Mac o en Windows, ese renglón te va a tocar.
+| Sistema | Quién pone el kernel de Linux | Qué tan visible es |
+|---|---|---|
+| **Linux** | el tuyo, directo | no hay VM |
+| **macOS** | Docker Desktop la arranca por ti; con Podman la arrancas tú, con `podman machine init` y `podman machine start` | Docker la esconde bien; Podman no te deja ignorarla |
+| **Windows** | WSL2, que también es una VM con un kernel de Linux real adentro | esconde la VM, no el hecho |
+
+En macOS y en Windows el contenedor sigue siendo un proceso de Linux sobre un kernel de Linux — sólo que ese kernel **no es el de tu sistema operativo**.
+
+> [!WARNING]
+> **Si trabajas en Mac o en Windows, este renglón te va a tocar.** Montar una carpeta tuya dentro del contenedor **cruza la frontera de esa VM**: es más lento, y los permisos y el dueño de los archivos se comportan distinto que en Linux nativo. Se toca con la mano en la sesión 2.
 
 ## El aislamiento no es una línea
 
 ![Rejilla de dos ejes que ordena las opciones de aislamiento. El eje horizontal pregunta dónde aterriza la syscall que no controlas y va de izquierda a derecha: proceso suelto y contenedor, que la mandan directo al kernel del host; gVisor, que la manda a un núcleo en espacio de usuario que reimplementa la interfaz de syscalls de Linux; Kata, que la manda a un segundo kernel real dentro de una VM ligera; y la VM completa, que la manda a un kernel invitado detrás del hipervisor. El eje vertical pregunta qué privilegio tiene quien se escapa, y va de root en el host abajo a un usuario sin privilegios con su rango de subuid arriba. Contenedor rootful y contenedor rootless ocupan la misma columna y sólo se separan en el eje vertical, con una flecha corta que marca que rootless mueve un eje y no el otro; gVisor aparece dos veces, una a cada altura, porque tiene su propio modo rootless. Al pie, la conclusión: rootless no añade ninguna frontera, mismo kernel y misma superficie de syscalls, y los dos ejes se componen en vez de ordenarse](../_assets/cont-espectro.svg)
 
-Entre «contenedor» y «máquina virtual» hay cosas en medio, y una de ellas aparece aquí por primera vez: **gVisor**, que no pone un kernel real ni renuncia a poner uno, sino que **reimplementa la interfaz de syscalls de Linux en espacio de usuario** y atiende ahí las llamadas de tu proceso. Este mismo dibujo vuelve en la sesión 3 y ahí se desarma entero —es la @cont-s3p5-espectro, y por eso aquí va sin número—; por ahora quédate con que no es una recta de «poco» a «mucho» aislamiento, sino dos preguntas distintas que se responden por separado.
+Entre «contenedor» y «máquina virtual» hay cosas en medio, y una de ellas aparece aquí por primera vez: **gVisor**, que no pone un kernel real ni renuncia a poner uno, sino que **reimplementa la interfaz de syscalls de Linux en espacio de usuario** y atiende ahí las llamadas de tu proceso.
+
+Este mismo dibujo vuelve en la sesión 3 y ahí se desarma entero —es la @cont-s3p5-espectro, y por eso aquí va sin número—. Por ahora quédate con esto: **no es una recta de «poco» a «mucho» aislamiento, sino dos preguntas distintas que se responden por separado.**
 
 ::: problem {#cont-p6-si-fuera-vm title="Lo mismo, pero en una VM"}
 Este comando arranca un contenedor que sirve una página web:
@@ -92,25 +122,25 @@ Una frase por respuesta, y en la 4 di **qué tendría que romper** para llegar a
 :::
 
 ::: hint {of="cont-p6-si-fuera-vm"}
-Las cuatro preguntas tienen la misma causa detrás, y está en la tabla de arriba: la VM lleva un kernel propio y el contenedor no. Contesta cada una empezando por ahí.
+Las cuatro preguntas tienen la misma causa detrás, y está en la tabla de arriba: **la VM lleva un kernel propio y el contenedor no.** Contesta cada una empezando por ahí.
 :::
 
 ::: answer {of="cont-p6-si-fuera-vm"}
-**1. Arranque.** De cientos de milisegundos a decenas de segundos. El contenedor sólo hace nacer un proceso —el rootfs ya estaba en disco desde el `pull`—; la VM arranca un sistema operativo completo: firmware, kernel, init, servicios y hasta entonces `nginx`.
+| Pregunta | Máquina virtual | Contenedor |
+|---|---|---|
+| **1. Arranque** | decenas de segundos: firmware, kernel, init, servicios, y hasta entonces `nginx` | cientos de ms: sólo hace nacer un proceso — el rootfs ya estaba en disco desde el `pull` |
+| **2. Tamaño** | una imagen de disco con Ubuntu entero: gigabytes, y no comparte nada con nadie | las capas de `nginx:1.27`, decenas de MB, y **comparte** las que ya tuvieras de otras imágenes |
+| **3. Kernel** | **un kernel invitado propio**, que puede ser de otra versión o de otra distribución | **el de tu host**, el mismo que ejecuta tu navegador |
+| **4. Qué ve del host** | empieza viendo poco, y para salir hay que romper el kernel invitado y **después** el hipervisor: una segunda frontera, y mucho más chica | empieza viendo poco, y para salir basta **una vulnerabilidad del kernel del host** — que es el tuyo, el que corre todo lo demás |
 
-**2. Tamaño.** El contenedor baja las capas de `nginx:1.27`, decenas de MB, y **comparte** las que ya tuvieras de otras imágenes. La VM necesita una imagen de disco con Ubuntu entero: gigabytes, y no comparte nada con nadie.
+Las columnas van en el mismo orden que la tabla del principio de la página, para que puedas comprobarte sin voltear la cabeza.
 
-**3. Kernel.** En el contenedor, `nginx` corre sobre **el kernel de tu host**, el mismo que ejecuta tu navegador. En la VM corre sobre **un kernel invitado propio**, que puede ser de otra versión o de otra distribución. El límite de `--memory 512m` también cambia de naturaleza: en el contenedor es una cuota de cgroup que el kernel del host contabiliza; en la VM es memoria que el hipervisor le entrega al invitado y que el invitado administra por su cuenta.
+**Y un detalle de la 3 que se pasa por alto:** el límite de `--memory 512m` también cambia de naturaleza. En el contenedor es una **cuota de cgroup** que el kernel del host contabiliza; en la VM es memoria que el hipervisor le entrega al invitado y que el invitado administra por su cuenta.
 
-**4. Qué ve del host.** En los dos casos `nginx` empieza viendo poco. La diferencia es qué hay que romper para salir: desde el contenedor, **una vulnerabilidad del kernel del host** —y ese kernel es el tuyo, el que corre todo lo demás—; desde la VM, primero el kernel invitado y **después** el hipervisor, que es una segunda frontera y mucho más chica. Por eso el caso 2 de arriba sigue siendo de VM, y por eso existe Kata.
+La diferencia no es qué ve cada uno, es **qué hay que romper para salir**. Por eso el caso 2 de arriba sigue siendo de VM, y por eso existe Kata.
 :::
 
-Esta página movió la frontera hacia abajo, hasta el kernel. La que sigue la mueve
-hacia arriba, hasta el otro extremo de la cadena de la página 4: **quitar el
-daemon**. Es el mismo tipo de pregunta —qué compras y qué no compras al sacar una
-pieza— y tiene la misma clase de respuesta incómoda, porque lo que casi todo el
-mundo cree que compra no es lo que compra. Y de paso, ahí la VM de macOS deja de
-ser invisible: es la que tienes que arrancar tú, a mano, con `podman machine`.
+Esta página movió la frontera hacia abajo, hasta el kernel. La que sigue la mueve hacia arriba, hasta el otro extremo de la cadena de la página 4: **quitar el daemon**. Es el mismo tipo de pregunta —qué compras y qué no compras al sacar una pieza— y tiene la misma clase de respuesta incómoda, porque lo que casi todo el mundo cree que compra no es lo que compra. Y de paso, ahí la VM de macOS deja de ser invisible: es la que tienes que arrancar tú, a mano, con `podman machine`.
 
 Sigue con [[docker-y-podman]].
 

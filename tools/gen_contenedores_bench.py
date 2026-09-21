@@ -1,11 +1,11 @@
-"""Genera las cuatro graficas de benchmark de la unidad de Contenedores.
+"""Genera las cinco graficas de benchmark de la unidad de Contenedores.
 
 Mismo patron que gen_regex.py y gen_diagramas.py: paleta importada de
 svg_base, una funcion por figura que devuelve una cadena SVG completa, y un
 catalogo DIAGRAMAS que el generador y su prueba comparten como unica fuente de
 "que figuras existen".
 
-La diferencia con los generadores conceptuales es que estas cuatro no dibujan
+La diferencia con los generadores conceptuales es que estas cinco no dibujan
 una idea: dibujan un CSV. Los datos viven en
 course/8_contenedores/_assets/benchmarks/results/ y CSV_DE declara, por figura,
 que archivo los trae y que columnas exige. Nada se teclea a mano: si el
@@ -57,6 +57,8 @@ CSV_DE = {
         ("runtime", "workload", "rep", "time_s")),
     "cont-bench-anidado": ("exp4_nested.csv",
         ("method", "metric", "rep", "value")),
+    "cont-bench-io": ("io.csv",
+        ("runtime", "mode", "rep", "mb_per_sec")),
 }
 
 
@@ -593,11 +595,139 @@ def cont_bench_anidado():
     return "".join(p)
 
 
+# --------------------------------------------------------------------------
+# Experimento 5: escribir, y el brazo que no midio el disco
+#
+# Esta grafica tiene un requisito que las otras cuatro no tienen: io.csv trae
+# en el mismo archivo un resultado solido —el volumen de Docker contra su capa
+# overlay— y un artefacto —Podman sobre fuse-overlayfs reportando 3.7x el
+# disco a pelo, que es page cache y no disco—. Esconder el artefacto seria
+# publicar una tabla mutilada; dibujarlo como una barra mas seria publicar un
+# numero falso. Asi que se dibuja como lo que es: la barra del artefacto va
+# HUECA (sin relleno, contorno punteado en rojo), se sale del eje y termina en
+# un corte de sierra en vez de en un extremo. Las cuatro barras solidas son
+# mediciones; la unica que no lo es, no se parece a ninguna.
+# --------------------------------------------------------------------------
+
+def cont_bench_io():
+    """Cuatro barras medidas y una quinta dibujada como lo que es: un artefacto."""
+    filas = leer("cont-bench-io")
+    solidas = (
+        ("a pelo · al disco", ("bare", "direct"), ACENTO),
+        ("Docker · capa overlay", ("docker", "overlay"), CIAN),
+        ("Docker · volumen", ("docker", "volume"), CIAN),
+        ("Podman · volumen", ("podman", "volume"), AMBAR),
+    )
+    valores = [
+        resumen(filas, "mb_per_sec", runtime=r, mode=m)
+        for _, (r, m), _ in solidas
+    ]
+    a_pelo, overlay, volumen = valores[0], valores[1], valores[2]
+    fantasma = resumen(filas, "mb_per_sec", runtime="podman", mode="overlay")
+    mejora = (volumen / overlay - 1) * 100
+    veces = fantasma / a_pelo
+
+    ancho, alto = 1040, 620
+    izq, der = 250, 880
+    tope = 600.0
+    ticks = (0, 100, 200, 300, 400, 500, 600)
+    xs = [lineal(t, 0, tope, izq, der) for t in ticks]
+    arriba, abajo = 104, 345
+
+    aria = (
+        "Grafica de barras del rendimiento de escritura en megabytes por "
+        "segundo: el disco a pelo da 458, Docker escribe 380 en su capa "
+        "overlay y 510 en un volumen, un 34 por ciento mas, y Podman escribe "
+        "512 en un volumen. La quinta barra, la de Podman sobre su capa "
+        "overlay, dice 1700 y no se dibuja como las otras cuatro: va hueca, "
+        "con el contorno punteado en rojo, se sale del eje y termina en un "
+        "corte de sierra, porque 1700 es 3.7 veces el disco a pelo y lo que "
+        "midio fue el page cache, no el disco"
+    )
+    p = [marco(ancho, alto, aria)]
+    p.append(texto(ancho / 2, 44, "Cuánto rinde escribir, y cuándo el número "
+                   "no es del disco", TEXTO, 22, peso="600"))
+    p.append(texto(ancho / 2, 70,
+                   "Mediana de 3 repeticiones · MB/s · cuatro mediciones y un "
+                   "artefacto, dibujados distinto a propósito", SUAVE, 14))
+
+    p.append(rejilla_vertical(arriba, abajo, xs))
+
+    # La referencia fisica: lo que da el disco sin contenedor de por medio.
+    x_pelo = lineal(a_pelo, 0, tope, izq, der)
+    p.append(regla(x_pelo, arriba, x_pelo, abajo, ACENTO, 1.2, guion="4 6"))
+    p.append(texto(x_pelo, arriba - 8, "el disco a pelo", ACENTO, 12))
+
+    for i, (etiqueta, _, color) in enumerate(solidas):
+        cy = 130 + i * 46
+        valor = valores[i]
+        x_fin = lineal(valor, 0, tope, izq, der)
+        p.append(rect(izq, cy - 15, x_fin - izq, 30, color))
+        p.append(texto(izq - 14, cy + 5, etiqueta, TEXTO, 14, anclaje="end"))
+        p.append(texto(x_fin + 12, cy + 5, f"{valor:.0f} MB/s", TEXTO, 14,
+                       anclaje="start", peso="600"))
+
+    # El corchete entre las dos barras de Docker: el resultado que sí se publica.
+    y_overlay, y_volumen = 130 + 46, 130 + 2 * 46
+    x_corchete = 900
+    p.append(regla(x_corchete, y_overlay, x_corchete, y_volumen, ACENTO, 1.5))
+    for y in (y_overlay, y_volumen):
+        p.append(regla(x_corchete - 10, y, x_corchete, y, ACENTO, 1.5))
+    p.append(texto(x_corchete + 10, (y_overlay + y_volumen) / 2 + 5,
+                   f"+{mejora:.0f} %", ACENTO, 15, anclaje="start", peso="600"))
+
+    # La barra que no es una medicion: hueca, punteada, fuera del eje y rota.
+    cy = 130 + 4 * 46
+    y0, y1 = cy - 15, cy + 15
+    x_corte = der + 40
+    p.append(texto(izq - 14, cy + 5, "Podman · capa overlay", ROJO, 14,
+                   anclaje="end"))
+    p.append(
+        f'<path d="M {x_corte:.1f} {y0:.1f} L {izq:.1f} {y0:.1f} '
+        f'L {izq:.1f} {y1:.1f} L {x_corte:.1f} {y1:.1f}" fill="none" '
+        f'stroke="{ROJO}" stroke-width="2" stroke-dasharray="7 5"/>'
+    )
+    p.append(
+        f'<path d="M {x_corte:.1f} {y0:.1f} L {x_corte - 12:.1f} '
+        f'{y0 + 7.5:.1f} L {x_corte + 12:.1f} {y0 + 15:.1f} '
+        f'L {x_corte - 12:.1f} {y0 + 22.5:.1f} L {x_corte:.1f} {y1:.1f}" '
+        f'fill="none" stroke="{ROJO}" stroke-width="2"/>'
+    )
+    p.append(texto(izq + 18, cy + 5,
+                   f"{fantasma:.0f} MB/s — esto no es una medición de disco",
+                   ROJO, 14, anclaje="start", peso="600"))
+
+    p.append(eje_x(izq, der, 356, list(zip(xs, (str(t) for t in ticks))),
+                   "megabytes por segundo escritos"))
+
+    p.append(nota(50, 430, 940, 118, [
+        ("Un resultado y un artefacto, en el mismo CSV.", ACENTO, 15),
+        (f"Docker: en un volumen rinde {volumen:.0f} MB/s contra "
+         f"{overlay:.0f} en la capa overlay, {mejora:.0f} % más. Ése es el "
+         "resultado, y es el que la unidad publica.", SUAVE, 13.5),
+        (f"Podman sobre fuse-overlayfs reporta {fantasma:.0f} MB/s: "
+         f"{veces:.1f}× el disco a pelo. Nadie escribe más rápido que su "
+         "disco.", ROJO, 13.5),
+        ("Lo que midió ahí fue el page cache. Por eso esa barra va hueca, "
+         "fuera del eje y rota: no es un dato que se pueda leer en la escala.",
+         SUAVE, 13.5),
+    ]))
+
+    p.append(pie(ancho, 566, [
+        f"{MAQUINA} · {RUNTIMES}",
+        "Tanda 1 · 3 repeticiones por brazo, mediana · de esta prueba se "
+        "conservó el CSV, no el script que lo produjo",
+    ]))
+    p.append(cierre())
+    return "".join(p)
+
+
 DIAGRAMAS = {
     "cont-bench-arranque": cont_bench_arranque,
     "cont-bench-escala": cont_bench_escala,
     "cont-bench-overhead": cont_bench_overhead,
     "cont-bench-anidado": cont_bench_anidado,
+    "cont-bench-io": cont_bench_io,
 }
 
 

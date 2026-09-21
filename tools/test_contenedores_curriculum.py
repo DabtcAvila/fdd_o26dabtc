@@ -67,6 +67,25 @@ IDS_PYTEST = [f"{p.parent.name.split('_')[0]}-{p.stem}" for p in LECCIONES]
 MAX_LINEAS = 160
 MAX_EXENTAS = 260
 MAX_CHULETA = 320
+# El techo cuenta **líneas de fuente**, y en estas páginas un párrafo ocupa una
+# sola por largo que sea: el de 314 palabras de `lo-que-cuesta` costaba 1. Así que
+# partir un muro de prosa en tabla, viñetas y avisos **baja las palabras y sube
+# las líneas** —ese párrafo pasó a 90 palabras en 14 líneas—, y medido en líneas
+# el resultado parece un empeoramiento.
+#
+# Eso explica a dos de las tres. Dicho sin adorno, porque la diferencia importa:
+#   lo-que-cuesta   144 -> 205 líneas, 3613 -> 3264 palabras: reflow puro.
+#   docker-y-podman 158 -> 187 líneas, 2930 -> 2905 palabras: reflow puro.
+#   capas-y-cache   152 -> 185 líneas, 1745 -> 1814 palabras: **se le añadió**
+#     material (la tabla de la clave de caché y el aviso de que ni Git ni Docker
+#     guardan diffs). Cabía en 160 antes y no cabe ahora, y no es por reflow.
+# Como las de 260, las tres van nombradas de una en una y están en el spec.
+MAX_ESTRUCTURADAS = 215
+ESTRUCTURADAS = {
+    "docker-y-podman",
+    "capas-y-cache",
+    "lo-que-cuesta",
+}
 EXENTAS_260 = {
     "instalar-docker-y-podman",
     "planes-b-de-instalacion",
@@ -311,6 +330,21 @@ def test_los_indices_y_los_anexos_quedan_fuera_de_la_forma_de_leccion(pagina):
 # 2. Los topes de longitud (regla 5)
 # --------------------------------------------------------------------------
 
+def test_los_conjuntos_de_exentas_no_se_solapan():
+    """Si un id cae en dos conjuntos gana el techo más flojo, en silencio.
+
+    `test_ninguna_pagina_pasa_su_techo_de_longitud` encadena `elif`, así que un
+    id en `EXENTAS_260` y en `ESTRUCTURADAS` se mediría contra 260 y la rama de
+    215 quedaría muerta sin que ninguna prueba lo dijera. Hoy son disjuntos por
+    suerte, no por construcción; esto lo vuelve construcción.
+    """
+    solape = ESTRUCTURADAS & EXENTAS_260
+    assert not solape, f"ids en dos conjuntos de exentas a la vez: {sorted(solape)}"
+    assert "chuleta-contenedores" not in (ESTRUCTURADAS | EXENTAS_260), (
+        "la chuleta tiene su propio techo; no puede estar además en otro conjunto"
+    )
+
+
 @pytest.mark.parametrize(
     "pagina",
     LECCIONES + INDICES + ANEXOS,
@@ -319,14 +353,20 @@ def test_los_indices_y_los_anexos_quedan_fuera_de_la_forma_de_leccion(pagina):
 def test_ninguna_pagina_pasa_su_techo_de_longitud(pagina):
     """Tres pantallas, con las excepciones que el spec nombra una por una.
 
-    Si una página nueva no cabe, la salida no es agregarla a `EXENTAS_260`:
-    es partirla, o mandar la referencia larga a la chuleta.
+    Si una página nueva no cabe, la salida por defecto no es agregarla a un
+    conjunto de exentas: es partirla, o mandar la referencia larga a la chuleta.
+    Los conjuntos existen para los dos casos en que partir empeora la página —
+    cubrir las tres plataformas (`EXENTAS_260`) y la prosa ya estructurada en
+    tablas y avisos (`ESTRUCTURADAS`)— y cada miembro se nombra y se justifica
+    en el spec. Añadir uno es una decisión que se argumenta, no un trámite.
     """
     identificador = ident(pagina)
     if identificador == "chuleta-contenedores":
         techo = MAX_CHULETA
     elif identificador in EXENTAS_260:
         techo = MAX_EXENTAS
+    elif identificador in ESTRUCTURADAS:
+        techo = MAX_ESTRUCTURADAS
     else:
         techo = MAX_LINEAS
     lineas = len(lee(pagina).splitlines())
@@ -792,6 +832,14 @@ CIFRAS = [
     ("lo-que-cuesta", "5.52", lambda: f"{_mediana('exp2_scale.csv', 'launch_time_s', runtime='docker', count='20'):.2f}"),
     ("escalamiento-y-orquestacion", "5.5", lambda: f"{_mediana('exp2_scale.csv', 'launch_time_s', runtime='docker', count='20'):.1f}"),
     ("escalamiento-y-orquestacion", "2.7", lambda: f"{_mediana('exp2_scale.csv', 'launch_time_s', runtime='podman', count='20'):.1f}"),
+    # Escritura, tanda 1 (io.csv): el brazo bueno y el brazo imposible, en
+    # el mismo archivo. Los 1700 MB/s se publican **como artefacto**, así
+    # que también son una cifra que tiene que seguir saliendo del CSV: el
+    # día que alguien lo vuelva a medir bien, la página cambia de tesis.
+    ("lo-que-cuesta", "458", lambda: f"{_mediana('io.csv', 'mb_per_sec', runtime='bare', mode='direct'):.0f}"),
+    ("lo-que-cuesta", "380", lambda: f"{_mediana('io.csv', 'mb_per_sec', runtime='docker', mode='overlay'):.0f}"),
+    ("lo-que-cuesta", "510", lambda: f"{_mediana('io.csv', 'mb_per_sec', runtime='docker', mode='volume'):.0f}"),
+    ("lo-que-cuesta", "1700", lambda: f"{_mediana('io.csv', 'mb_per_sec', runtime='podman', mode='overlay'):.0f}"),
     # Runtimes OCI, tanda 2 (exp5_oci.csv): los tres brazos del mito del 2×.
     ("docker-y-podman", "215", lambda: f"{_mediana('exp5_oci.csv', 'startup_ms', brazo='podman-crun'):.0f}"),
     ("docker-y-podman", "361", lambda: f"{_mediana('exp5_oci.csv', 'startup_ms', brazo='docker-runc'):.0f}"),
@@ -850,6 +898,36 @@ def test_los_incrementos_del_anexo_de_anidamiento_salen_de_su_CSV():
     )
     assert f"**{salto('podman', 'podman-nested')} %**" in texto, (
         "el incremento de Podman anidado no es el de exp4_nested.csv"
+    )
+
+
+def test_los_derivados_de_la_prueba_de_escritura_salen_de_su_CSV():
+    """El 34 % y el 3.7× son los dos números que se citan fuera de la gráfica.
+
+    Uno es el resultado que la unidad sí publica —salir del overlay— y el otro
+    es la prueba de que el brazo de Podman midió page cache y no disco. Los dos
+    son cocientes, así que ninguna de las dos guardas de arriba los cubre: un
+    dedazo en cualquiera de ellos pasaría en verde citando cifras correctas.
+    """
+    overlay = _mediana("io.csv", "mb_per_sec", runtime="docker", mode="overlay")
+    volumen = _mediana("io.csv", "mb_per_sec", runtime="docker", mode="volume")
+    a_pelo = _mediana("io.csv", "mb_per_sec", runtime="bare", mode="direct")
+    fantasma = _mediana("io.csv", "mb_per_sec", runtime="podman", mode="overlay")
+
+    mejora = f"{round((volumen / overlay - 1) * 100)} %"
+    for identificador in ("lo-que-cuesta", "donde-vive-cada-byte"):
+        assert mejora in lee(_POR_ID[identificador]), (
+            f"{identificador} ya no dice que salir del overlay son {mejora} "
+            "más rápido, que es lo que da io.csv"
+        )
+
+    assert f"{fantasma / a_pelo:.1f}×" in lee(_POR_ID["lo-que-cuesta"]), (
+        "lo-que-cuesta perdió el cociente que delata al artefacto: el brazo de "
+        "Podman reporta más veces el disco a pelo de lo que la página dice"
+    )
+    assert "1700" not in lee(_POR_ID["donde-vive-cada-byte"]), (
+        "2/7 publica el brazo descartado; ahí no hay espacio para explicar por "
+        "qué está mal, y un número malo sin su explicación es peor que ninguno"
     )
 
 

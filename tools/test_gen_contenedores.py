@@ -12,9 +12,9 @@ Dos diferencias con las guardas hermanas, y las dos son a proposito:
    comiteado. Una prueba que reescribe el artefacto que vigila no puede fallar
    cuando el artefacto esta mal: lo arregla en silencio.
 
-2. La unidad tiene treinta figuras de dos clases. Veintiseis son conceptuales
-   (gen_contenedores.py) y cuatro dibujan un CSV medido (gen_contenedores_bench
-   .py). Las cuatro de benchmark llevan guardas extra: que el CSV siga trayendo
+2. La unidad tiene treinta y una figuras de dos clases. Veintiseis son
+   conceptuales (gen_contenedores.py) y cinco dibujan un CSV medido
+   (gen_contenedores_bench.py). Las cinco llevan guardas extra: que el CSV siga trayendo
    las columnas que declara CSV_DE, que el estadistico siga siendo la mediana
    —cambiarlo a mean() publicaria numeros que contradicen la prosa— y que las
    cifras escritas a mano en la aria-label sigan siendo las que sale del CSV.
@@ -54,6 +54,7 @@ BENCH = (
     "cont-bench-escala",
     "cont-bench-overhead",
     "cont-bench-anidado",
+    "cont-bench-io",
 )
 
 
@@ -97,8 +98,8 @@ def raiz_de(slug):
 # --------------------------------------------------------------------------
 
 
-def test_el_catalogo_declara_las_treinta_figuras_de_la_unidad():
-    """26 conceptuales + 4 de benchmark. Sumar o quitar una es una decision."""
+def test_el_catalogo_declara_las_treinta_y_una_figuras_de_la_unidad():
+    """26 conceptuales + 5 de benchmark. Sumar o quitar una es una decision."""
     assert len(GEN.DIAGRAMAS_CONCEPTUALES) == 26
     assert tuple(GEN_BENCH.DIAGRAMAS) == BENCH
     assert not set(GEN.DIAGRAMAS_CONCEPTUALES) & set(GEN_BENCH.DIAGRAMAS), (
@@ -109,7 +110,7 @@ def test_el_catalogo_declara_las_treinta_figuras_de_la_unidad():
     # nombre. Que el SVG que producen sea el mismo lo dice la comparacion
     # byte a byte contra el disco, que ambas copias tienen que pasar.
     assert set(GEN.DIAGRAMAS) == set(GEN.DIAGRAMAS_CONCEPTUALES) | set(BENCH)
-    assert len(GEN.DIAGRAMAS) == 30
+    assert len(GEN.DIAGRAMAS) == 31
 
 
 @pytest.mark.parametrize("slug", SLUGS)
@@ -295,7 +296,7 @@ def test_los_generadores_solo_usan_biblioteca_estandar(generador):
 
 
 # --------------------------------------------------------------------------
-# Las cuatro graficas de benchmark: dibujan un CSV, no una idea
+# Las cinco graficas de benchmark: dibujan un CSV, no una idea
 # --------------------------------------------------------------------------
 
 
@@ -350,7 +351,7 @@ def test_un_csv_ausente_aborta_con_su_ruta(tmp_path, monkeypatch):
         GEN_BENCH.leer("cont-bench-escala")
 
 
-# Las aria-label de las cuatro graficas estan escritas a mano y citan las
+# Las aria-label de las cinco graficas estan escritas a mano y citan las
 # cifras medidas. Nada las ata al CSV: si el experimento se vuelve a correr,
 # las barras cambian solas y el texto accesible se queda contando la medicion
 # vieja. Esta tabla es esa atadura. La clave es (figura, valor esperado,
@@ -409,11 +410,22 @@ def _cifras_anidado():
     )
 
 
+def _cifras_io():
+    f = "cont-bench-io"
+    return [
+        f"{_mediana(f, 'mb_per_sec', runtime=r, mode=m):.0f}"
+        for r, m in (("bare", "direct"), ("docker", "overlay"),
+                     ("docker", "volume"), ("podman", "volume"),
+                     ("podman", "overlay"))
+    ]
+
+
 @pytest.mark.parametrize("figura, cifras", [
     ("cont-bench-arranque", _cifras_arranque),
     ("cont-bench-escala", _cifras_escala),
     ("cont-bench-overhead", _cifras_overhead),
     ("cont-bench-anidado", _cifras_anidado),
+    ("cont-bench-io", _cifras_io),
 ])
 def test_las_cifras_de_la_aria_label_siguen_saliendo_del_csv(figura, cifras):
     etiqueta = re.search(
@@ -424,4 +436,44 @@ def test_las_cifras_de_la_aria_label_siguen_saliendo_del_csv(figura, cifras):
         f"{figura}: la aria-label ya no cita {faltan}, que es lo que hoy sale "
         f"de {GEN_BENCH.CSV_DE[figura][0]}. El texto accesible esta contando "
         "una medicion vieja."
+    )
+
+
+def test_el_brazo_imposible_de_io_no_se_dibuja_como_una_medicion():
+    """io.csv trae un resultado y un artefacto, y la figura los separa dibujando.
+
+    El brazo de `podman/overlay` reporta 3.7x el disco a pelo: `fuse-overlayfs`
+    midio page cache, no disco. La decision de diseno es que ese brazo se
+    publique —esconderlo seria mutilar la tabla— pero **no como una barra**:
+    va hueco, con el contorno punteado en rojo, saliendose del eje y roto por
+    un corte de sierra. Esta guarda es lo que impide que una edicion futura lo
+    convierta en una barra solida mas, que es exactamente el error que la
+    pagina 1/9 existe para ensenar a no cometer.
+    """
+    svg = GEN_BENCH.cont_bench_io()
+    filas = GEN_BENCH.leer("cont-bench-io")
+    fantasma = GEN_BENCH.resumen(filas, "mb_per_sec", runtime="podman",
+                                 mode="overlay")
+    a_pelo = GEN_BENCH.resumen(filas, "mb_per_sec", runtime="bare",
+                               mode="direct")
+    assert fantasma > 2 * a_pelo, (
+        "el brazo de podman/overlay dejo de ser fisicamente imposible: si el "
+        "CSV se volvio a medir, esta figura y la pagina 1/9 hay que rehacerlas"
+    )
+    # Ninguna barra solida lo dibuja: los <rect> de color son mediciones.
+    rellenos = re.findall(r'<rect\b[^>]*fill="([^"]+)"', svg)
+    assert GEN_BENCH.ROJO not in rellenos, (
+        "el artefacto se dibujo como barra solida: en esta figura el rojo "
+        "solo puede ser contorno y texto"
+    )
+    # Y si esta dibujado: contorno hueco, punteado y en rojo.
+    hueco = re.findall(
+        r'<path\b[^>]*fill="none"[^>]*stroke="%s"[^>]*stroke-dasharray'
+        % re.escape(GEN_BENCH.ROJO), svg
+    )
+    assert hueco, (
+        "falta el contorno hueco y punteado del brazo que no midio disco"
+    )
+    assert f'>{fantasma:.0f} MB/s' in svg or f'{fantasma:.0f} MB/s' in svg, (
+        "la figura ya no dice cuanto reporto el brazo descartado"
     )
