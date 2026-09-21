@@ -88,6 +88,30 @@ events:
     title: "Descanso obligatorio del ITAM"
     summary: "Miércoles 16 de septiembre. No cae sesión de esta materia, que va martes y jueves."
 
+  - id: session-10
+    kind: session
+    date: "2026-09-17"
+    start_time: "19:00"
+    end_time: "20:00"
+    title: "Contenedores: qué son en realidad, sin tocar el teclado"
+    page: la-idea-del-contenedor
+
+  - id: session-11
+    kind: session
+    date: "2026-09-22"
+    start_time: "19:00"
+    end_time: "20:30"
+    title: "Contenedores: instalar, construir y publicar una imagen"
+    page: contenedores-con-las-manos
+
+  - id: session-12
+    kind: session
+    date: "2026-09-24"
+    start_time: "19:00"
+    end_time: "20:30"
+    title: "Contenedores: diseño, servicios y dónde se rompe el aislamiento"
+    page: disenar-con-contenedores
+
   - id: asueto-noviembre
     kind: cancellation
     date: "2026-11-03"

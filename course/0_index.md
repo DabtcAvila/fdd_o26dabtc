@@ -19,6 +19,8 @@ el temario, cómo se califica y las dos primeras tareas.
 
 Las sesiones son los **martes y jueves, de 19:00 a 20:30**.
 
+Hay una sola excepción en todo el semestre: el **jueves 17 de septiembre** la sesión dura una hora, de **19:00 a 20:00**. Es la clase que abre la unidad de contenedores, se da sin computadora y no necesita más.
+
 ## El repositorio del curso
 
 Todo el curso vive en un repositorio público de GitHub:

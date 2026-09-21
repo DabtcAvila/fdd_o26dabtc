@@ -37,11 +37,6 @@ def _cargar():
     return modulo
 
 
-@pytest.fixture(scope="module", autouse=True)
-def _svgs_frescos():
-    subprocess.run([sys.executable, str(GENERADOR)], check=True)
-
-
 def test_cada_diagrama_declarado_existe_y_lleva_prefijo():
     for nombre in _cargar().DIAGRAMAS:
         assert nombre.startswith("git-"), (

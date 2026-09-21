@@ -36,7 +36,7 @@ git remote -v | grep -q upstream \
 
 **Empieza por aquí.** Nada de lo demás funciona sin esto, y no hay comando de Git que lo haga: el fork no es de Git, es de GitHub.
 
-> [!IMPORTANT]
+> [!NOTE]
 > El fork ocurre **en los servidores de GitHub**, no en tu computadora. Presionar el botón no cambia ni un archivo de tu disco. Son dos cosas separadas, y confundirlas es la causa del error del ejercicio del final de esta página.
 
 **Haz:** entra a `https://github.com/raya-lucaria/fdd_o26`.
