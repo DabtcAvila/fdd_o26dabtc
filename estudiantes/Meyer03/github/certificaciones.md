@@ -20,7 +20,7 @@ Fecha en que lo terminaste: 16 de septiembre de 2026
 
 Se llena en la **segunda** entrega.
 
-Fecha en que lo terminaste:
+Fecha en que lo terminaste: 22/sep/2026
 
 ![Captura del curso Intermediate Git terminado](./git-intermedio.png)
 
@@ -28,9 +28,6 @@ Fecha en que lo terminaste:
 
 Se llena en la **segunda** entrega, cuando ya hiciste los dos cursos.
 
-Dos o tres líneas. Algo concreto que salió en alguno de los dos cursos y que
-no habías visto en clase, o que en clase entendiste a medias y ahí se te
-acomodó. Si sientes que no aprendiste nada nuevo, dilo y explica qué parte de
-los cursos te pareció repetida.
+Ya entendí como moverme entre las ramas.
 
 
