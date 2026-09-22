@@ -53,13 +53,13 @@ bobuc05/fdd-imagen:latest   70f31c621fe0        105MB         25.6MB
 
 docker history <tu-usuario>/<tu-imagen>
 IMAGE          CREATED              CREATED BY                                      SIZE      COMMENT
-cd82d2c13a8f   About a minute ago   CMD ["python" "app.py"]                         0B        buildkit.dockerfile.v0
-<missing>      About a minute ago   COPY . . # buildkit                             20.5kB    buildkit.dockerfile.v0
+e3b0ba9e152a   About a minute ago   CMD ["python" "app.py"]                         0B        buildkit.dockerfile.v0
 <missing>      About a minute ago   USER app                                        0B        buildkit.dockerfile.v0
-<missing>      About a minute ago   RUN /bin/sh -c useradd -m app && chown -R ap…   77.8kB    buildkit.dockerfile.v0
-<missing>      About a minute ago   RUN /bin/sh -c pip install --no-cache-dir -r…   13.3MB    buildkit.dockerfile.v0
-<missing>      About a minute ago   COPY requirements.txt . # buildkit              12.3kB    buildkit.dockerfile.v0
-<missing>      About a minute ago   WORKDIR /app                                    8.19kB    buildkit.dockerfile.v0
+<missing>      About a minute ago   RUN /bin/sh -c useradd -m app && chown -R ap…   86kB      buildkit.dockerfile.v0
+<missing>      About a minute ago   COPY . . # buildkit                             16.4kB    buildkit.dockerfile.v0
+<missing>      34 minutes ago       RUN /bin/sh -c pip install --no-cache-dir -r…   13.3MB    buildkit.dockerfile.v0
+<missing>      34 minutes ago       COPY requirements.txt . # buildkit              12.3kB    buildkit.dockerfile.v0
+<missing>      34 minutes ago       WORKDIR /app                                    8.19kB    buildkit.dockerfile.v0
 <missing>      3 days ago           CMD ["python3"]                                 0B        buildkit.dockerfile.v0
 <missing>      3 days ago           RUN /bin/sh -c set -eux;  for src in idle3 p…   16.4kB    buildkit.dockerfile.v0
 <missing>      3 days ago           RUN /bin/sh -c set -eux;   savedAptMark="$(a…   41.4MB    buildkit.dockerfile.v0
@@ -69,7 +69,7 @@ cd82d2c13a8f   About a minute ago   CMD ["python" "app.py"]                     
 <missing>      3 days ago           RUN /bin/sh -c set -eux;  apt-get update;  a…   4.95MB    buildkit.dockerfile.v0
 <missing>      3 days ago           ENV LANG=C.UTF-8                                0B        buildkit.dockerfile.v0
 <missing>      3 days ago           ENV PATH=/usr/local/bin:/usr/local/sbin:/usr…   0B        buildkit.dockerfile.v0
-<missing>      4 days ago           # debian.sh --arch 'amd64' out/ 'trixie' '@1…   87.6MB    debuerreotype 0.17
+<missing>      5 days ago           # debian.sh --arch 'amd64' out/ 'trixie' '@1…   87.6MB    debuerreotype 0.17
 
 
 ```
@@ -78,11 +78,15 @@ cd82d2c13a8f   About a minute ago   CMD ["python" "app.py"]                     
 
 Uno por línea: qué estaba mal, qué consecuencia tiene, y qué cambiaste.
 
-1. **Imagen base sobredimensionada (`FROM python:latest`):** Utilizaba la etiqueta genérica sin optimización, lo que inflaba el peso de la imagen por encima de los límites permitidos.
-Se corrigió migrando a una base ligera (`python:3.11-alpine`) para garantizar un peso menor a 300 MB.
-2. **Mal orden de capas (`COPY` prematuro):** Copiaba todo el código fuente antes de instalar las dependencias con `pip`, rompiendo el sistema de caché de Docker en cada modificación. 
-Se reestructuró para procesar únicamente el archivo de requerimientos primero.
-3. **Falta de correspondencia con el script de ejecución:** El comando por defecto apuntaba a un archivo genérico (`app.py`) en lugar de invocar tu script de validación personalizado (`info.sh`).
+1. **Imagen base sobredimensionada (`FROM python:latest`):** La imagen era pesada y no estaba pineada. Consecuencia: descargas lentas y riesgo de que la versión cambie a futuro.
+Solución: Se cambió a la base oficial y ligera python:3.12-slim .
+
+2. **Mal orden de capas (`COPY` prematuro):** Todo el código se copiaba antes de instalar dependencias. Consecuencia: se invalidaba la caché de Docker con cualquier cambio
+mínimo en el código, forzando a reinstalar todo siempre. Solución: Se separó COPY requirements.txt . y pip install antes de hacer el COPY . . final
+
+3. **Falta de correspondencia con el script de ejecución:** El contenedor ejecutaba su proceso principal como root. Consecuencia: riesgo clave de seguridad si el contenedor es comprometido.
+Solución: Se creó un usuario sin privilegios llamado app, se le dio propiedad de la carpeta y se agregó la instrucción USER app 
+
 
 ## Una cosa que se me rompió
 
