@@ -7,6 +7,7 @@ las reglas se prueban en las dos direcciones.
 Varias de estas pruebas existen por un hallazgo concreto de una revision
 adversarial; cada una dice cual.
 """
+import datetime
 import importlib.util
 import sys
 from pathlib import Path
@@ -285,12 +286,32 @@ def test_hoy_una_branch_inventada_solo_avisa(mod, monkeypatch, capsys):
     (2026-09-15), una branch inventada que toca una sola carpeta propia pasa
     con aviso, no con fallo. BRANCH_NOMBRE_ESTRICTO_DESDE = 2026-09-22, tal
     como lo declara entregas.yml."""
+    # «Hoy» se congela: con el reloj real esta prueba se volvió roja el 22,
+    # justo el día en que la regla dejó de estar en gracia.
+    _congela_hoy(monkeypatch, datetime.date(2026, 9, 15))
     archivos = [_f("estudiantes/ana/docker/certificaciones.md")]
     assert _correr(mod, monkeypatch, archivos,
                    rama="entrega-datacamp-git-intermedio", tareas=MAPA,
                    nombre_estricto_desde="2026-09-22") == 0
     salida = capsys.readouterr().out
     assert "AVISO" in salida
+
+
+def test_desde_el_22_la_misma_branch_inventada_falla(mod, monkeypatch):
+    """El otro lado de la fecha: vencida la gracia, la regla 5 bloquea."""
+    _congela_hoy(monkeypatch, datetime.date(2026, 9, 22))
+    archivos = [_f("estudiantes/ana/docker/certificaciones.md")]
+    assert _correr(mod, monkeypatch, archivos,
+                   rama="entrega-datacamp-git-intermedio", tareas=MAPA,
+                   nombre_estricto_desde="2026-09-22") == 1
+
+
+def _congela_hoy(monkeypatch, dia):
+    class _Fecha(datetime.date):
+        @classmethod
+        def today(cls):
+            return dia
+    monkeypatch.setattr(datetime, "date", _Fecha)
 
 
 # --- regla 6: una entrega, una carpeta --------------------------------------
