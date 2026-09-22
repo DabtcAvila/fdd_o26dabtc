@@ -11,9 +11,11 @@ prerequisites: [los-ocho-casos]
 
 # Las cuatro trampas
 
-**Página 11 de 13 · sección 2 de 3**
+**Página 16 de 16 · sección 2 de 3**
 
 Meta: los cuatro filos del montaje que cortan la primera vez, y cómo se ve cada uno.
+
+**Página de referencia.** La clase no la recorre: si ya la usaste, sirve para consultar.
 
 ::: figure {#cont-tapar title="Tapar y copiar no son lo mismo"}
 ![Dos montajes sobre el mismo path de la misma imagen, con resultados opuestos. Arriba, un bind mount de un directorio vacío sobre /bin: lo que la imagen traía —ls, cat, sh, bash— queda debajo del montaje, intacto e inalcanzable, y adentro no se ve nada; el intento de correr ls devuelve command not found. Abajo, un named volume vacío sobre ese mismo /bin: una flecha rotulada COPIA lleva los cuatro binarios de la imagen al volumen, y adentro sí se ven; el volumen los conserva después del docker rm. Al margen, la opción que apaga la copia escrita en sus dos sintaxis, dos puntos nocopy con la corta y volume-nocopy con la larga, y un recuadro que explica que por eso el laboratorio de Postgres funciona sin pensarlo](../_assets/cont-tapar.svg)
@@ -31,7 +33,7 @@ Un **bind mount** siempre tapa: monta un directorio vacío sobre `/bin` y ya no 
 
 Un **named volume vacío hace lo contrario**: la primera vez que se monta, **copia** al volumen lo que la imagen tenía en ese path. Si ya tiene algo, tapa. La opción que lo apaga se escribe **`:nocopy`** con `-v` y `volume-nocopy` con `--mount`. **Podman hace exactamente lo mismo.**
 
-Esto es lo contrario de lo que dice medio internet, y explica por qué el laboratorio de Postgres funciona sin que lo pienses: el volumen vacío se lleva el `/var/lib/postgresql/data` que la imagen ya traía inicializado.
+Esto es lo contrario de lo que dice medio internet, y explica por qué el laboratorio de Postgres funciona sin que lo pienses: el `/var/lib/postgresql/data` de la imagen viene vacío, pero con el dueño y los permisos de Postgres, y el volumen vacío se lleva eso; la base se inicializa después, al primer arranque ([[named-volumes-y-postgres|2/7]]).
 
 La regla no es «el volumen copia y el bind mount no». Es que el bind mount **nunca** copia, y el named volume copia **una** vez, y sólo si está vacío. El ejercicio del final lo mide con `wc -l`; hazlo antes de creerle a esta página.
 
@@ -88,7 +90,7 @@ Montar el código es lo que hace que el ciclo de [[los-ocho-casos]] cueste dos p
 
 En tu laptop existe. En el servidor no. Nadie va a clonar tu repositorio al lado del contenedor para después montárselo: ahí el código viaja **dentro de la imagen**, que es justo el caso 2 de la página anterior. El bind mount de código es una comodidad del desarrollo, no un modo de desplegar, y confundir las dos cosas es el error de diseño que abre [[el-contrato-de-un-servicio]].
 
-Para **datos** la historia es la contraria, y ésa es la página que sigue.
+Para **datos** la historia es la contraria, y ésa es [[named-volumes-y-postgres|la página 7]].
 
 ::: problem {#cont-p11-tapar-o-copiar title="Tres montajes sobre `/etc`, tres números"}
 `alpine:3.20` trae archivos en `/etc`. Vas a montar tres cosas distintas sobre ese path y contar lo que queda visible. **Escribe los tres números antes de correr nada** — el primero como *N*, y los otros dos en función de *N*.
@@ -121,7 +123,7 @@ Y `:nocopy` da `0` porque es la opción que apaga ese comportamiento por omisió
 Limpia cuando termines: `docker volume rm etcvol`.
 :::
 
-Sigue con [[named-volumes-y-postgres]], donde el volumen deja de ser una trampa y pasa a ser el punto.
+Con esto cierra la sección. Sigue con [[disenar-con-contenedores]], donde el volumen deja de ser una trampa y pasa a ser una de las tres preguntas del contrato de un servicio.
 
 > [!NOTE]
 > **Si sólo recuerdas una cosa:** el bind mount nunca copia y el named volume copia una sola vez, y las dos veces que te sorprenda va a ser porque creíste lo contrario.

@@ -12,7 +12,7 @@ Dos diferencias con las guardas hermanas, y las dos son a proposito:
    comiteado. Una prueba que reescribe el artefacto que vigila no puede fallar
    cuando el artefacto esta mal: lo arregla en silencio.
 
-2. La unidad tiene treinta y una figuras de dos clases. Veintiseis son
+2. La unidad tiene treinta y cuatro figuras de dos clases. Veintinueve son
    conceptuales (gen_contenedores.py) y cinco dibujan un CSV medido
    (gen_contenedores_bench.py). Las cinco llevan guardas extra: que el CSV siga trayendo
    las columnas que declara CSV_DE, que el estadistico siga siendo la mediana
@@ -98,9 +98,9 @@ def raiz_de(slug):
 # --------------------------------------------------------------------------
 
 
-def test_el_catalogo_declara_las_treinta_y_una_figuras_de_la_unidad():
-    """26 conceptuales + 5 de benchmark. Sumar o quitar una es una decision."""
-    assert len(GEN.DIAGRAMAS_CONCEPTUALES) == 26
+def test_el_catalogo_declara_las_treinta_y_cuatro_figuras_de_la_unidad():
+    """29 conceptuales + 5 de benchmark. Sumar o quitar una es una decision."""
+    assert len(GEN.DIAGRAMAS_CONCEPTUALES) == 29
     assert tuple(GEN_BENCH.DIAGRAMAS) == BENCH
     assert not set(GEN.DIAGRAMAS_CONCEPTUALES) & set(GEN_BENCH.DIAGRAMAS), (
         "una figura declarada en los dos catalogos se pisaria al fusionarlos"
@@ -110,7 +110,7 @@ def test_el_catalogo_declara_las_treinta_y_una_figuras_de_la_unidad():
     # nombre. Que el SVG que producen sea el mismo lo dice la comparacion
     # byte a byte contra el disco, que ambas copias tienen que pasar.
     assert set(GEN.DIAGRAMAS) == set(GEN.DIAGRAMAS_CONCEPTUALES) | set(BENCH)
-    assert len(GEN.DIAGRAMAS) == 31
+    assert len(GEN.DIAGRAMAS) == 34
 
 
 @pytest.mark.parametrize("slug", SLUGS)

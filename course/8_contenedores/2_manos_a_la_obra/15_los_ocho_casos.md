@@ -11,9 +11,11 @@ prerequisites: [el-archivo-compartido]
 
 # Los ocho casos
 
-**Página 10 de 13 · sección 2 de 3**
+**Página 15 de 16 · sección 2 de 3**
 
 Meta: cerrar el modelo con una predicción por caso, antes de tocar el teclado.
+
+**Página de referencia.** La clase no la recorre: si ya la usaste, sirve para consultar.
 
 ::: figure {#cont-matriz-volumen title="Los ocho casos, como tres decisiones"}
 ![Árbol de tres decisiones binarias con ocho hojas. La primera partición es dónde está el código: en la imagen, con un Dockerfile que hace COPY punto punto, o por volumen, con la bandera -v del directorio actual a /app. La segunda es dónde editas: en el host o dentro del contenedor. La tercera es si hay build de por medio o no. Cada hoja responde dos preguntas rotuladas arriba —si el cambio se ve al correr y si sobrevive a docker rm— y lleva una línea con la razón. Las cuatro hojas de la rama del volumen quedan agrupadas bajo la conclusión de que ahí editar fuera y ver dentro no necesita ningún rebuild, mientras que en la rama de la imagen la respuesta cambia en cada hoja](../_assets/cont-matriz-volumen.svg)
@@ -90,7 +92,7 @@ docker run --rm -v "$(pwd)":/app ocho:1 | head -3                    # caso 8
 
 **Deberías ver:** `VOLUMEN` en los casos 5 y 6, `ADENTRO` en el 7 — y el `grep` demuestra que **el archivo de tu carpeta también dice `ADENTRO`**. El caso 8 no aporta nada nuevo, y ése es justo el resultado: con volumen, el `build` dejó de decidir.
 
-En Linux y en WSL2 ese `sed` de adentro corrió como `root` y **tu `app.py` acaba siendo de `root`**, exactamente como en [[el-archivo-compartido]]. Para volver a editarlo: `sudo chown "$USER" app.py`.
+En Linux y en WSL2 el contenedor corrió como `root`, pero **tu `app.py` sigue siendo tuyo**: `sed -i` conserva el dueño del archivo que ya existía. Lo que sí queda de `root` es lo **nuevo**: el `output.txt` que escribe `app.py`, exactamente como en [[el-archivo-compartido]]. No hace falta `sudo`: `rm output.txt` funciona, porque el directorio es tuyo.
 
 ## El bucle de trabajo diario
 
