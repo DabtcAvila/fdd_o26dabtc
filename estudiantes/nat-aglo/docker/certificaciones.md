@@ -15,7 +15,7 @@ partes, por eso hay tres secciones.
 
 Se llena en la **primera** entrega.
 
-Fecha en que lo terminaste: 21/Septiembre/2026
+Fecha en que lo terminaste: 21/11/2026
 
 URL del Statement of Accomplishment: https://www.datacamp.com/completed/statement-of-accomplishment/course/0e76662b3ac3e1c4874fa707b90d433431c29846
 
