@@ -38,6 +38,13 @@ Meta: dejar de preguntar «¿se guardó?» y preguntar «¿en cuál de los cuatr
 
 :::
 
+**Qué hace cada comando de la tabla:**
+
+- `docker build` — lee tu Dockerfile y tu carpeta, y produce una imagen nueva.
+- `docker rmi` — borra una imagen (sus capas, si nadie más las usa).
+- `docker rm` — borra un contenedor detenido y, con él, su capa de escritura.
+- `docker volume rm` — borra un named volume y todo lo que tenga adentro.
+
 Lee despacio la segunda fila: es la única que dice «no», y ahí cae **todo** lo que escribes sin decir dónde.
 
 La tercera y la cuarta existen justo para sacar los bytes de ahí.
@@ -72,6 +79,16 @@ cd ~/fdd/docker-lab
 docker run --rm -v "$(pwd)":/app mi-imagen:v1
 ```
 
+**Qué hace cada pieza:**
+
+- `cd ~/fdd/docker-lab` — te mueve a tu carpeta de trabajo.
+- `docker run` — crea un contenedor nuevo desde una imagen y lo arranca.
+- `--rm` — borra el contenedor en cuanto su proceso termina.
+- `-v origen:destino` — hace aparecer `origen` adentro, en la ruta `destino`.
+- `"$(pwd)"` — la ruta de tu carpeta actual; las comillas aguantan espacios en la ruta.
+- `:/app` — dónde aparece esa carpeta adentro del contenedor.
+- `mi-imagen:v1` — la imagen: nombre y etiqueta (versión); corre su comando por omisión.
+
 1. ¿En **cuál de las cuatro filas** cae `salida.txt`? Una frase con el porqué.
 2. ¿Qué comando lo borra? ¿Y qué **no** lo borra?
 3. El `--rm` destruyó el contenedor al terminar. ¿Cambia eso tu respuesta?
@@ -85,7 +102,7 @@ Una sola pregunta decide las cuatro: **¿esa ruta de adentro está montada desde
 ::: answer {of="cont-s2p7-una-fila"}
 **1. Bind mount**, tercera fila. `/app` está montado desde `~/fdd/docker-lab`: escribir ahí es escribir en **tu disco**, no en una copia.
 
-**2.** Lo borra **`rm salida.txt`** en tu terminal. No lo borran `docker rm`, `docker rmi mi-imagen:v1` ni `docker volume prune`: Docker no es dueño de ese directorio.
+**2.** Lo borra **`rm salida.txt`** en tu terminal. No lo borran `docker rm`, `docker rmi mi-imagen:v1` ni `docker volume prune` (que, sin `-a`, sólo borra los volúmenes anónimos sin uso): Docker no es dueño de ese directorio.
 
 **3. No cambia nada, y ése es el punto.** El `--rm` se llevó la capa de escritura, y `salida.txt` no estaba ahí.
 

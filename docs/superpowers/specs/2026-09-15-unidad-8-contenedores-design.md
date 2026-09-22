@@ -203,6 +203,10 @@ en ruidoso; la guarda las comprueba.
    reflow sino por aire: cada experimento lleva «Predice / Haz / Deberías ver /
    Por qué» en líneas propias. A 160 hubo que pegar el «Haz» a la pregunta y
    quitar los blancos antes de los encabezados, y la página dejó de escanearse.
+   **Mismo día, más tarde — las ocho páginas de la clase 2 pasan a un techo
+   propio de 260** (`CLASE` en la guarda). El profesor pidió que cada bandera y
+   cada subcomando se explique donde se usa; cada bloque lleva su «Qué hace cada
+   pieza», una línea por pieza, y eso sube las líneas sin subir la prosa.
 6. **Forma de página**: `Meta:` de una línea → `::: figure` → `## En corto` con
    **máximo tres viñetas** → cuerpo → **exactamente un `::: problem` con `hint` y
    `answer`** → cierre en **dos líneas** (`> [!NOTE]`, y en la siguiente `> **Si sólo recuerdas una cosa:** …`): con el cuerpo en la misma línea el marcador no casa `_CALLOUT_MARKER_RE` y **sale impreso como texto**, sin fallar el build. Lo vigila `tools/test_callouts.py`. Prohibido

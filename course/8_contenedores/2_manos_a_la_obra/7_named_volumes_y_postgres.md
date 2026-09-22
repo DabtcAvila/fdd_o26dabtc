@@ -44,7 +44,8 @@ Meta: ver con los ojos que el estado no vive en el contenedor, sino al lado.
 
 - **El uid.** Postgres corre como el usuario `postgres`, **uid 999**.
   - En Linux un bind mount sí arranca: el arranque, como root, se apropia de tu carpeta (`drwx------ 999`).
-  - Después tu `rm -rf` dice `Permission denied` (los permisos son números, [[las-cuatro-trampas|2/16]]): borrarla pide root o un contenedor.
+  - Después tu `rm -rf` dice `Permission denied`: los permisos son números, [[las-cuatro-trampas|2/16]].
+  - Borrarla pide root o un contenedor.
   - El named volume no te deja esa basura.
 - **La portabilidad.** `-v pgdata:/var/lib/postgresql/data` es la misma línea en los tres sistemas. Un bind mount cambia de ruta y, en macOS y Windows, cruza la frontera de una VM.
 
@@ -65,6 +66,24 @@ docker exec pg psql -U postgres -c 'CREATE TABLE notas (id serial PRIMARY KEY, n
 docker exec pg psql -U postgres -c "INSERT INTO notas (nombre) VALUES ('ada');"
 docker exec pg psql -U postgres -c 'SELECT * FROM notas;'
 ```
+
+**Qué hace cada pieza:**
+
+- `docker volume create pgdata` — crea un named volume vacío llamado `pgdata`.
+- `docker run` — crea un contenedor nuevo desde una imagen y lo arranca.
+- `-d` — lo deja corriendo en segundo plano y te devuelve la terminal.
+- `--name pg` — le pone nombre, para no usar su ID.
+- `-e POSTGRES_PASSWORD=fdd` — pasa una variable de entorno: la contraseña del superusuario.
+- `\` — el comando sigue en la línea de abajo.
+- `-v pgdata:/var/lib/postgresql/data` — monta el volumen **por nombre** donde Postgres guarda sus datos.
+- `postgres:16` — la imagen: Postgres, versión 16.
+- `sleep 5;` — espera 5 segundos; el `;` separa dos comandos en una línea.
+- `until …; do sleep 1; done` — repite `sleep 1` hasta que el comando de `until` salga bien.
+- `docker exec pg` — corre un comando dentro del contenedor `pg`, que ya está encendido.
+- `pg_isready -q` — pregunta si Postgres ya acepta conexiones; `-q` calla y sólo responde sí o no.
+- `psql -U postgres` — el cliente de Postgres, entrando como el usuario `postgres`.
+- `-c '…'` — corre esa sentencia SQL y sale.
+- `"…('ada')"` — comillas dobles por fuera porque el SQL lleva comillas simples adentro.
 
 **Deberías ver:**
 - `CREATE TABLE`, luego `INSERT 0 1`;
@@ -88,6 +107,16 @@ docker exec pg2 psql -U postgres -c 'SELECT * FROM notas;'
 docker logs pg2 2>&1 | head -3
 ```
 
+**Qué hace cada pieza:**
+
+- `docker rm -f pg` — borra el contenedor; `-f` lo detiene antes si sigue corriendo.
+- `docker volume ls` — lista los volúmenes que existen.
+- `| grep pgdata` — pasa esa lista a `grep`, que deja sólo las líneas con `pgdata`.
+- `pg2` — un contenedor **nuevo**, con otro nombre, sobre el mismo volumen.
+- `docker logs pg2` — muestra lo que el contenedor ha escrito en su salida.
+- `2>&1` — junta los errores con la salida normal, para que también pasen por el `|`.
+- `| head -3` — deja sólo las 3 primeras líneas.
+
 **Deberías ver:**
 - `local     pgdata`: el volumen sigue ahí;
 - **la misma fila**, `1 | ada`, desde un contenedor que nunca la insertó;
@@ -95,7 +124,8 @@ docker logs pg2 2>&1 | head -3
 
 **Por qué:**
 - `docker rm -f` se llevó la capa de escritura y el nombre; el estado estaba al lado ([[escalamiento-y-orquestacion]], puesta a prueba).
-- La **inicialización** ocurrió una sola vez, en `pg`. La imagen trae `/var/lib/postgresql/data` vacío: la copia sólo aportó dueño y permisos.
+- La **inicialización** ocurrió una sola vez, en `pg`.
+- La imagen trae `/var/lib/postgresql/data` vacío: la copia sólo aportó dueño y permisos.
 
 ## Tiempo 3: y ahora sí, matarlos
 
@@ -110,12 +140,16 @@ sleep 5; until docker exec pg3 pg_isready -q; do sleep 1; done
 docker exec pg3 psql -U postgres -c 'SELECT * FROM notas;'
 ```
 
+**Qué hace cada pieza:**
+
+nada nuevo salvo `docker volume rm pgdata` — borra el volumen y lo que tenga adentro; no hay papelera.
+
 **Deberías ver:**
 - `ERROR:  relation "notas" does not exist`.
 
 **Por qué:** `docker run` creó solo, sin avisar, un volumen `pgdata` **nuevo y vacío**. De todos los comandos de la página, `docker volume rm` es el único que borró un dato. Sin deshacer.
 
-Limpia: `docker rm -f pg3 && docker volume rm pgdata`.
+Limpia: `docker rm -f pg3 && docker volume rm pgdata` (`&&` corre lo segundo sólo si lo primero salió bien).
 
 ::: problem {#cont-p12-postgres-17 title="Un volumen de la 16, un servidor de la 17"}
 Tienes un volumen inicializado por `postgres:16` y quieres actualizar: mismo volumen, imagen nueva.
@@ -131,6 +165,11 @@ docker run -d --name v17 -e POSTGRES_PASSWORD=fdd \
 sleep 3; docker logs v17
 ```
 
+**Qué hace cada pieza:**
+
+- `postgres:17` — otra imagen, Postgres 17, montando el volumen que escribió la 16.
+- `sleep 3; docker logs v17` — le da 3 segundos para intentar arrancar y luego lees sus logs.
+
 **Predice antes de correrlo:** ¿arranca `v17`? Si no, ¿qué lo impide, y por qué el volumen no lo resuelve?
 :::
 
@@ -139,13 +178,15 @@ El volumen no guarda «tus tablas»: guarda el **directorio de datos** de Postgr
 :::
 
 ::: answer {of="cont-p12-postgres-17"}
-**No arranca.** `docker ps -a` lo muestra `Exited (1)`, y `docker logs v17` trae, tras la marca de tiempo (el parche, `17.x`, depende de la imagen del día):
+**No arranca.** `docker ps -a` lo muestra `Exited (1)`, y `docker logs v17` trae, tras la marca de tiempo:
 
 ```text
 FATAL:  database files are incompatible with server
 DETAIL:  The data directory was initialized by PostgreSQL version 16,
          which is not compatible with this version 17.x.
 ```
+
+(El parche, `17.x`, depende de la imagen del día.)
 
 - El volumen hizo su trabajo **perfecto**: entregó intacto el directorio de datos.
 - Ese directorio tiene un formato que cambia entre versiones mayores, y el 17 se niega a tocarlo antes que corromperlo. La negativa es la característica.

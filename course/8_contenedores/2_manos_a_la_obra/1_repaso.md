@@ -39,6 +39,35 @@ Esto ya lo viste en DataCamp y en [[receta-imagen-contenedor|1/3]]. Aquí no se 
 
 **La imagen no se edita; se reemplaza.** Las capas y la caché del rebuild están en [[capas-y-cache|1/8]]. Los demás comandos, en [[chuleta-contenedores|la chuleta]].
 
+## Anatomía de un `docker run`
+
+Un comando completo, desarmado. No lo corras: es para leerlo pieza por pieza.
+
+`docker run -d --name web -v "$(pwd)":/app -e MODO=dev --rm app:1 python app.py`
+
+| Pieza | Qué hace | Si la quitas… |
+|---|---|---|
+| `docker run` | crea un contenedor nuevo desde una imagen y lo arranca | — es el comando |
+| `-d` | lo deja corriendo en segundo plano y te devuelve la terminal | se queda pegado a tu terminal hasta que el proceso termine |
+| `--name web` | le pone nombre, para no usar su ID | Docker inventa uno al azar |
+| `-v "$(pwd)":/app` | monta tu carpeta actual (`origen:destino`) en `/app` de adentro | ve sólo el `/app` que trae la imagen: la copia del build |
+| `-e MODO=dev` | define la variable de entorno `MODO` adentro | la variable no existe, salvo que la imagen la traiga |
+| `--rm` | borra el contenedor en cuanto su proceso termina | queda en `docker ps -a` como `Exited` hasta que lo borres |
+| `app:1` | la imagen: nombre y etiqueta (versión) | error: Docker no sabe de qué imagen partir |
+| `python app.py` | el comando que corre adentro; reemplaza al `CMD` de la imagen | corre el `CMD` que dejó el Dockerfile |
+
+Las opciones van **antes** de la imagen; lo que va **después** de la imagen es el comando.
+
+## Anatomía de un `docker build`
+
+`docker build -t app:1 .`
+
+| Pieza | Qué hace | Si la quitas… |
+|---|---|---|
+| `docker build` | lee el Dockerfile y arma una imagen nueva | — es el comando |
+| `-t app:1` | le pone nombre y etiqueta a la imagen | la imagen sale sin nombre: sólo con su ID |
+| `.` | el contexto: la carpeta que se manda al build; de ahí sale lo que copia `COPY` | error: `build` exige esa carpeta |
+
 ## Si cambias X, ¿qué tienes que hacer para verlo?
 
 Hoy sólo mírala: cada fila se prueba en [[lab-sin-volumen|2/5]] y [[lab-con-volumen|2/6]]. El bind mount de la última se explica en [[donde-vive-cada-byte|2/4]].
@@ -62,6 +91,19 @@ printf '%s\n' 'FROM alpine:3.20' \
 cat Dockerfile
 ```
 
+**Qué hace cada pieza:**
+
+- `mkdir -p ~/fdd/docker-lab/repaso` — crea la carpeta, y las de en medio si faltan.
+- `&&` — corre lo de la derecha sólo si lo de la izquierda salió bien.
+- `cd` — entra a esa carpeta.
+- `printf '%s\n' 'a' 'b'` — escribe cada texto entre comillas en su propia línea.
+- `\` al final de una línea — el comando sigue en la línea de abajo.
+- `> Dockerfile` — manda esa salida al archivo `Dockerfile`, en vez de a la pantalla.
+- `FROM alpine:3.20` — la receta parte de esa imagen base, una Linux mínima.
+- `RUN echo ... > /nota.txt` — durante el build, escribe `/nota.txt` dentro de la imagen.
+- `CMD ["cat", "/nota.txt"]` — el comando por defecto de cada contenedor: mostrar la nota.
+- `cat Dockerfile` — muestra el archivo en pantalla.
+
 **Deberías ver:** las tres líneas. Eso es **la primera cosa**: un archivo, nada más. Docker todavía no sabe que existe.
 
 **Haz:** construye la imagen y búscala.
@@ -70,6 +112,11 @@ cat Dockerfile
 docker build -t repaso:1 .
 docker images repaso
 ```
+
+**Qué hace cada pieza:**
+
+- `docker build -t repaso:1 .` — la anatomía de arriba, con nombre `repaso` y etiqueta `1`.
+- `docker images repaso` — lista las imágenes locales llamadas `repaso`.
 
 **Deberías ver:** al final del build, `naming to docker.io/library/repaso:1`, y luego una fila de `repaso` con la etiqueta `1`, su `ID` y su tamaño (unos 8 MB). Ésa es **la segunda cosa**, y ya no depende de tu archivo: bórralo y la imagen sigue ahí.
 
@@ -81,6 +128,15 @@ docker run --name dos repaso:1 sh -c 'echo "escrito adentro" > /nota.txt; cat /n
 docker run --rm repaso:1
 docker ps -a
 ```
+
+**Qué hace cada pieza:**
+
+- `--name uno` / `--name dos` — nombres para encontrarlos después en la lista.
+- `sh -c '...'` — reemplaza al `CMD`: corre ese texto como un comando del shell, adentro.
+- `echo "escrito adentro" > /nota.txt` — sobrescribe la nota, en la capa de `dos`.
+- `;` — separa dos comandos: corre uno y luego el otro, salga bien o mal.
+- `--rm` — borra el tercer contenedor apenas termina.
+- `docker ps -a` — lista todos los contenedores, vivos y detenidos.
 
 **Deberías ver:**
 - `horneado en el build`, luego `escrito adentro`, y otra vez `horneado en el build`;
@@ -94,6 +150,11 @@ docker rmi repaso:1
 docker rm uno dos
 docker rmi repaso:1
 ```
+
+**Qué hace cada pieza:**
+
+- `docker rmi repaso:1` — quita esa etiqueta; si era la última, borra la imagen.
+- `docker rm uno dos` — borra los dos contenedores, con su capa de escritura.
 
 **Deberías ver:** el primer `rmi` falla con `conflict: unable to remove repository reference "repaso:1" (must force) - container ... is using its referenced image`. Un contenedor **detenido** también cuenta. Borrados los contenedores, sale `Untagged: repaso:1` y `Deleted: sha256:...`.
 

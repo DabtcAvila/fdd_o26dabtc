@@ -35,6 +35,17 @@ docker run --rm -d --name corto ubuntu:24.04 sleep 300
 docker ps --filter name=corto
 ```
 
+**Qué hace cada pieza:**
+
+- `docker run` — crea un contenedor nuevo desde una imagen y lo arranca.
+- `--rm` — borra el contenedor en cuanto termina su proceso.
+- `ubuntu:24.04` — la imagen: nombre y etiqueta (versión).
+- `-d` — lo deja corriendo en segundo plano y te devuelve la terminal.
+- `--name corto` — le pone nombre, para no usar su ID.
+- `sleep 300` — el comando que corre adentro: espera 300 segundos y termina.
+- `docker ps` — lista los contenedores que están corriendo.
+- `--filter name=corto` — muestra sólo los que tengan `corto` en el nombre.
+
 **Deberías ver:** el primero te devuelve el prompt sin imprimir nada; el segundo, un ID largo, y `corto` en `Up Less than a second`.
 
 - El comando por defecto de `ubuntu` es `bash`. Sin terminal no tiene de dónde leer: **termina en el acto**.
@@ -51,6 +62,11 @@ docker ps
 docker ps -a
 ```
 
+**Qué hace cada pieza:**
+
+- `sleep 3600` — espera una hora: el contenedor vive esa hora.
+- `-a` — *all*: suma a la lista los contenedores que ya terminaron.
+
 **Deberías ver:** `lab` en las dos listas, `Up` (`Less than a second` o `N seconds`). `ps` ve sólo vivos; `ps -a`, también terminados.
 
 **Haz:** entra, mira los procesos, sal.
@@ -63,6 +79,15 @@ ps aux
 exit
 docker ps -a
 ```
+
+**Qué hace cada pieza:**
+
+- `docker exec` — corre un comando más dentro de un contenedor que ya está vivo.
+- `-it` — te conecta el teclado (`-i`) y una terminal (`-t`): una shell interactiva.
+- `lab` — en qué contenedor entrar.
+- `bash` — el comando que corre adentro: una shell nueva, al lado del `sleep`.
+- `ps aux` — ya adentro: lista todos los procesos del contenedor, con su `PID`.
+- `exit` — cierra esa shell y te regresa a tu terminal.
 
 **Deberías ver:** en `ps aux`, tu `bash` y el `sleep` (el `PID` 1); tras `exit`, `lab` **aún** `Up`.
 
@@ -77,6 +102,16 @@ docker run -d --name reloj alpine:3.20 sh -c 'while true; do date; sleep 1; done
 docker logs -f reloj
 ```
 
+**Qué hace cada pieza:**
+
+- `alpine:3.20` — una imagen mínima (unos MB), con `sh` en vez de `bash`.
+- `sh -c '...'` — le pasa a la shell un programa completo, escrito entre comillas.
+- `while true; do ...; done` — repite para siempre lo de en medio.
+- `date` — imprime la fecha y hora.
+- `sleep 1` — espera un segundo antes de la siguiente vuelta.
+- `docker logs` — muestra lo que el proceso ha escrito en su salida.
+- `-f` — *follow*: se queda esperando y enseña cada línea nueva al llegar.
+
 **Deberías ver:** una línea por segundo (`Tue Sep 22 22:01:15 UTC 2026`, `...16`, `...17`). Ctrl-C corta **`logs`**, no el contenedor.
 
 Tras Ctrl-C, compruébalo y limpia:
@@ -85,6 +120,11 @@ Tras Ctrl-C, compruébalo y limpia:
 docker ps --filter name=reloj
 docker rm -f reloj
 ```
+
+**Qué hace cada pieza:**
+
+- `docker rm` — borra un contenedor terminado y su capa de escritura.
+- `-f` — *force*: si sigue vivo, primero lo mata. Aquí `-f` no es *follow*.
 
 ## Detener no es borrar
 
@@ -95,6 +135,11 @@ docker stop lab
 docker ps -a --filter name=lab
 docker start lab
 ```
+
+**Qué hace cada pieza:**
+
+- `docker stop` — pide al proceso que termine (`SIGTERM`); a los 10 s lo mata (`SIGKILL`).
+- `docker start` — vuelve a arrancar un contenedor detenido, con su mismo comando.
 
 **Deberías ver:** `Exited (137) Less than a second ago`, y tras `start`, otra vez `Up`.
 - `stop` tarda ~10 s: `sleep` ignora `SIGTERM`; el 137 es el `SIGKILL`.
@@ -109,6 +154,11 @@ docker run --name roto ubuntu:24.04 sh -c comando-que-no-existe
 docker ps -a --filter name=roto
 docker logs roto
 ```
+
+**Qué hace cada pieza:**
+
+- `sh -c comando-que-no-existe` — la shell intenta correrlo, no lo encuentra y sale con 127.
+- `docker run` sin `-d` — se queda pegado a tu terminal hasta que el proceso termina.
 
 **Deberías ver:** `sh: 1: comando-que-no-existe: not found` dos veces (en el `run` y en `logs`), y `Exited (127) Less than a second ago` en `ps -a`.
 

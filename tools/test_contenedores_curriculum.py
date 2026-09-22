@@ -92,8 +92,24 @@ ESTRUCTURADAS = {
     "docker-y-podman",
     "capas-y-cache",
     "lo-que-cuesta",
+}
+
+# Las ocho páginas de la clase 2 (2026-09-22). El profesor pidió que cada
+# bandera y cada subcomando se explique donde se usa —«los usas pero no
+# mencionan qué está pasando»—, así que cada bloque ejecutable lleva debajo su
+# «Qué hace cada pieza», una línea por pieza. Eso sube las líneas sin subir la
+# prosa. Los dos laboratorios ya estaban en 215 por el aire del formato
+# Predice / Haz / Deberías ver; la glosa los empuja más.
+MAX_CLASE = 260
+CLASE = {
+    "repaso-dockerfile-imagen-contenedor",
+    "ciclo-de-vida-de-un-contenedor",
+    "el-dockerfile-por-dentro",
+    "donde-vive-cada-byte",
     "lab-sin-volumen",
     "lab-con-volumen",
+    "named-volumes-y-postgres",
+    "limpieza-de-docker",
 }
 EXENTAS_260 = {
     "instalar-docker-y-podman",
@@ -347,7 +363,7 @@ def test_los_conjuntos_de_exentas_no_se_solapan():
     215 quedaría muerta sin que ninguna prueba lo dijera. Hoy son disjuntos por
     suerte, no por construcción; esto lo vuelve construcción.
     """
-    solape = ESTRUCTURADAS & EXENTAS_260
+    solape = (ESTRUCTURADAS & EXENTAS_260) | (CLASE & (ESTRUCTURADAS | EXENTAS_260))
     assert not solape, f"ids en dos conjuntos de exentas a la vez: {sorted(solape)}"
     assert "chuleta-contenedores" not in (ESTRUCTURADAS | EXENTAS_260), (
         "la chuleta tiene su propio techo; no puede estar además en otro conjunto"
@@ -376,6 +392,8 @@ def test_ninguna_pagina_pasa_su_techo_de_longitud(pagina):
         techo = MAX_EXENTAS
     elif identificador in ESTRUCTURADAS:
         techo = MAX_ESTRUCTURADAS
+    elif identificador in CLASE:
+        techo = MAX_CLASE
     else:
         techo = MAX_LINEAS
     lineas = len(lee(pagina).splitlines())

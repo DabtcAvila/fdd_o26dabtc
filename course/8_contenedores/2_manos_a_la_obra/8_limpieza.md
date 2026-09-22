@@ -35,6 +35,10 @@ Una sesión como la de hoy deja gigabytes que no aparecen en ninguna carpeta que
 docker system df
 ```
 
+**Qué hace cada pieza:**
+
+- `docker system df` — el `df` de Docker: cuánto disco ocupa cada tipo de cosa.
+
 **Deberías ver:**
 - cuatro renglones: `Images`, `Containers`, `Local Volumes`, `Build Cache`;
 - columnas `TOTAL`, `ACTIVE`, `SIZE` y `RECLAIMABLE`.
@@ -77,6 +81,17 @@ docker images app
 docker images -f dangling=true
 ```
 
+**Qué hace cada pieza:**
+
+- `cd ~/fdd/docker-lab/lab-a` — entra a la carpeta del laboratorio A.
+- `docker build` — construye una imagen a partir del Dockerfile.
+- `-q` — silencioso: sólo imprime el ID (`sha256:…`) de la imagen resultante.
+- `-t app:1` — le pone nombre y etiqueta a la imagen.
+- `.` — el contexto: la carpeta actual, de donde el build lee el Dockerfile y los archivos.
+- `docker images app` — lista sólo las imágenes llamadas `app`, con su ID.
+- `printf '# un comentario\n' >> app.py` — añade una línea al final de `app.py`; `>>` no borra.
+- `-f dangling=true` — filtra: sólo las imágenes que se quedaron sin nombre.
+
 **Deberías ver:**
 - cada `build -q` imprime el `sha256:` de su imagen;
 - `docker images app` muestra `app:1` las dos veces, pero con otro `ID`;
@@ -93,6 +108,15 @@ docker images -f dangling=true
 docker run --name detenido alpine:3.20 true
 docker ps -a --filter status=exited --format '{{.Names}} {{.Status}}'
 ```
+
+**Qué hace cada pieza:**
+
+- `--name detenido` — el nombre del contenedor.
+- `alpine:3.20` — una imagen mínima de Linux.
+- `true` — el comando de adentro: termina al instante y sin error, así que el contenedor queda detenido.
+- `docker ps -a` — lista contenedores, también los detenidos (`-a`).
+- `--filter status=exited` — sólo los que ya terminaron.
+- `--format '{{.Names}} {{.Status}}'` — imprime sólo nombre y estado, uno por línea.
 
 **Deberías ver:**
 - `detenido Exited (0) ...`, junto a todo lo que corriste sin `--rm` en la sección.
@@ -117,6 +141,14 @@ done
 docker images | grep -E '^lab-'
 ```
 
+**Qué hace cada pieza:**
+
+- `for i in 1 2 3 4 5; do … done` — repite lo de adentro cinco veces, con `$i` valiendo 1, 2… 5.
+- `printf 'FROM alpine:3.20\n' |` — escribe un Dockerfile de una línea y lo pasa por el tubo.
+- `docker build -q -t "lab-$i" -` — el `-` final lee el Dockerfile del tubo, sin carpeta.
+- `>/dev/null` — tira la salida (los IDs) para no ensuciar la pantalla.
+- `grep -E '^lab-'` — deja sólo las líneas que **empiezan** con `lab-`.
+
 La línea tiene que seleccionar **exactamente** `lab-1` a `lab-5`: si hay una `laboratorio` o una `lab-6`, no se toca. Las piezas: `docker images --format`, un `grep -E` y `xargs`.
 :::
 
@@ -132,10 +164,17 @@ docker images --format '{{.Repository}}:{{.Tag}}' \
   | xargs -r docker rmi
 ```
 
+**Qué hace cada pieza:**
+
+- `--format '{{.Repository}}:{{.Tag}}'` — una línea por imagen, `nombre:etiqueta`, sin encabezado.
+- `grep -E '^lab-[1-5]:latest$'` — deja sólo las líneas que casan completas con el patrón.
+- `xargs -r docker rmi` — junta esas líneas como argumentos de un solo `docker rmi`, que las borra.
+- `-r` — si no llegó ninguna línea, no corre `docker rmi`.
+
 - **Los dos anclajes son el ejercicio.** Sin `^`, `mi-lab-3` casaría; sin `$`, `lab-1:latest-viejo` también.
 - `[1-5]` es una clase de caracteres, no un rango numérico: `lab-12` no casa porque tras el `1` viene un `2` donde el patrón exige `:`.
 - `--format` le da a `grep` una columna, no una tabla con encabezado y espacios.
-- `xargs` junta las líneas en un solo `docker rmi`. El `-r` evita correrlo sin argumentos si el filtro no encuentra nada. Si tu `xargs` no acepta `-r`, quítalo: el de macOS no corre nada con la entrada vacía.
+- Si tu `xargs` no acepta `-r`, quítalo: el de macOS no corre nada con la entrada vacía.
 - Como las cinco comparten el `ID` de `alpine:3.20`, la salida dice `Untagged: lab-1:latest`…: se quitan las etiquetas, la imagen base se queda.
 - **En Podman** los builds locales se llaman `localhost/lab-1`: el patrón pasa a ser `^(localhost/)?lab-[1-5]:latest$`.
 

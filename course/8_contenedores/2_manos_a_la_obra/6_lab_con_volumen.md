@@ -36,6 +36,17 @@ printf '%s\n' 'FROM python:3.12-slim' 'WORKDIR /app' 'COPY . .' \
 docker build -t appv:1 .
 docker run --rm appv:1 | head -3
 ```
+
+**Qué hace cada pieza:**
+
+- `mkdir -p ... && cd ...` — crea la carpeta (sin quejarse si ya existe) y, si salió bien, entra.
+- `cp ... .` — copia `app.py` del repo a la carpeta actual (`.`).
+- `printf '%s\n' ... > Dockerfile` — escribe cada texto en su propia línea, dentro de `Dockerfile`.
+- `\` — el comando sigue en la línea de abajo.
+- `docker build -t appv:1 .` — construye una imagen con nombre `appv:1`; `.` es tu carpeta, lo que lee `COPY`.
+- `docker run --rm appv:1` — crea un contenedor de `appv:1`, corre su `CMD` y lo borra al salir.
+- `| head -3` — pasa la salida a `head`, que muestra sólo las 3 primeras líneas.
+
 **Deberías ver:** `Lab 1: Bind Mounts` entre dos filas de `=`. En macOS, el `sed -i` del host va como en [[lab-sin-volumen]].
 
 ### 1. Bind mount: editas en el host
@@ -48,6 +59,17 @@ sed -i 's/Bind Mounts/HOST/' app.py
 docker exec vivo python app.py | head -3
 docker run --rm appv:1 | head -3
 ```
+
+**Qué hace cada pieza:**
+
+- `-d` — el contenedor corre en segundo plano y te devuelve la terminal.
+- `--name vivo` — le pone nombre, para usarlo abajo sin su ID.
+- `-v "$(pwd)":/app` — bind mount, `origen:destino`: izquierda, tu carpeta en el host; derecha, dónde aparece adentro.
+- `"$(pwd)"` — la ruta absoluta de tu carpeta actual; las comillas aguantan espacios.
+- `sleep 600` — el comando de adentro, en vez del `CMD`: espera 10 minutos y lo mantiene vivo.
+- `sed -i 's/A/B/' app.py` — cambia `A` por `B` en cada línea del archivo y lo guarda (`-i`).
+- `docker exec vivo python app.py` — corre otro proceso dentro del contenedor que ya corría.
+
 **Deberías ver:**
 - `Lab 1: HOST` desde el `exec`, sin build ni reinicio.
 - `Lab 1: Bind Mounts` sin montaje: la imagen no se enteró.
@@ -65,6 +87,14 @@ docker exec vivo sh -c 'echo hola > /app/nuevo.txt'
 ls -l app.py nuevo.txt
 docker run --rm appv:1 | head -3
 ```
+
+**Qué hace cada pieza:**
+
+- `grep -n 'Lab 1:' app.py` — muestra las líneas que contienen el texto, con su número.
+- `sh -c '...'` — corre la línea completa en un shell de adentro, para que el `>` pase allá.
+- `echo hola > /app/nuevo.txt` — crea el archivo con `hola` adentro (y en tu disco).
+- `ls -l` — lista con detalle; la tercera y cuarta columnas son dueño y grupo.
+
 **Deberías ver:**
 - Dos líneas con `Lab 1: ADENTRO` en **tu** `app.py` (el docstring y el `print`).
 - En Linux, `app.py` sigue siendo tuyo; `nuevo.txt` es de `root root`.
@@ -82,6 +112,14 @@ Sólo en Linux con Docker (fila 1); en Podman rootless ya son tuyos: no lo corra
 docker run --rm -v "$(pwd)":/app alpine:3.20 \
   chown "$(id -u):$(id -g)" /app/nuevo.txt /app/output.txt
 ```
+
+**Qué hace cada pieza:**
+
+- `alpine:3.20` — una imagen mínima; aquí sólo presta un `root` que puede cambiar dueños.
+- `chown dueño:grupo archivos` — cambia el dueño y el grupo de esos archivos.
+- `"$(id -u):$(id -g)"` — tu uid y tu gid como números, p. ej. `1000:1000`.
+- `--user "$(id -u):$(id -g)"` — (en la línea de abajo) corre el proceso con tu uid, no como `root`.
+
 Para que nazcan tuyos desde el principio: `--user "$(id -u):$(id -g)"`. Detalle en [[el-archivo-compartido|2/14]].
 
 ### 3. Bind mount + build: ahora sí cambia la imagen
@@ -96,6 +134,12 @@ sed -i 's/ADENTRO/DISCO/' app.py
 docker run --rm -v "$(pwd)":/app appv:1 | head -3
 docker run --rm appv:1 | head -3
 ```
+
+**Qué hace cada pieza:**
+
+- `docker rm -f vivo` — detiene y borra el contenedor `vivo` en un solo paso (`-f`).
+- Lo demás ya salió: `build` lee tu carpeta; el mismo `docker run` con y sin `-v`.
+
 **Deberías ver:**
 - `Lab 1: ADENTRO` en la imagen recién construida: la edición de adentro **sí** entró.
 - Después, `Lab 1: DISCO` con montaje y `Lab 1: ADENTRO` sin él.
@@ -112,6 +156,13 @@ docker run --rm appv:1 | head -3
 ```bash
 docker run --rm -v "$(pwd)":/app:ro appv:1 2>&1 | tail -1
 ```
+
+**Qué hace cada pieza:**
+
+- `:ro` — tercer campo del `-v`: monta de sólo lectura (*read-only*).
+- `2>&1` — junta los errores con la salida normal, para que pasen por el `|`.
+- `| tail -1` — muestra sólo la última línea: el error.
+
 **Deberías ver:** `OSError: [Errno 30] Read-only file system: '/app/output.txt'`
 
 **Por qué:** `:ro` deja entrar tu código y le prohíbe al contenedor tocarlo.
@@ -129,6 +180,14 @@ sed -i 's/DISCO/NUEVO/' app.py
 docker build -t appv:1 .
 docker run --rm -v codigo:/app appv:1 | head -3
 ```
+
+**Qué hace cada pieza:**
+
+- `-v codigo:/app` — **nombre** en vez de ruta a la izquierda: es un named volume, no tu carpeta.
+- `codigo` — si no existe, Docker lo crea (como `docker volume create codigo`); lo ves con `docker volume ls`.
+- `... appv:1 sed -i ... /app/app.py` — el comando final reemplaza al `CMD`: edita adentro del volumen.
+- `docker volume rm codigo` — (en el Por qué) borra el volumen y lo que guarda.
+
 **Deberías ver:**
 - `ADENTRO`, no `DISCO`: el volumen no es tu carpeta, es copia de la imagen.
 - `VOLUMEN` con el volumen; `ADENTRO` sin él: la imagen no cambió.
@@ -163,7 +222,7 @@ docker run --rm -v "$(pwd)":/app appv:1 | head -3
 docker run --rm -v codigo:/app appv:1 | head -3
 docker run --rm appv:1 | head -3
 ```
-Luego: ¿qué dos comandos hacen que los cuatro digan `OTRO`?
+Nada nuevo en el bloque: todas sus piezas ya salieron arriba. Luego: ¿qué dos comandos hacen que los cuatro digan `OTRO`?
 :::
 
 ::: hint {of="cont-s2p6-cuatro-lineas"}

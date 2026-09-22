@@ -38,6 +38,15 @@ docker build -t app:1 .
 docker run --rm app:1 | head -3
 ```
 
+**Qué hace cada pieza:**
+
+- `mkdir -p … && cd …` — crea la carpeta (`-p`: sin error si existe); `&&` entra sólo si eso salió bien.
+- `cp … .` — copia `app.py` a la carpeta actual (el punto).
+- `printf '%s\n' … > Dockerfile` — escribe cada texto entre comillas en su propia línea.
+- `docker build -t app:1 .` — construye la imagen con tu carpeta (`.`) y la etiqueta `app:1`.
+- `docker run --rm app:1` — corre un contenedor de `app:1` y lo borra al terminar.
+- `| head -3` — de toda la salida, deja pasar sólo las 3 primeras líneas.
+
 **Deberías ver:**
 - la cabecera `Lab 1: Bind Mounts` entre dos filas de `=`;
 - es la línea que vas a cambiar; `| head -3` muestra sólo eso.
@@ -55,6 +64,11 @@ docker run --rm app:1 | head -3
 docker inspect -f '{{.Config.Cmd}}' app:1
 sed -i 's/"--version"/"app.py"/' Dockerfile
 ```
+
+**Qué hace cada pieza:**
+
+- `sed -i 's/viejo/nuevo/' archivo` — cambia el texto en el archivo mismo (`-i`).
+- `docker inspect -f '{{.Config.Cmd}}' app:1` — le pregunta a la imagen sólo su `CMD`.
 
 **Deberías ver:**
 - `Lab 1: Bind Mounts` otra vez;
@@ -81,6 +95,16 @@ docker ps --filter name=viejo --format '{{.Image}}'
 docker images app
 ```
 
+**Qué hace cada pieza:**
+
+- `-d` — deja el contenedor corriendo en segundo plano y te devuelve la terminal.
+- `--name viejo` — le pone nombre, para no usar su ID.
+- `sleep infinity` — el comando de adentro: no hace nada, nunca termina; lo mantiene vivo.
+- `docker exec viejo python app.py` — corre un comando más dentro de `viejo`, ya encendido.
+- `docker ps --filter name=viejo` — lista sólo los contenedores cuyo nombre es `viejo`.
+- `--format '{{.Image}}'` — de cada uno, imprime sólo la imagen de la que nació.
+- `docker images app` — lista las imágenes del repositorio `app`, con su `IMAGE ID`.
+
 **Deberías ver:**
 - el contenedor nuevo dice `Lab 1: HOST`; `viejo` sigue con `Lab 1: Bind Mounts`;
 - `ps` no dice `app:1`: da un ID pelón de 12 caracteres, distinto del `IMAGE ID` que muestra `docker images app`.
@@ -100,6 +124,13 @@ docker diff viejo | grep ' /app'
 docker run --rm app:1 | head -3
 docker logs viejo
 ```
+
+**Qué hace cada pieza:**
+
+- `docker exec viejo sed -i …` — el mismo `sed`, pero corre adentro y edita su copia.
+- `docker diff viejo` — lista lo que cambió en su capa de escritura respecto a la imagen.
+- `| grep ' /app'` — deja sólo las líneas de `/app`.
+- `docker logs viejo` — muestra lo que ha impreso el proceso principal de `viejo`.
 
 **Deberías ver:**
 - `viejo` dice `Lab 1: DENTRO`; el contenedor nuevo, `Lab 1: HOST`;
@@ -121,6 +152,8 @@ docker run --rm app:1 | head -3
 docker images app
 ```
 
+**Qué hace cada pieza:** nada nuevo; es el mismo build, con el mismo contexto: tu carpeta.
+
 **Deberías ver:**
 - el paso `COPY . .` marcado `CACHED`;
 - el mismo `IMAGE ID` del experimento 2;
@@ -140,6 +173,13 @@ docker run --rm app:parche python app.py | head -3
 docker history app:parche | head -2
 docker inspect -f '{{.Config.Cmd}}' app:parche
 ```
+
+**Qué hace cada pieza:**
+
+- `docker commit viejo app:parche` — congela el contenedor y su capa en la imagen `app:parche`.
+- `… app:parche python app.py` — el comando al final reemplaza al `CMD` de la imagen.
+- `docker history app:parche` — lista las capas de la imagen, la más nueva arriba.
+- `| head -2` — la cabecera y la capa de arriba, que es la del commit.
 
 **Deberías ver:**
 - `Lab 1: DENTRO`;
@@ -164,6 +204,12 @@ docker rm -f viejo
 docker exec viejo python app.py
 docker run --rm app:1 | head -3
 ```
+
+**Qué hace cada pieza:**
+
+- `docker stop viejo` — le pide al proceso que termine; si en 10 s no lo hace, lo mata.
+- `docker start viejo` — vuelve a arrancar el mismo contenedor, con su capa de escritura.
+- `docker rm -f viejo` — borra el contenedor, deteniéndolo antes si corría (`-f`).
 
 **Deberías ver:**
 - tras el reinicio, `Lab 1: DENTRO`. El `stop` tarda unos 10 s: `sleep` ignora la señal ([[ciclo-de-vida-de-un-contenedor|2/2]]);
