@@ -52,23 +52,24 @@ bobuc05/fdd-imagen:latest   70f31c621fe0        105MB         25.6MB
 
 
 docker history <tu-usuario>/<tu-imagen>
-IMAGE          CREATED         CREATED BY                                      SIZE      COMMENT
-70f31c621fe0   8 minutes ago   CMD ["./info/info.sh"]                          0B        buildkit.dockerfile.v0
-<missing>      8 minutes ago   COPY . . # buildkit                             16.4kB    buildkit.dockerfile.v0
-<missing>      8 minutes ago   RUN /bin/sh -c pip install --no-cache-dir -r…   16.3MB    buildkit.dockerfile.v0
-<missing>      8 minutes ago   COPY requirements.txt . # buildkit              12.3kB    buildkit.dockerfile.v0
-<missing>      8 minutes ago   WORKDIR /app                                    8.19kB    buildkit.dockerfile.v0
-<missing>      3 days ago      CMD ["python3"]                                 0B        buildkit.dockerfile.v0
-<missing>      3 days ago      RUN /bin/sh -c set -eux;  for src in idle3 p…   16.4kB    buildkit.dockerfile.v0
-<missing>      3 days ago      RUN /bin/sh -c set -eux;   apk add --no-cach…   51.6MB    buildkit.dockerfile.v0
-<missing>      3 days ago      ENV PYTHON_SHA256=91bcdebfdde239a003ae93738a…   0B        buildkit.dockerfile.v0
-<missing>      3 days ago      ENV PYTHON_VERSION=3.11.16                      0B        buildkit.dockerfile.v0
-<missing>      3 days ago      ENV GPG_KEY=A035C8C19219BA821ECEA86B64E628F8…   0B        buildkit.dockerfile.v0
-<missing>      3 days ago      RUN /bin/sh -c set -eux;  apk add --no-cache…   2.83MB    buildkit.dockerfile.v0
-<missing>      3 days ago      ENV LANG=C.UTF-8                                0B        buildkit.dockerfile.v0
-<missing>      3 days ago      ENV PATH=/usr/local/bin:/usr/local/sbin:/usr…   0B        buildkit.dockerfile.v0
-<missing>      3 days ago      CMD ["/bin/sh"]                                 0B        buildkit.dockerfile.v0
-<missing>      3 days ago      ADD alpine-minirootfs-3.24.2-x86_64.tar.gz /…   9.08MB    buildkit.dockerfile.v0
+IMAGE          CREATED              CREATED BY                                      SIZE      COMMENT
+cd82d2c13a8f   About a minute ago   CMD ["python" "app.py"]                         0B        buildkit.dockerfile.v0
+<missing>      About a minute ago   COPY . . # buildkit                             20.5kB    buildkit.dockerfile.v0
+<missing>      About a minute ago   USER app                                        0B        buildkit.dockerfile.v0
+<missing>      About a minute ago   RUN /bin/sh -c useradd -m app && chown -R ap…   77.8kB    buildkit.dockerfile.v0
+<missing>      About a minute ago   RUN /bin/sh -c pip install --no-cache-dir -r…   13.3MB    buildkit.dockerfile.v0
+<missing>      About a minute ago   COPY requirements.txt . # buildkit              12.3kB    buildkit.dockerfile.v0
+<missing>      About a minute ago   WORKDIR /app                                    8.19kB    buildkit.dockerfile.v0
+<missing>      3 days ago           CMD ["python3"]                                 0B        buildkit.dockerfile.v0
+<missing>      3 days ago           RUN /bin/sh -c set -eux;  for src in idle3 p…   16.4kB    buildkit.dockerfile.v0
+<missing>      3 days ago           RUN /bin/sh -c set -eux;   savedAptMark="$(a…   41.4MB    buildkit.dockerfile.v0
+<missing>      3 days ago           ENV PYTHON_SHA256=5c8462af5790baf43a321a1559…   0B        buildkit.dockerfile.v0
+<missing>      3 days ago           ENV PYTHON_VERSION=3.12.14                      0B        buildkit.dockerfile.v0
+<missing>      3 days ago           ENV GPG_KEY=7169605F62C751356D054A26A821E680…   0B        buildkit.dockerfile.v0
+<missing>      3 days ago           RUN /bin/sh -c set -eux;  apt-get update;  a…   4.95MB    buildkit.dockerfile.v0
+<missing>      3 days ago           ENV LANG=C.UTF-8                                0B        buildkit.dockerfile.v0
+<missing>      3 days ago           ENV PATH=/usr/local/bin:/usr/local/sbin:/usr…   0B        buildkit.dockerfile.v0
+<missing>      4 days ago           # debian.sh --arch 'amd64' out/ 'trixie' '@1…   87.6MB    debuerreotype 0.17
 
 
 ```
