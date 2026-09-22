@@ -11,9 +11,11 @@ prerequisites: [instalar-docker-y-podman]
 
 # Planes B
 
-**Página 2 de 13 · sección 2 de 3**
+**Página 11 de 16 · sección 2 de 3**
 
 Meta: que nadie se quede sin poder hacer la tarea mientras resuelve su instalación.
+
+**Página de referencia.** La clase no la recorre: si ya la usaste, sirve para consultar.
 
 ::: figure {#cont-planes-b title="Síntoma, causa y arreglo: las cinco trampas de instalación, y la que no existe"}
 ![Tabla de diagnóstico de tres columnas —síntoma, causa y arreglo— con las cinco trampas de instalación: los bind mounts que fallan fuera de tu carpeta personal por el paquete confinado de snap, el WSL1 en vez de WSL2, la integración por distro apagada en Docker Desktop, la virtualización desactivada en el firmware y el disco sin espacio que delata df -h en la raíz. Una sexta fila, tachada, dice que Secure Boot no tiene nada que ver con Docker. Al pie, la fecha de reporte anticipada: si el sábado 19 no te funciona, dilo el sábado 19](../_assets/cont-planes-b.svg)
@@ -46,7 +48,7 @@ Las dos son **un puente, no un destino**: el laboratorio de volúmenes de esta s
 
 Es el primer resultado de la búsqueda y es el que más caro sale. El paquete de `snap` está **confinado**: sólo ve una parte de tu disco. Instala bien, arranca bien, y un `docker run hello-world` funciona perfecto — así que parece que terminaste.
 
-El síntoma aparece después, en la página 9 de esta sección, cuando montes una carpeta: **los bind mounts fuera de tu carpeta personal fallan**, con un `no such file or directory` sobre una ruta que existe y que puedes ver con `ls`. Es media clase del martes, y perdida de una forma especialmente difícil de diagnosticar, porque el error miente.
+El síntoma aparece después, en la página 6 de esta sección, cuando montes una carpeta: **los bind mounts fuera de tu carpeta personal fallan**, con un `no such file or directory` sobre una ruta que existe y que puedes ver con `ls`. Es media clase del martes, y perdida de una forma especialmente difícil de diagnosticar, porque el error miente.
 
 **Haz:** averigua si lo tuyo es el paquete de `snap`.
 
@@ -94,7 +96,7 @@ df -h /
 docker system df
 ```
 
-**Deberías ver:** al menos **10 GB** libres en la columna `Avail`. El segundo comando te dice cuánto de lo ocupado es de Docker; qué se borra con cada `prune` es [[limpieza-de-docker|la última página de esta sección]].
+**Deberías ver:** al menos **10 GB** libres en la columna `Avail`. El segundo comando te dice cuánto de lo ocupado es de Docker; qué se borra con cada `prune` es [[limpieza-de-docker|la página 8 de esta sección]].
 
 ## Y la trampa que no existe: Secure Boot
 

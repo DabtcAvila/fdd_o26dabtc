@@ -11,7 +11,7 @@ prerequisites: [el-dockerfile-por-dentro]
 
 # Arreglar un Dockerfile
 
-**Página 6 de 13 · sección 2 de 3**
+**Página 9 de 16 · sección 2 de 3**
 
 Meta: encontrar en un archivo real los tres defectos que ya sabes nombrar, medir cada uno antes de arreglarlo, y entregar el resultado.
 
@@ -147,7 +147,7 @@ CMD ["python", "app.py"]
 El último renglón no suma, pero sin él no hay nada que calificar: la revisión automática es la puerta, y lo que comprueba es el repositorio, no tu imagen. **Que tu imagen se baje de verdad lo corro yo, con el comando que tú me escribiste.**
 :::
 
-Sigue con [[donde-vive-cada-byte]], que contesta la pregunta que abrió el defecto 3: cuando el proceso escribe algo, ¿dónde queda?
+Aquí termina lo que pide la clase. Sigue con [[instalar-docker-y-podman]] sólo para consultar: de la página 10 a la 16 son referencia.
 
 > [!NOTE]
 > **Si sólo recuerdas una cosa:** pinear la base, partir el `COPY` y poner un `USER` no son estilo — cada uno se comprueba con un comando, y por eso los tres se califican.

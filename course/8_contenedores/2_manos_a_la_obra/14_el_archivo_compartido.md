@@ -11,9 +11,11 @@ prerequisites: [rutas-en-docker]
 
 # El archivo compartido
 
-**Página 9 de 13 · sección 2 de 3**
+**Página 14 de 16 · sección 2 de 3**
 
 Meta: ver el bind mount funcionando en las dos direcciones, y descubrir que la pregunta «¿de quién queda el archivo?» tiene **cuatro** respuestas, no una.
+
+**Página de referencia.** La clase no la recorre: si ya la usaste, sirve para consultar.
 
 ::: figure {#cont-uid-plataformas title="El mismo bind mount y el mismo proceso, en cuatro plataformas: cuatro resultados"}
 ![Cuatro paneles, uno por plataforma, y en todos el mismo proceso de contenedor corriendo con uid 0, es decir root adentro. En el primero, Linux nativo con Docker, no hay user namespace porque Docker no lo activa por omisión, así que el uid 0 de adentro es el uid 0 de afuera, el mismo número sobre el mismo kernel y el mismo inodo: el archivo queda de root y no se borra sin sudo. En el segundo, Linux con Podman rootless, hay un user namespace con tu mapeo y el uid 0 de adentro se mapea a tu uid, y sólo ése, porque el 1000 de adentro cae en tu rango de subuid, que no es ningún usuario real: el archivo queda tuyo, sin sudo en ningún momento. En el tercero, WSL2 sobre una ruta ext4 de tu carpeta personal, es Linux de verdad, mismo kernel y mismo ext4, así que se comporta igual que el primero y el archivo queda de root. En el cuarto, macOS o Windows sobre una ruta del disco del sistema, el bind mount cruza a la máquina virtual por un puente que traduce la propiedad y te devuelve tu uid pase lo que pase adentro: el archivo queda tuyo, no porque esté bien sino porque nadie lo mide. Al pie, dos recuadros con las salidas: en Docker, la bandera user con tu uid y tu gid, con un asterisco que advierte que el proceso deja de ser root también adentro y que ese uid no existe en el archivo de usuarios de la imagen; y en Podman, userns igual a keep id, o el sufijo dos puntos U del volumen, que hace un chown recursivo del origen](../_assets/cont-uid-plataformas.svg)

@@ -11,9 +11,11 @@ prerequisites: [contenedores-con-las-manos]
 
 # Instalar Docker y Podman
 
-**Página 1 de 13 · sección 2 de 3**
+**Página 10 de 16 · sección 2 de 3**
 
 Meta: dejar los dos runtimes corriendo sin `sudo` antes del martes, y bajar de antemano las imágenes de la clase.
+
+**Página de referencia.** La clase no la recorre: si ya la usaste, sirve para consultar.
 
 ::: figure {#cont-sin-sudo title="La comprobación que vale en las tres plataformas, y las ocho formas de creer que corres sin `sudo`"}
 ![Árbol de comprobación de que de verdad corres sin sudo. Arriba, la cadena de comandos whoami, id -u, type -a docker, docker context ls, docker version y docker run con la bandera rm sobre hello-world. Abajo, las ocho formas de creer que corres sin sudo sin correr sin sudo, cada una colgada del comando que la delata: el alias con sudo adentro, la función de shell, ser root en WSL2, el sudo -i olvidado, el newgrp que sólo valía en esa ventana, el chmod 666 del socket tachado en rojo, un DOCKER_HOST apuntando a otra máquina, y usar Podman diciendo que es Docker. Al margen, la advertencia que se cobra en la sección 3: estar en el grupo docker es ser root](../_assets/cont-sin-sudo.svg)
@@ -148,7 +150,7 @@ De ahí sale la prohibición que no tiene matices: **nunca `chmod 666 /var/run/d
 
 La sesión del 22 baja seis imágenes. Somos treinta personas detrás del NAT del ITAM, o sea **una sola dirección IP para todos**: el límite de descargas anónimas de Docker Hub se agota alrededor del minuto diez y la clase se detiene para todo el grupo. El mensaje, cuando pasa, es `toomanyrequests: You have reached your pull rate limit`, y no se arregla reintentando: se arregla habiendo bajado las imágenes antes.
 
-Hay dos salidas y conviene usar las dos. La primera: los **pulls autenticados cuentan contra tu cuenta, no contra la IP** — y ya tienes cuenta, porque la hiciste en [[a-docker-hub|la página 3]]. La segunda: bajarlas desde tu casa, antes.
+Hay dos salidas y conviene usar las dos. La primera: los **pulls autenticados cuentan contra tu cuenta, no contra la IP** — y si ya hiciste [[a-docker-hub|la página 12]], ya tienes cuenta. La segunda: bajarlas desde tu casa, antes.
 
 **Haz:** esto, en tu red, antes del martes.
 
@@ -163,7 +165,7 @@ docker pull postgres:17
 docker images
 ```
 
-**Deberías ver:** seis renglones en `docker images`, uno por imagen, con su tamaño. Son unos cuantos cientos de megabytes y se bajan **una sola vez**. Si `docker login` te pide usuario y contraseña y no tienes cuenta todavía, esa cuenta se hace en la página 3 — y conviene hacer esa página antes que este bloque.
+**Deberías ver:** seis renglones en `docker images`, uno por imagen, con su tamaño. Son unos cuantos cientos de megabytes y se bajan **una sola vez**. Si `docker login` te pide usuario y contraseña y no tienes cuenta todavía, esa cuenta se hace en la página 12 — y conviene hacer esa página antes que este bloque.
 
 ::: problem {#cont-s2p1-comprobacion title="¿De verdad corres sin `sudo`?"}
 Circula una comprobación que aquí **no sirve**: listar tus grupos y buscar `docker` entre ellos. Sólo dice algo en Linux con el daemon del sistema; en macOS, en Windows y en cualquier instalación rootless ese grupo no existe ni debe existir, así que su ausencia no prueba nada.

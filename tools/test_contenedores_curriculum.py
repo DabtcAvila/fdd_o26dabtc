@@ -7,7 +7,7 @@ Docker o un Podman vivos y CI no los tiene. Lo que sí se reaprovecha entero es
 la otra mitad: la forma de la página, los topes, el ejercicio único, el cierre,
 y sobre todo las **aserciones argumentales**, que son las que de verdad pagan.
 
-La unidad son 27 páginas de lección repartidas en tres secciones, cuatro
+La unidad son 30 páginas de lección repartidas en tres secciones, cuatro
 índices y cuatro anexos. Hoy cumplen la forma porque se revisaron a mano, una
 por una. Sin guarda, la primera edición apurada las erosiona en silencio: el
 build no se cae por un «En corto» de cinco viñetas, ni por una página que se
@@ -56,7 +56,7 @@ ANEXOS = [
 ]
 CHULETA = ANEXOS[0]
 
-# Las 27 lecciones, en el orden en que se leen: sección 1 entera, luego la 2,
+# Las 30 lecciones, en el orden en que se leen: sección 1 entera, luego la 2,
 # luego la 3. Ese orden es el que hace decidible «antes de definirse».
 LECCIONES: list[Path] = [p for s in SECCIONES for p in _lecciones(s)]
 IDS_PYTEST = [f"{p.parent.name.split('_')[0]}-{p.stem}" for p in LECCIONES]
@@ -81,10 +81,19 @@ MAX_CHULETA = 320
 #     guardan diffs). Cabía en 160 antes y no cabe ahora, y no es por reflow.
 # Como las de 260, las tres van nombradas de una en una y están en el spec.
 MAX_ESTRUCTURADAS = 215
+#
+# Los dos laboratorios de la clase 2 (2026-09-22) entran por lo mismo, pero al
+# revés: no crecieron por reflow sino por **aire**. Cada experimento es
+# «Predice / Haz / Deberías ver / Por qué» en líneas propias, con una línea en
+# blanco antes de cada encabezado. A 160 hubo que pegar el «Haz» a la pregunta
+# y quitar los blancos, y la página dejó de escanearse, que es para lo que
+# existe el formato. Partirlos rompería la matriz de ocho casos en dos mitades.
 ESTRUCTURADAS = {
     "docker-y-podman",
     "capas-y-cache",
     "lo-que-cuesta",
+    "lab-sin-volumen",
+    "lab-con-volumen",
 }
 EXENTAS_260 = {
     "instalar-docker-y-podman",
@@ -176,24 +185,24 @@ def antes_de(identificador: str) -> list[Path]:
 # El inventario, antes que nada
 # --------------------------------------------------------------------------
 
-def test_la_unidad_tiene_las_27_lecciones_los_4_indices_y_los_4_anexos():
+def test_la_unidad_tiene_las_30_lecciones_los_4_indices_y_los_4_anexos():
     """Si alguien parte una página en dos, esta guarda deja de cubrirla.
 
     Las listas de arriba se construyen por `glob`, así que una página nueva
     entra sola a todas las pruebas de forma — pero el reparto por sección es
-    una decisión de diseño (9 · 13 · 5) y cambiarlo mueve los marcadores de
+    una decisión de diseño (9 · 16 · 5) y cambiarlo mueve los marcadores de
     posición, los índices y la chuleta a la vez. Que falle aquí es el aviso.
     """
-    assert [len(_lecciones(s)) for s in SECCIONES] == [9, 13, 5]
-    assert len(LECCIONES) == 27
+    assert [len(_lecciones(s)) for s in SECCIONES] == [9, 16, 5]
+    assert len(LECCIONES) == 30
     for grupo in (INDICES, ANEXOS):
         for pagina in grupo:
             assert pagina.is_file(), f"falta {pagina.relative_to(RAIZ)}"
-    assert len(set(IDS_LECCION)) == 27, "dos lecciones comparten id estable"
+    assert len(set(IDS_LECCION)) == 30, "dos lecciones comparten id estable"
 
 
 # --------------------------------------------------------------------------
-# 1. La forma de la página (regla 6), sólo sobre las 27 lecciones
+# 1. La forma de la página (regla 6), sólo sobre las 30 lecciones
 # --------------------------------------------------------------------------
 
 @pytest.mark.parametrize("pagina", LECCIONES, ids=IDS_PYTEST)
@@ -542,7 +551,7 @@ def test_el_indice_de_cada_seccion_lista_sus_paginas_con_enlace(seccion):
 
 
 def test_el_indice_de_la_unidad_enlaza_las_tres_secciones_y_los_cuatro_anexos():
-    """El índice de la unidad no lista las 27 páginas: lista quién sí las lista.
+    """El índice de la unidad no lista las 30 páginas: lista quién sí las lista.
 
     Por eso se comprueba distinto: sus dos tablas tienen que cubrir, entre las
     dos, los tres índices de sección y los cuatro anexos, sin sobrar ni faltar.
@@ -575,7 +584,7 @@ def test_el_indice_de_la_unidad_enlaza_las_tres_secciones_y_los_cuatro_anexos():
 
 
 def test_toda_pagina_de_la_unidad_es_alcanzable_desde_un_indice():
-    """Cerrar el círculo: ninguna de las 35 páginas queda huérfana."""
+    """Cerrar el círculo: ninguna de las 38 páginas queda huérfana."""
     enlazados = {
         destino
         for indice in INDICES
@@ -734,7 +743,7 @@ def test_puerto_se_glosa_donde_se_adelanta_y_se_define_donde_toca():
         ("socket", "cont-def-daemon", "1_la_idea/4_anatomia_de_docker_run.md"),
         ("syscall", "cont-def-syscall", "1_la_idea/4_anatomia_de_docker_run.md"),
         ("réplica", "cont-def-estado", "1_la_idea/5_escalamiento_y_orquestacion.md"),
-        ("psql", "cont-def-psql", "2_manos_a_la_obra/12_named_volumes_y_postgres.md"),
+        ("psql", "cont-def-psql", "2_manos_a_la_obra/7_named_volumes_y_postgres.md"),
     ],
 )
 def test_las_palabras_que_el_curso_nunca_definio_se_definen_al_usarlas(
@@ -926,7 +935,7 @@ def test_los_derivados_de_la_prueba_de_escritura_salen_de_su_CSV():
         "Podman reporta más veces el disco a pelo de lo que la página dice"
     )
     assert "1700" not in lee(_POR_ID["donde-vive-cada-byte"]), (
-        "2/7 publica el brazo descartado; ahí no hay espacio para explicar por "
+        "2/4 publica el brazo descartado; ahí no hay espacio para explicar por "
         "qué está mal, y un número malo sin su explicación es peor que ninguno"
     )
 
@@ -1147,9 +1156,10 @@ def test_las_paginas_de_laboratorio_alternan_haz_y_deberias_ver(pagina):
 def test_ningun_bloque_ejecutable_pide_sudo_para_hablar_con_el_runtime(pagina):
     """`sudo docker` es el síntoma de una instalación a medias.
 
-    La sección 2 dedica su primera página y su plan B a dejar los dos runtimes
-    corriendo **sin** `sudo`; un `sudo docker` en un bloque que el alumno copia
-    enseña justo el hábito que esa página existe para quitar. El `sudo` de
+    La sección 2 dedica su página de instalación (2/10) y su plan B a dejar
+    los dos runtimes corriendo **sin** `sudo`; un `sudo docker` en un bloque
+    que el alumno copia enseña justo el hábito que esa página existe para
+    quitar. El `sudo` de
     `apt-get`, `dnf` o `usermod` es otra cosa y sigue siendo legítimo.
     """
     ofensas = [
@@ -1160,5 +1170,5 @@ def test_ningun_bloque_ejecutable_pide_sudo_para_hablar_con_el_runtime(pagina):
     ]
     assert not ofensas, (
         f"{pagina.name} pide `sudo` para hablar con el runtime; la instalación "
-        "de 2/1 existe para no necesitarlo:\n" + "\n".join(ofensas)
+        "de 2/10 existe para no necesitarlo:\n" + "\n".join(ofensas)
     )

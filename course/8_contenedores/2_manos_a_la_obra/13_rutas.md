@@ -11,9 +11,11 @@ prerequisites: [donde-vive-cada-byte]
 
 # Rutas
 
-**Página 8 de 13 · sección 2 de 3**
+**Página 13 de 16 · sección 2 de 3**
 
 Meta: que montar deje de fallar por la ruta. La mitad de los «no me funciona el volumen» son un error de tecleo que Docker no reporta.
+
+**Página de referencia.** La clase no la recorre: si ya la usaste, sirve para consultar.
 
 ::: figure {#cont-rutas title="Cuatro maneras de escribir el origen de un `-v`, y una de las cuatro no es una ruta"}
 ![Cuatro tarjetas, una por cada forma de escribir el lado izquierdo de un guion v. La primera, la ruta absoluta, monta ese directorio y nada más: siempre funciona y nunca es portable, porque esa ruta no existe en la máquina de nadie más. La segunda, la ruta relativa que empieza con punto barra, funciona desde Docker CLI 23, de 2023, y también en Podman, y se resuelve contra tu directorio actual. La tercera, la forma portable, usa pwd entre comillas: el shell la vuelve absoluta antes de que Docker la vea, así que funciona con cualquier versión, y las comillas son por los espacios. La cuarta está marcada como la que no es una ruta: le falta el punto barra, y sin él Docker no ve una ruta sino un nombre, así que crea un named volume vacío con ese nombre y lo monta en silencio, sin error y sin aviso, de modo que el código no aparece por ningún lado dentro del contenedor y sólo docker volume ls lo delata. Abajo, un recuadro con tres cajas en fila —tu disco, la frontera de la máquina virtual y el contenedor— que muestra que en macOS y en Windows cada lectura y cada escritura del bind mount cruzan ese puente: por eso ahí es más lento y por eso los permisos los inventa el filesystem compartido, mientras que en Linux no hay puente y el bind mount es el mismo inodo del mismo kernel](../_assets/cont-rutas.svg)

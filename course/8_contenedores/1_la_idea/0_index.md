@@ -48,7 +48,7 @@ Meta: que "proceso aislado" deje de ser una frase hecha, y que `docker run` deje
 
 ## Antes de empezar
 
-**Nada que instalar.** Esta sección corre entera sin terminal: instalar Docker y Podman es la primera página de la sección siguiente.
+**Nada que instalar.** Esta sección corre entera sin terminal: instalar Docker y Podman vive en la sección siguiente, como página de referencia: [[instalar-docker-y-podman|2/10]].
 
 ## Lo que se reparte en clase
 
@@ -89,13 +89,13 @@ Varias páginas abren una pregunta y **la dejan abierta a propósito**. No es de
 | Orquestación | 1/1 | 1/5 |
 | gVisor | 1/6 | 3/5 |
 | Aislamiento máximo | 1/6 | 3/5 |
-| Estado que sobrevive al contenedor | 1/1 | 2/12 |
-| Bind mounts distintos en macOS y Windows | 1/6 | 2/8 y 2/9 |
-| `overlay` | 1/4 | 2/7 |
-| El copy-up de la capa de escritura | 1/9 | 2/7 |
+| Estado que sobrevive al contenedor | 1/1 | 2/7 |
+| Bind mounts distintos en macOS y Windows | 1/6 | 2/6, y a fondo en 2/13 y 2/14 |
+| `overlay` | 1/4 | 2/4 |
+| El copy-up de la capa de escritura | 1/9 | 2/4 |
 | Escribir en el socket de Docker es mandar sobre un proceso `root` | 1/4 | 3/4 |
-| Que Docker no active user namespaces | 1/2 | 2/9 y 3/4 |
-| `CMD` contra `ENTRYPOINT` | 1/3 | 2/5 |
+| Que Docker no active user namespaces | 1/2 | 2/6, 2/14 y 3/4 |
+| `CMD` contra `ENTRYPOINT` | 1/3 | 2/3 |
 | El arranque no descomprime la imagen | 1/4 | 1/9 |
 | `puerto`, con su definición completa | 1/2 | 3/1 |
 | `pods` | 1/7 | 3/1 |

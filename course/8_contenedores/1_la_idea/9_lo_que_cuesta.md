@@ -199,7 +199,7 @@ Multiplica antes de opinar. Y para la 4: pregúntate cuántas veces se paga cada
 Y ojo con la salida fácil: arrancarlos en paralelo reparte esos 214 s entre los núcleos, pero no los borra, y encima le sumas contención. **La pregunta correcta no es «¿cómo arranco más rápido?», es «¿por qué estoy arrancando 500 veces?».**
 :::
 
-Con esto cierra la sección. Sigue con [[contenedores-con-las-manos]], la sesión del martes, con teclado: instalar los dos runtimes y averiguar dónde vive cada byte que escribe un contenedor.
+Con esto cierra la sección. Sigue con [[contenedores-con-las-manos]], la sesión del martes, con teclado: repasar Dockerfile, imagen y contenedor, y averiguar en dos laboratorios dónde vive cada byte que escribe un contenedor.
 
 > [!NOTE]
 > **Si sólo recuerdas una cosa:** crear un contenedor cuesta cientos de milisegundos y correr adentro no cuesta; cualquier número que diga otra cosa está midiendo algo que no dijo.

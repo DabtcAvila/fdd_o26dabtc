@@ -11,9 +11,11 @@ prerequisites: [planes-b-de-instalacion]
 
 # A Docker Hub
 
-**Página 3 de 13 · sección 2 de 3**
+**Página 12 de 16 · sección 2 de 3**
 
 Meta: publicar un artefacto propio y comprobar que existe para los demás, no sólo para ti.
+
+**Página de referencia.** La clase no la recorre: si ya la usaste, sirve para consultar.
 
 ::: figure {#cont-registro title="El nombre de una imagen, desarmado, y el viaje de ida y vuelta al registro"}
 ![Un nombre de imagen desarmado en sus cuatro piezas rotuladas registro, usuario, nombre y tag, con ubuntu expandido abajo a docker.io diagonal library diagonal ubuntu con el tag latest, y la aclaración de que library no es un usuario sino el namespace reservado de las imágenes oficiales, donde no puedes hacer push. A la derecha, el viaje del artefacto propio: docker login, docker tag, docker push hacia el registro, y docker pull de vuelta desde otra máquina, con el digest sha256 colgando de la imagen como su nombre verdadero e inmutable. Dos avisos marcados: los nombres van en minúsculas siempre, y la URL pública de la imagen no es la de administración](../_assets/cont-registro.svg)
@@ -101,7 +103,7 @@ hola desde mi imagen
 
 Esas dos líneas —`Unable to find image ... locally` y `Pulling from`— son la prueba de que la imagen está publicada y es pública: se bajó **sin sesión iniciada**, que es exactamente la situación de quien la va a revisar. Si en vez de eso sale un `pull access denied`, el repositorio quedó privado y se cambia a público desde la configuración del repositorio en Docker Hub.
 
-Y el paso que se olvida siempre: **este ejercicio te dejó deslogueado.** Vuelve a `docker login` antes del prepull de [[instalar-docker-y-podman|la página 1]], porque el prepull sólo cuenta contra tu cuenta si tienes sesión.
+Y el paso que se olvida siempre: **este ejercicio te dejó deslogueado.** Vuelve a `docker login` antes del prepull de [[instalar-docker-y-podman|la página 10]], porque el prepull sólo cuenta contra tu cuenta si tienes sesión.
 
 ::: problem {#cont-s2p3-que-se-baja title="¿Qué se baja, de dónde, y por qué esa URL da 404?"}
 Dos preguntas, y las dos se contestan con la figura de arriba.
@@ -129,7 +131,7 @@ La pública es **`hub.docker.com/r/<tu-usuario>/<tu-imagen>`**. Ábrela en una v
 Las dos preguntas son la misma, y es la de toda la página: **lo que existe para ti no es lo que existe para los demás**, y la única forma de saberlo es quitarte tus privilegios y volver a mirar.
 :::
 
-Sigue con [[ciclo-de-vida-de-un-contenedor]], que es la primera página de la clase del martes.
+Sigue con [[rutas-en-docker]], la siguiente de consulta: cómo escribir el origen de un `-v` sin que Docker invente un volumen.
 
 > [!NOTE]
 > **Si sólo recuerdas una cosa:** el tag se mueve y el digest no; y una imagen no está publicada hasta que te la bajas sin sesión iniciada.
