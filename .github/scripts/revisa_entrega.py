@@ -101,6 +101,19 @@ def total_declarado(pr):
     return int(_gh(f"repos/{repo}/pulls/{pr}", "--jq", ".changed_files").strip())
 
 
+def fecha_del_pr(pr):
+    """El dia en que se abrio el pull request (UTC).
+
+    Los periodos de gracia se miden contra esta fecha y no contra hoy: si no,
+    un pull request abierto dentro de la gracia se vuelve rojo en cuanto el
+    alumno corrige y hace push a la misma branch, que es justo lo que se le
+    pide hacer.
+    """
+    repo = os.environ["GITHUB_REPOSITORY"]
+    creado = _gh(f"repos/{repo}/pulls/{pr}", "--jq", ".created_at").strip()
+    return datetime.date.fromisoformat(creado[:10])
+
+
 def es_basura(ruta):
     partes = ruta.split("/")
     nombre = partes[-1]
@@ -123,8 +136,8 @@ def subcarpeta(ruta, mio):
     return partes[0] if len(partes) > 1 else ""
 
 
-def _paso_la_fecha(variable_de_entorno):
-    """True si hoy ya paso la fecha de corte guardada en esa variable.
+def _paso_la_fecha(variable_de_entorno, abierto):
+    """True si el pull request se abrio en o despues de la fecha de corte.
 
     Sin la variable, estricto desde siempre: borrar la fecha endurece la
     regla, nunca la apaga. Las reglas 1 y 5 comparten este mecanismo pero
@@ -133,21 +146,21 @@ def _paso_la_fecha(variable_de_entorno):
     desde = os.environ.get(variable_de_entorno, "").strip()
     if not desde:
         return True
-    return datetime.date.today() >= datetime.date.fromisoformat(desde)
+    return abierto >= datetime.date.fromisoformat(desde)
 
 
-def _estricto_en_branch():
+def _estricto_en_branch(abierto):
     """La regla 1 (no entregar desde main) rechaza a partir de su fecha."""
-    return _paso_la_fecha("BRANCH_ESTRICTA_DESDE")
+    return _paso_la_fecha("BRANCH_ESTRICTA_DESDE", abierto)
 
 
-def _estricto_en_nombre():
+def _estricto_en_nombre(abierto):
     """La regla 5 (nombre de la branch) rechaza a partir de su propia fecha.
 
     Es una variable distinta de BRANCH_ESTRICTA_DESDE a proposito: esa
     gobierna la regla 1, que ya estaba vigente y que nadie pidio relajar.
     """
-    return _paso_la_fecha("BRANCH_NOMBRE_ESTRICTO_DESDE")
+    return _paso_la_fecha("BRANCH_NOMBRE_ESTRICTO_DESDE", abierto)
 
 
 def _lista(rutas):
@@ -176,6 +189,8 @@ def main():
     mio = f"{RAIZ_ESTUDIANTES}{autor}/"
     mapa = _mapa_tareas()
     fallos, avisos = [], []
+    abierto = fecha_del_pr(pr)
+    branch_nueva = False
 
     # 0. Un pull request sin archivos no es una entrega.
     if not archivos:
@@ -213,8 +228,9 @@ def main():
             "  Arreglo: git switch -c tarea-NN-nombre, vuelve a commitear ahi,\n"
             "  haz push y abre otro pull request desde esa branch."
         )
-        if _estricto_en_branch():
+        if _estricto_en_branch(abierto):
             fallos.append(texto)
+            branch_nueva = True
         else:
             avisos.append(
                 texto + "\n"
@@ -243,8 +259,9 @@ def main():
             "  Arreglo: git switch -c <el nombre>, vuelve a commitear ahi, haz\n"
             "  push y abre el pull request desde esa branch."
         )
-        if _estricto_en_nombre():
+        if _estricto_en_nombre(abierto):
             fallos.append(texto)
+            branch_nueva = True
         else:
             avisos.append(
                 texto + "\n"
@@ -350,10 +367,18 @@ def main():
         print("La entrega no paso la revision.\n")
         for f in fallos:
             print(f"- {f}\n")
-        print(
-            "Corrige y haz push a ESTA MISMA branch: el pull request se actualiza\n"
-            "solo y la revision se vuelve a correr. No abras otro."
-        )
+        if branch_nueva:
+            # La unica correccion que no cabe en la misma branch: su nombre.
+            print(
+                "El problema es la branch misma, y una branch no se renombra\n"
+                "dentro de un pull request: la entrega va en una branch nueva,\n"
+                "con su propio pull request. Cierra este cuando abras el nuevo."
+            )
+        else:
+            print(
+                "Corrige y haz push a ESTA MISMA branch: el pull request se actualiza\n"
+                "solo y la revision se vuelve a correr. No abras otro."
+            )
         return 1
 
     print(f"Entrega correcta: {len(archivos)} archivo(s), todos dentro de {mio}")

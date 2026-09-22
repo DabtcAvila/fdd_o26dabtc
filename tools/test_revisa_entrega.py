@@ -60,7 +60,8 @@ def _f(path, status="added", previa=""):
 
 def _correr(mod, monkeypatch, archivos, autor="ana", rama="tarea-07-git",
             mantenedores="uumami", rama_default="main", declarado=None,
-            estricta_desde="", nombre_estricto_desde="", tareas=""):
+            estricta_desde="", nombre_estricto_desde="", tareas="",
+            abierto=None):
     monkeypatch.setenv("AUTOR", autor)
     monkeypatch.setenv("RAMA", rama)
     monkeypatch.setenv("RAMA_DEFAULT", rama_default)
@@ -73,6 +74,9 @@ def _correr(mod, monkeypatch, archivos, autor="ana", rama="tarea-07-git",
     monkeypatch.setattr(mod, "archivos_del_pr", lambda pr: archivos)
     n = len(archivos) if declarado is None else declarado
     monkeypatch.setattr(mod, "total_declarado", lambda pr: n)
+    # La gracia se mide contra el dia en que se abrio el PR; por omision, hoy.
+    monkeypatch.setattr(mod, "fecha_del_pr",
+                        lambda pr: abierto or datetime.date.today())
     return mod.main()
 
 
@@ -518,3 +522,28 @@ def test_el_workflow_exporta_lo_que_el_script_lee(wf, mod):
 
 def test_los_bots_quedan_exentos(wf):
     assert "'Bot'" in wf["jobs"]["revision"]["if"]
+
+
+# --- la gracia se mide contra la apertura del PR, no contra hoy -------------
+
+def test_un_pr_abierto_en_la_gracia_sigue_en_gracia_al_corregir(mod, monkeypatch, capsys):
+    """Hallazgo de la revision del 2026-09-22: con la fecha de hoy, un PR de
+    la unidad 7 abierto el 17 se volvia rojo en cuanto el alumno hacia push
+    a la misma branch para corregir, que es lo que se le pide."""
+    _congela_hoy(monkeypatch, datetime.date(2026, 9, 30))
+    archivos = [_f("estudiantes/ana/github/certificaciones.md")]
+    assert _correr(mod, monkeypatch, archivos, rama="07_git_intermedio",
+                   tareas=MAPA, nombre_estricto_desde="2026-09-22",
+                   abierto=datetime.date(2026, 9, 17)) == 0
+    assert "AVISO" in capsys.readouterr().out
+
+
+def test_un_pr_abierto_despues_del_corte_falla_y_pide_branch_nueva(mod, monkeypatch, capsys):
+    """Y el cierre no dice «no abras otro»: el nombre no se arregla ahi."""
+    archivos = [_f("estudiantes/ana/github/certificaciones.md")]
+    assert _correr(mod, monkeypatch, archivos, rama="07_git_intermedio",
+                   tareas=MAPA, nombre_estricto_desde="2026-09-22",
+                   abierto=datetime.date(2026, 9, 23)) == 1
+    salida = capsys.readouterr().out
+    assert "branch nueva" in salida and "No abras otro" not in salida
+

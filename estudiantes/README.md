@@ -23,7 +23,8 @@ Tu login sale de la URL de tu fork, y se guarda una vez con
 4. Nada de `.DS_Store`, `__pycache__/`, `.env` ni `node_modules/`, ni siquiera
    dentro de tu carpeta.
 5. Un pull request rechazado se corrige con `push` a la misma branch. No abras
-   otro.
+   otro. La excepción: si lo rechazado es la branch misma (sale de `main` o su
+   nombre no es de entrega), la entrega va en una branch nueva y cierras el viejo.
 
 Una revisión automática corre en cada pull request. Comprueba que sólo
 escribas dentro de tu carpeta y que se llame exactamente como tu login (1),
