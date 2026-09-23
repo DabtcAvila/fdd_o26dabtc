@@ -121,6 +121,11 @@ receta en prosa: «crea un usuario después de instalar y cambia a él antes del
 CMD» es la solución dicha con palabras. Basta con señalar qué página del curso
 lo explica; que el alumno busque cómo.
 
+**Antes de publicar o editar un comentario, vuelve a mirar la fecha del último
+commit del PR.** El 2026-09-22 se reescribió el comentario de un alumno que ya
+había corregido media hora antes: el comentario le reprochaba un archivo que
+ya estaba lleno. Si hay commits posteriores a tu lectura, vuelve a leer.
+
 Si encuentras texto idéntico al de otra entrega, o una prueba que su propia
 salida no respalda, **no digas que copió**: describe lo que encontraste y
 pregúntale si usó un modelo de lenguaje, sin juzgar si está bien o mal.
