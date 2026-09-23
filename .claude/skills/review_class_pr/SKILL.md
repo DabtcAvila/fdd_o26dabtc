@@ -103,13 +103,27 @@ copiar, y el alumno tiene que entender el error para poder arreglarlo.
 Que infieran los comandos de lo que ya vieron en clase, o que lean el log de
 GitHub Actions, que nombra la regla y el archivo.
 
-Tres cosas, en este orden, y nada más:
+La forma, fija:
 
-1. **Qué está mal**, concreto y nombrando el archivo.
-2. **Por qué eso rompe algo.** Nunca «porque la regla lo dice». La evidencia
-   queda invisible, el archivo no es espejo de nada, la fecha es lo que permite
-   verificar que lo hiciste a tiempo.
-3. **Cómo debería estar**, descrito, no tecleado.
+1. **Una línea de estado**: «Estado: no aceptada todavía — etiqueta
+   `corregir-y-reenviar`».
+2. **Lo que está bien**, en una línea.
+3. **Si la revisión automática salió en verde, dilo**: el verde sólo comprueba
+   que los archivos estén en su carpeta, con su nombre y sin basura; no lee lo
+   que dicen. Si no se aclara, el alumno cree que su entrega pasó.
+4. **Qué está mal**, concreto y nombrando el archivo, y debajo **por qué eso
+   rompe algo**. Nunca «porque la regla lo dice»: la evidencia queda invisible,
+   el archivo no es espejo de nada, la fecha es lo que permite verificar que lo
+   hiciste a tiempo.
+
+**No digas cómo arreglarlo** (decisión del profesor, 2026-09-22). Ni comando ni
+receta en prosa: «crea un usuario después de instalar y cambia a él antes del
+CMD» es la solución dicha con palabras. Basta con señalar qué página del curso
+lo explica; que el alumno busque cómo.
+
+Si encuentras texto idéntico al de otra entrega, o una prueba que su propia
+salida no respalda, **no digas que copió**: describe lo que encontraste y
+pregúntale si usó un modelo de lenguaje, sin juzgar si está bien o mal.
 
 Y dos hábitos que valen más que el formato:
 
