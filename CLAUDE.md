@@ -106,6 +106,18 @@ One subtlety worth keeping: a rename reports only the destination in `filename`,
 
 The content that promises these checks lives in two places, `course/7_git_y_github/2_github/4_el_flujo_del_curso.md` and `estudiantes/README.md`, so all three — script, workflow, and those two pages — move together; this repo already let one of them drift out of sync once. The mirror rule is **not** machine-checked — say so wherever it is described.
 
+Two details of the grace periods: both dates are compared against the PR's **opening** date (`created_at`), not today — otherwise a PR opened inside the grace turns red the moment the student pushes a fix. And when what failed is the branch itself (default branch or bad name), the closing message says the delivery goes in a **new** branch, the one exception to "push to the same branch".
+
+### Per-task CI: the ficha (from 2026-09-22 on)
+
+`entregas.yml` has a **third** step, `.github/scripts/revisa_ficha.py`, that runs the checks declared in `.github/tareas/<branch>.toml` — the task's **ficha** (schema in `.github/tareas/README.md`). No ficha for a branch means nothing to check (green, silent). The ficha is read from disk, which is safe **only** because the checkout is pinned to `base.sha`; the script reads nothing but `.github/tareas/` and `codigo/` from disk (a test spies `open` to prove it) and the student's files only through the API. Its messages say **what** is wrong, **why**, and **where to investigate** — never how to fix it (the teacher's rule). Prompt-injection text in a student file is reported as a warning, never obeyed.
+
+- **Old deliveries keep their rules.** `tarea-08-datacamp-intro` and `tarea-08-imagen` stay in the `CATALOGO` inside `revisa_contenido.py`, and that catalog no longer grows (a test pins it). Every new task gets a ficha.
+- **Creating a task:** use the `crear_tarea` skill (ficha + official YAML + template in `codigo/` + `TAREAS` entry + board row + tests + adversarial pass).
+- **Reviewing deliveries:** use the `revisar_tarea` skill (it replaced `review_class_pr`): all-or-nothing verdict with teacher override, comparison between deliveries (`compara.py`), slop/incoherence signals stated as verifiable facts — never "copied" or "used AI".
+- **The review registry** lives on the orphan branch `registro-entregas` (`registro.csv`, one row per delivery attempt, **GitHub login only**, never real names). It is kept out of `main` on purpose because the repo is public; never merge that branch. Write to it with `.claude/skills/revisar_tarea/registro.py`.
+- The board `course/8_contenedores/7_D_entregas.md` also describes what the automatic review checks, so it moves together with the scripts and the two pages above.
+
 Deployment requires the repository to stay **public**: GitHub Pages is not available for private repos on this organization's plan.
 
 ## Content conventions
