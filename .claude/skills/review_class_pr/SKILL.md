@@ -126,14 +126,15 @@ commit del PR.** El 2026-09-22 se reescribió el comentario de un alumno que ya
 había corregido media hora antes: el comentario le reprochaba un archivo que
 ya estaba lleno. Si hay commits posteriores a tu lectura, vuelve a leer.
 
-Si la entrega **se ve generada con un modelo de lenguaje y sin revisar**
-—salidas que no corresponden a la imagen o a la máquina, fechas imposibles,
-defectos de un archivo que no existe, texto idéntico al de otra entrega, una
-prueba con una imagen que su propio `docker images` no muestra—, **dilo
-directamente** (decisión del profesor, 2026-09-22): nombra las señales
-concretas, di que se ve que usó un modelo y no revisó lo que entregó, y que
-tiene que leer y entender cada línea. Usar un modelo no es la falta; entregar
-sin leer, sí. Nunca digas que «copió» de otro alumno.
+Si las salidas pegadas **no cuadran** —fechas imposibles, un digest recortado,
+IDs que cambian, un `history` sin las capas del Dockerfile, una prueba con una
+imagen que su propio `docker images` no muestra, texto idéntico al de otra
+entrega—, **di los hechos y por qué cada uno es un error; no afirmes lo que no
+sabes** (decisión del profesor, 2026-09-22). No puedes ver su máquina: no digas
+que algo «no existe» ni que «usó un modelo». Cierra con la condicional: si usó
+alguna herramienta para redactar, que revise cada línea contra lo que corrió,
+porque tiene que entender y poder defender lo que entrega. Nunca digas que
+«copió» de otro alumno.
 
 Y dos hábitos que valen más que el formato:
 
