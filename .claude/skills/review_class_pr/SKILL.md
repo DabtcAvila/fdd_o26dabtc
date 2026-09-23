@@ -126,9 +126,14 @@ commit del PR.** El 2026-09-22 se reescribió el comentario de un alumno que ya
 había corregido media hora antes: el comentario le reprochaba un archivo que
 ya estaba lleno. Si hay commits posteriores a tu lectura, vuelve a leer.
 
-Si encuentras texto idéntico al de otra entrega, o una prueba que su propia
-salida no respalda, **no digas que copió**: describe lo que encontraste y
-pregúntale si usó un modelo de lenguaje, sin juzgar si está bien o mal.
+Si la entrega **se ve generada con un modelo de lenguaje y sin revisar**
+—salidas que no corresponden a la imagen o a la máquina, fechas imposibles,
+defectos de un archivo que no existe, texto idéntico al de otra entrega, una
+prueba con una imagen que su propio `docker images` no muestra—, **dilo
+directamente** (decisión del profesor, 2026-09-22): nombra las señales
+concretas, di que se ve que usó un modelo y no revisó lo que entregó, y que
+tiene que leer y entender cada línea. Usar un modelo no es la falta; entregar
+sin leer, sí. Nunca digas que «copió» de otro alumno.
 
 Y dos hábitos que valen más que el formato:
 
