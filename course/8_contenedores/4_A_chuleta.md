@@ -26,12 +26,12 @@ En los ejemplos, `ubuntu:24.04`, `alpine:3.20` y `postgres:16` son las imágenes
 | Quiero | Docker | Podman | Dónde |
 |---|---|---|---|
 | Correrlo y que se borre al salir | `docker run --rm alpine:3.20 echo ok` | igual | [[anatomia-de-docker-run|1/4]] |
-| Dejarlo corriendo, con nombre | `docker run -d --name lab ubuntu:24.04 sleep 300` | igual | [[ciclo-de-vida-de-un-contenedor|2/4]] |
-| Entrar con terminal desde el arranque | `docker run -it ubuntu:24.04 bash` | igual | [[ciclo-de-vida-de-un-contenedor|2/4]] |
-| Montar mi carpeta de trabajo | `docker run --rm -v "$(pwd)":/app ubuntu:24.04 ls /app` | igual | [[el-archivo-compartido|2/9]] |
-| Que el archivo que escriba quede **mío** | `docker run --rm --user "$(id -u):$(id -g)" …` | `podman run --rm --userns=keep-id …` | [[el-archivo-compartido|2/9]] |
+| Dejarlo corriendo, con nombre | `docker run -d --name lab ubuntu:24.04 sleep 300` | igual | [[ciclo-de-vida-de-un-contenedor|2/2]] |
+| Entrar con terminal desde el arranque | `docker run -it ubuntu:24.04 bash` | igual | [[ciclo-de-vida-de-un-contenedor|2/2]] |
+| Montar mi carpeta de trabajo | `docker run --rm -v "$(pwd)":/app ubuntu:24.04 ls /app` | igual | [[lab-con-volumen|2/6]] |
+| Que el archivo que escriba quede **mío** | `docker run --rm --user "$(id -u):$(id -g)" …` | `podman run --rm --userns=keep-id …` | [[el-archivo-compartido|2/14]] |
 | Pasarle configuración | `docker run -e POSTGRES_PASSWORD=fdd postgres:16` | igual | [[el-contrato-de-un-servicio|3/2]] |
-| Correr una imagen de otra arquitectura | `docker run --rm --platform linux/amd64 ubuntu:24.04 uname -m` | igual | [[instalar-docker-y-podman|2/1]] |
+| Correr una imagen de otra arquitectura | `docker run --rm --platform linux/amd64 ubuntu:24.04 uname -m` | igual | [[instalar-docker-y-podman|2/10]] |
 
 :::
 
@@ -39,24 +39,26 @@ En los ejemplos, `ubuntu:24.04`, `alpine:3.20` y `postgres:16` son las imágenes
 
 ## El ciclo de vida
 
-Trece comandos que salen todos de la misma regla — el contenedor **es** su `PID` 1 — y se leen contra la figura de [[ciclo-de-vida-de-un-contenedor|la página 4 de la sección 2]].
+Quince comandos que salen todos de la misma regla — el contenedor **es** su `PID` 1 — y se leen contra la figura de [[ciclo-de-vida-de-un-contenedor|la página 2 de la sección 2]].
 
-::: table {#cont-chuleta-ciclo title="Los trece del ciclo de vida"}
+::: table {#cont-chuleta-ciclo title="Los quince del ciclo de vida"}
 
 | Quiero | Docker | Podman | Dónde |
 |---|---|---|---|
-| Ver los que están **vivos** | `docker ps` | igual | [[ciclo-de-vida-de-un-contenedor|2/4]] |
-| Ver también los que ya terminaron | `docker ps -a` | igual | [[ciclo-de-vida-de-un-contenedor|2/4]] |
-| Buscar uno por nombre | `docker ps -a --filter name=roto` | igual | [[ciclo-de-vida-de-un-contenedor|2/4]] |
-| Leerlo en columnas que yo elijo | `docker ps -a --format '{{.Names}} {{.Status}}'` | igual | [[limpieza-de-docker|2/13]] |
-| Ver lo que escribió | `docker logs lab` | igual | [[ciclo-de-vida-de-un-contenedor|2/4]] |
-| Meterme a uno que **ya está corriendo** | `docker exec -it lab bash` | igual | [[ciclo-de-vida-de-un-contenedor|2/4]] |
-| Correr un comando suelto adentro | `docker exec lab cat /datos.txt` | igual | [[donde-vive-cada-byte|2/7]] |
-| Detenerlo | `docker stop lab` | igual | [[ciclo-de-vida-de-un-contenedor|2/4]] |
-| Revivirlo con su mismo comando | `docker start lab` | igual | [[ciclo-de-vida-de-un-contenedor|2/4]] |
+| Ver los que están **vivos** | `docker ps` | igual | [[ciclo-de-vida-de-un-contenedor|2/2]] |
+| Ver también los que ya terminaron | `docker ps -a` | igual | [[ciclo-de-vida-de-un-contenedor|2/2]] |
+| Buscar uno por nombre | `docker ps -a --filter name=roto` | igual | [[ciclo-de-vida-de-un-contenedor|2/2]] |
+| Leerlo en columnas que yo elijo | `docker ps -a --format '{{.Names}} {{.Status}}'` | igual | [[limpieza-de-docker|2/8]] |
+| Ver lo que escribió | `docker logs lab` | igual | [[ciclo-de-vida-de-un-contenedor|2/2]] |
+| Seguirlo en vivo, línea por línea | `docker logs -f lab` | `podman logs -f lab` | [[ciclo-de-vida-de-un-contenedor|2/2]] |
+| Meterme a uno que **ya está corriendo** | `docker exec -it lab bash` | igual | [[ciclo-de-vida-de-un-contenedor|2/2]] |
+| Correr un comando suelto adentro | `docker exec lab cat /datos.txt` | igual | [[lab-sin-volumen|2/5]] |
+| Ver qué cambió en su capa de escritura | `docker diff lab` | `podman diff lab` | [[lab-sin-volumen|2/5]] |
+| Detenerlo | `docker stop lab` | igual | [[ciclo-de-vida-de-un-contenedor|2/2]] |
+| Revivirlo con su mismo comando | `docker start lab` | igual | [[ciclo-de-vida-de-un-contenedor|2/2]] |
 | Pararlo y volverlo a arrancar de un golpe | `docker restart lab` | igual | [[el-contrato-de-un-servicio|3/2]] |
-| Borrarlo de la lista | `docker rm lab` | igual | [[ciclo-de-vida-de-un-contenedor|2/4]] |
-| Matarlo y borrarlo de un golpe | `docker rm -f lab` | igual | [[ciclo-de-vida-de-un-contenedor|2/4]] |
+| Borrarlo de la lista | `docker rm lab` | igual | [[ciclo-de-vida-de-un-contenedor|2/2]] |
+| Matarlo y borrarlo de un golpe | `docker rm -f lab` | igual | [[ciclo-de-vida-de-un-contenedor|2/2]] |
 | Sacarle un archivo, **vivo o muerto** | `docker cp lab:/app/salida.csv .` | igual | esta página |
 
 :::
@@ -72,7 +74,7 @@ Y dos que en Podman se escriben igual y conviene saber en qué se diferencian: `
 | `0` | terminó bien: hizo su trabajo y se acabó |
 | `1` | el programa falló por su cuenta — lee `logs` |
 | `126` | el archivo existe pero no es ejecutable; casi siempre falta `chmod +x` |
-| `127` | no existe el comando: una errata, o no está instalado en esa imagen |
+| `127` | un shell (`sh -c …`) no encontró el comando: una errata, o no está instalado en esa imagen. Sin shell de por medio no hay `Exited (127)`: el contenedor queda `Created`, aunque el propio `docker run` sale con código 127 |
 | `137` | lo mataron con `SIGKILL`: tu `stop` que se pasó del tiempo, o el límite de memoria |
 
 :::
@@ -83,18 +85,20 @@ Y dos que en Podman se escriben igual y conviene saber en qué se diferencian: `
 
 | Quiero | Docker | Podman | Dónde |
 |---|---|---|---|
-| Construir con el contexto de aquí | `docker build -t mi-imagen .` | igual | [[el-dockerfile-por-dentro|2/5]] |
-| Usar otro archivo, mismo contexto | `docker build -f docker/Dockerfile.prod -t app .` | igual | [[el-dockerfile-por-dentro|2/5]] |
+| Construir con el contexto de aquí | `docker build -t mi-imagen .` | igual | [[el-dockerfile-por-dentro|2/3]] |
+| Usar otro archivo, mismo contexto | `docker build -f docker/Dockerfile.prod -t app .` | igual | [[el-dockerfile-por-dentro|2/3]] |
 | Ignorar el caché y rehacer todo | `docker build --no-cache -t mi-imagen .` | igual | [[capas-y-cache|1/8]] |
-| Construir callado, y quedarme con el hash | `docker build -q -t mi-imagen .` | igual | [[el-dockerfile-por-dentro|2/5]] |
-| Ver la imagen **por capas** | `docker history mi-imagen` | igual | [[el-dockerfile-por-dentro|2/5]] |
-| Ver qué imágenes tengo, y cuánto pesan | `docker images` | igual | [[instalar-docker-y-podman|2/1]] |
-| Lo mismo, en las columnas que quiero | `docker images --format 'table {{.Repository}}\t{{.Tag}}\t{{.Size}}'` | igual | [[el-dockerfile-por-dentro|2/5]] |
-| Publicar para otra arquitectura | `docker buildx build --platform linux/amd64 -t app .` | `podman build --platform linux/amd64 -t app .` | [[instalar-docker-y-podman|2/1]] |
+| Construir callado, y quedarme con el hash | `docker build -q -t mi-imagen .` | igual | [[el-dockerfile-por-dentro|2/3]] |
+| Ver la imagen **por capas** | `docker history mi-imagen` | igual | [[el-dockerfile-por-dentro|2/3]] |
+| Ver qué comando corre al arrancar | `docker inspect -f '{{.Config.Cmd}}' mi-imagen` | `podman inspect --format '{{.Config.Cmd}}' mi-imagen` | [[lab-sin-volumen|2/5]] |
+| Volver imagen la capa de un contenedor — **existe, no se usa**: el Dockerfile no se entera | `docker commit lab mi-imagen:parche` | `podman commit lab mi-imagen:parche` | [[lab-sin-volumen|2/5]] |
+| Ver qué imágenes tengo, y cuánto pesan | `docker images` | igual | [[instalar-docker-y-podman|2/10]] |
+| Lo mismo, en las columnas que quiero | `docker images --format 'table {{.Repository}}\t{{.Tag}}\t{{.Size}}'` | igual | [[el-dockerfile-por-dentro|2/3]] |
+| Publicar para otra arquitectura | `docker buildx build --platform linux/amd64 -t app .` | `podman build --platform linux/amd64 -t app .` | [[instalar-docker-y-podman|2/10]] |
 
 :::
 
-El `.` final **no es «aquí»: es el contexto**, y viaja entero al daemon. Si pesa más de lo que esperabas, la herramienta es `.dockerignore` —mismo formato que `.gitignore`— y recorta **antes** de enviar:
+El `.` final **no es «aquí»: es el contexto**. Con BuildKit no viaja entero: viaja lo que piden los `COPY`. Pero un `COPY . .` pide **todo**, y por eso existe `.dockerignore` —mismo formato que `.gitignore`—, que recorta **antes** de enviar:
 
 ```text
 .git
@@ -130,16 +134,17 @@ Y dos que aparecen mucho y aquí no hacen falta: **`ADD`**, que es `COPY` con ma
 
 | Quiero | Docker | Podman | Dónde |
 |---|---|---|---|
-| Crear un named volume | `docker volume create pgdata` | igual | [[named-volumes-y-postgres|2/12]] |
-| Listarlos | `docker volume ls` | igual | [[donde-vive-cada-byte|2/7]] |
-| Ver dónde vive uno de verdad | `docker volume inspect pgdata` | igual | [[named-volumes-y-postgres|2/12]] |
-| Borrarlo — **esto sí pierde el dato** | `docker volume rm pgdata` | igual | [[named-volumes-y-postgres|2/12]] |
-| Borrar los que no tienen dueño | `docker volume prune` | igual | [[limpieza-de-docker|2/13]] |
-| Montar **mi carpeta** (bind mount) | `-v "$(pwd)":/app` | igual | [[rutas-en-docker|2/8]] |
-| Montar un **named volume** | `-v pgdata:/var/lib/postgresql/data` | igual | [[named-volumes-y-postgres|2/12]] |
-| Montarlo de sólo lectura | `-v "$(pwd)":/app:ro` | igual | [[las-cuatro-trampas|2/11]] |
-| Escribirlo sin ambigüedad | `--mount type=bind,src="$(pwd)/app",dst=/app` | igual | [[rutas-en-docker|2/8]] |
-| Arreglar el dueño del origen (Podman) | — | `-v ./app:/app:U` | [[el-archivo-compartido|2/9]] |
+| Crear un named volume | `docker volume create pgdata` | igual | [[named-volumes-y-postgres|2/7]] |
+| Listarlos | `docker volume ls` | igual | [[named-volumes-y-postgres|2/7]] |
+| Ver dónde vive uno de verdad | `docker volume inspect pgdata` | igual | [[named-volumes-y-postgres|2/7]] |
+| Borrarlo — **esto sí pierde el dato** | `docker volume rm pgdata` | igual | [[named-volumes-y-postgres|2/7]] |
+| Borrar los volúmenes que ningún contenedor usa | `docker volume prune`: sólo los **anónimos** | `podman volume prune`: **todos**, también los que tienen nombre | [[limpieza-de-docker|2/8]] |
+| …incluidos los **con nombre** | `docker volume prune -a` | no hay `-a`: el de arriba ya se los lleva | [[limpieza-de-docker|2/8]] |
+| Montar **mi carpeta** (bind mount) | `-v "$(pwd)":/app` | igual | [[rutas-en-docker|2/13]] |
+| Montar un **named volume** | `-v pgdata:/var/lib/postgresql/data` | igual | [[named-volumes-y-postgres|2/7]] |
+| Montarlo de sólo lectura | `-v "$(pwd)":/app:ro` | igual | [[lab-con-volumen|2/6]] |
+| Escribirlo sin ambigüedad | `--mount type=bind,src="$(pwd)/app",dst=/app` | igual | [[rutas-en-docker|2/13]] |
+| Arreglar el dueño del origen (Podman) | — | `-v ./app:/app:U` | [[el-archivo-compartido|2/14]] |
 
 :::
 
@@ -169,13 +174,13 @@ En la red por omisión **no hay resolución por nombres**: dos contenedores se a
 
 | Quiero | Docker | Podman | Dónde |
 |---|---|---|---|
-| Entrar a Docker Hub | `docker login` | igual | [[a-docker-hub|2/3]] |
-| Bajar una imagen | `docker pull postgres:16` | igual | [[instalar-docker-y-podman|2/1]] |
-| Ponerle el nombre con el que se publica | `docker tag hola tuusuario/hola:v1` | igual | [[a-docker-hub|2/3]] |
-| Subirla | `docker push tuusuario/hola:v1` | igual | [[a-docker-hub|2/3]] |
-| Ver su digest, que es su nombre verdadero | `docker inspect --format '{{index .RepoDigests 0}}' tuusuario/hola:v1` | igual | [[a-docker-hub|2/3]] |
-| Borrar una imagen local | `docker rmi -f tuusuario/hola:v1` | igual | [[a-docker-hub|2/3]] |
-| Salir de la sesión | `docker logout` | igual | [[a-docker-hub|2/3]] |
+| Entrar a Docker Hub | `docker login` | igual | [[a-docker-hub|2/12]] |
+| Bajar una imagen | `docker pull postgres:16` | igual | [[instalar-docker-y-podman|2/10]] |
+| Ponerle el nombre con el que se publica | `docker tag hola tuusuario/hola:v1` | igual | [[a-docker-hub|2/12]] |
+| Subirla | `docker push tuusuario/hola:v1` | igual | [[a-docker-hub|2/12]] |
+| Ver su digest, que es su nombre verdadero | `docker inspect --format '{{index .RepoDigests 0}}' tuusuario/hola:v1` | igual | [[a-docker-hub|2/12]] |
+| Borrar una imagen local | `docker rmi -f tuusuario/hola:v1` | igual | [[a-docker-hub|2/12]] |
+| Salir de la sesión | `docker logout` | igual | [[a-docker-hub|2/12]] |
 
 :::
 
@@ -189,18 +194,18 @@ Y el que tumba a alguien cada semestre: **los nombres de imagen van en minúscul
 
 | Quiero | Docker | Podman | Dónde |
 |---|---|---|---|
-| Medir antes de borrar | `docker system df` | igual | [[limpieza-de-docker|2/13]] |
-| Ver las capas huérfanas | `docker images -f dangling=true` | igual | [[limpieza-de-docker|2/13]] |
-| Borrar los contenedores **detenidos** | `docker container prune -f` | igual | [[limpieza-de-docker|2/13]] |
-| Borrar sólo las capas huérfanas | `docker image prune` | igual | [[limpieza-de-docker|2/13]] |
-| …y además las imágenes que nadie usa | `docker image prune -a` | igual | [[limpieza-de-docker|2/13]] |
-| Barrer contenedores, capas, redes y caché | `docker system prune -a` | igual | [[limpieza-de-docker|2/13]] |
-| Incluir también los **volúmenes** | `docker system prune --volumes` | igual | [[limpieza-de-docker|2/13]] |
-| Borrar por patrón | `docker images --format '{{.Repository}}:{{.Tag}}' \| grep '^lab-' \| xargs -r docker rmi` | igual | [[limpieza-de-docker|2/13]] |
+| Medir antes de borrar | `docker system df` | igual | [[limpieza-de-docker|2/8]] |
+| Ver las capas huérfanas | `docker images -f dangling=true` | igual | [[limpieza-de-docker|2/8]] |
+| Borrar los contenedores **detenidos** | `docker container prune` — sin `-f` la primera vez, para leer qué propone | igual | [[limpieza-de-docker|2/8]] |
+| Borrar sólo las capas huérfanas | `docker image prune` | igual | [[limpieza-de-docker|2/8]] |
+| …y además las imágenes que nadie usa | `docker image prune -a` | igual | [[limpieza-de-docker|2/8]] |
+| Barrer contenedores, capas, redes y caché | `docker system prune -a` | igual | [[limpieza-de-docker|2/8]] |
+| Incluir también los volúmenes | `docker system prune --volumes`: sólo los **anónimos** | `podman system prune --volumes`: **todos** los que nadie usa, también los que tienen nombre | [[limpieza-de-docker|2/8]] |
+| Borrar por patrón | `docker images --format '{{.Repository}}:{{.Tag}}' \| grep -E '^lab-[1-5]:latest$' \| xargs -r docker rmi` | lo mismo con `podman`, pero Podman nombra `localhost/lab-1:latest`: el patrón es `^(localhost/)?lab-[1-5]:latest$` | [[limpieza-de-docker|2/8]] |
 
 :::
 
-Ningún `prune` toca lo que está **en uso**, y ninguno toca los **volúmenes** salvo que se lo pidas aparte. Esa excepción no es un descuido: es la única fila donde borrar es **perder un dato** y no rehacer un build.
+Ningún `prune` toca lo que está **en uso**, y en Docker ninguno toca un volumen **con nombre** salvo `docker volume prune -a`: `system prune --volumes` y `volume prune` sin `-a` sólo se llevan los anónimos. **En Podman no hay esa red:** `podman volume prune` y `podman system prune --volumes` se llevan también los que tienen nombre. Esa excepción no es un descuido: es la única fila donde borrar es **perder un dato** y no rehacer un build.
 
 ## Mirar la instalación, y endurecer
 
@@ -208,12 +213,12 @@ Ningún `prune` toca lo que está **en uso**, y ninguno toca los **volúmenes** 
 
 | Quiero | Comando | Dónde |
 |---|---|---|
-| Saber si el cliente habla con su daemon | `docker version` | [[instalar-docker-y-podman|2/1]] |
-| Saber **cuál** `docker` estoy corriendo | `type -a docker` y `docker context ls` | [[instalar-docker-y-podman|2/1]] |
+| Saber si el cliente habla con su daemon | `docker version` | [[instalar-docker-y-podman|2/10]] |
+| Saber **cuál** `docker` estoy corriendo | `type -a docker` y `docker context ls` | [[instalar-docker-y-podman|2/10]] |
 | Ver cómo está configurado el motor por dentro | `docker info` | [[contenedores-anidados|Anexo C]] |
-| Comprobar mi rango rootless | `grep "^$USER:" /etc/subuid /etc/subgid` | [[instalar-docker-y-podman|2/1]] |
-| Ver la máquina de Podman | `podman machine list` | [[instalar-docker-y-podman|2/1]] |
-| Ver los uid como los ve Podman — diagnostica, no arregla | `podman unshare ls -ln` | [[el-archivo-compartido|2/9]] |
+| Comprobar mi rango rootless | `grep "^$USER:" /etc/subuid /etc/subgid` | [[instalar-docker-y-podman|2/10]] |
+| Ver la máquina de Podman | `podman machine list` | [[instalar-docker-y-podman|2/10]] |
+| Ver los uid como los ve Podman — diagnostica, no arregla | `podman unshare ls -ln` | [[el-archivo-compartido|2/14]] |
 | Ver con qué capabilities arranca | `docker run --rm alpine:3.20 grep CapEff /proc/self/status` | [[cuando-se-rompe-el-aislamiento|3/4]] |
 | Apagar todas las capabilities | `--cap-drop ALL` | [[cuando-se-rompe-el-aislamiento|3/4]] |
 | Impedir que escale privilegios | `--security-opt no-new-privileges` | [[cuando-se-rompe-el-aislamiento|3/4]] |
@@ -261,9 +266,10 @@ Lo que **no** compra la ausencia de daemon es velocidad: con el runtime igualado
 | `invalid reference format: repository name must be lowercase` | hay mayúsculas en el nombre de la imagen | todo en minúsculas, aunque tu login no lo esté |
 | `toomanyrequests: You have reached your pull rate limit` | se agotó el límite de descargas anónimas de Docker Hub; treinta personas detrás de una sola IP lo agotan en minutos | `docker login`, y haz el prepull **antes** de la clase |
 | `denied: requested access to the resource is denied` | el usuario del tag no es el de tu sesión — o le escribiste una mayúscula | `docker login`, revisa el `docker tag`, y vuelve a empujar |
-| `no such file or directory` sobre una ruta que **sí** existe, al montarla | Docker instalado por `snap`, que está confinado y no ve fuera de tu carpeta personal | quítalo y reinstala desde el repositorio oficial — [[planes-b-de-instalacion|2/2]] |
-| `forbidden path outside the build context` | un `COPY ../datos .`: no se puede copiar de fuera del contexto | mueve el archivo dentro del contexto, o cambia qué directorio le pasas al `build` |
-| `Exited (127)` y `exec: "…": executable file not found in $PATH` | el comando no existe en esa imagen: una errata, o no está instalado | corrige el nombre, o instálalo en el `Dockerfile` |
+| `no such file or directory` sobre una ruta que **sí** existe, al montarla | Docker instalado por `snap`, que está confinado y no ve fuera de tu carpeta personal | quítalo y reinstala desde el repositorio oficial — [[planes-b-de-instalacion|2/11]] |
+| `failed to compute cache key: ... "/datos": not found` | un `COPY ../datos .`: BuildKit no sale del contexto, así que busca `datos` **dentro** de él. Si ahí existe un `datos/`, copia ése **sin error** | mueve el archivo dentro del contexto, o cambia qué directorio le pasas al `build`. `forbidden path outside the build context` es el mismo error en el builder viejo |
+| `exec: "…": executable file not found in $PATH`, y el contenedor queda `Created` | `docker run img comando-que-no-existe`: el `run` falla en el acto, el proceso nunca arrancó y `docker logs` sale vacío | corrige el nombre, o instálalo en el `Dockerfile` |
+| `Exited (127)`, y en `docker logs`: `sh: 1: …: not found` | el comando lo lanzó un shell —`sh -c comando-que-no-existe`— y el shell no lo encontró | igual: corrige el nombre, o instálalo en el `Dockerfile` |
 | `Exited (126)` | el archivo existe y no es ejecutable | `chmod +x` al script, o un `RUN chmod +x` en el `Dockerfile` |
 | `Exited (137)` | `SIGKILL`: tu `stop` se pasó de los diez segundos, o chocó con el límite de memoria | si fue memoria, sube `--memory`; si fue `stop`, atiende `SIGTERM` |
 | `exec ./entrada.sh: no such file or directory`, **con el archivo ahí** | el script se guardó con saltos de línea de Windows: el `\r` quedó pegado al final del `#!` y ese intérprete no existe | guarda con saltos de línea de Unix, o `sed -i 's/\r$//' entrada.sh` y reconstruye |

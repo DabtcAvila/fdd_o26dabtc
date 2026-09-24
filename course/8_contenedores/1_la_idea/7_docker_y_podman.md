@@ -67,7 +67,7 @@ De ahí sale algo que sorprende la primera vez: `podman ps` **no le pregunta a n
 > [!WARNING]
 > **Docker también corre rootless**, aunque el mito diga otra cosa. No viene así por defecto —se instala aparte, con `dockerd-rootless-setuptool.sh`, y deja un daemon **por usuario** en vez de uno del sistema— y necesita exactamente lo mismo que acabas de leer. Rootless no es una marca de Podman: **es una función del kernel de Linux y los dos la usan.** Lo que los separa es **cuál es el default**, y el default es lo que decide qué está corriendo en la mayoría de las máquinas.
 
-Ése es el porqué. El **procedimiento** —qué escribir, en qué orden, qué instalar— vive en la primera página de la sección 2, «Instalar Docker y Podman», y está escrito para copiarse.
+Ése es el porqué. El **procedimiento** —qué escribir, en qué orden, qué instalar— vive en la página 10 de la sección 2, «Instalar Docker y Podman» —referencia, no clase—, y está escrito para copiarse.
 
 Y un matiz que ya viste en la figura del espectro de la página 6: **rootless no añade ninguna frontera.** El kernel sigue siendo el mismo y la superficie de `syscall` es idéntica. Lo que cambia es con qué privilegio sale quien se escape.
 

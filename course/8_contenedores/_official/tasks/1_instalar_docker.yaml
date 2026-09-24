@@ -17,7 +17,7 @@ content:
     por hecho DataCamp. Podman hace lo mismo sin un proceso con privilegios
     corriendo todo el tiempo, y vas a querer haberlo instalado el día que veas
     la diferencia en clase. Instala los dos, en el orden que quieras, siguiendo
-    la primera página de la segunda sección de la unidad, que trae las
+    la página 10 de la segunda sección de la unidad, que trae las
     instrucciones de Linux, de macOS y de Windows con WSL2; si algo falla, la
     página siguiente es la de planes B y tiene los síntomas más comunes con su
     causa.

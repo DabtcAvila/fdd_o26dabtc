@@ -5,9 +5,10 @@ funcion por figura que devuelve una cadena SVG completa, y un catalogo
 DIAGRAMAS que el generador y su prueba comparten como unica fuente de "que
 figuras existen".
 
-El catalogo de este modulo FUSIONA las figuras conceptuales con las cuatro
-graficas de benchmark de gen_contenedores_bench.py, que dibujan CSV en vez de
-ideas. Quien importe DIAGRAMAS de aqui ve las treinta figuras de la unidad.
+El catalogo de este modulo FUSIONA las veintinueve figuras conceptuales con
+las cinco graficas de benchmark de gen_contenedores_bench.py, que dibujan CSV
+en vez de ideas. Quien importe DIAGRAMAS de aqui ve las treinta y cuatro
+figuras de la unidad.
 
 Solo biblioteca estandar, a proposito: la guarda de la unidad IMPORTA este
 modulo y el runner de CI solo instala pytest, pillow y pyyaml.
@@ -925,7 +926,7 @@ def cont_capas_cache():
 
 
 # --------------------------------------------------------------------------
-# 2/1 · Las ocho formas de creer que corres sin sudo
+# 2/10 · Las ocho formas de creer que corres sin sudo
 # --------------------------------------------------------------------------
 
 def _trampa(x, y, w, h, titulo, delator, tachada=False):
@@ -1023,7 +1024,7 @@ def cont_sin_sudo():
 
 
 # --------------------------------------------------------------------------
-# 2/2 · Planes B: sintoma, causa, arreglo
+# 2/11 · Planes B: sintoma, causa, arreglo
 # --------------------------------------------------------------------------
 
 def cont_planes_b():
@@ -1038,11 +1039,12 @@ def cont_planes_b():
         "firmware, y el disco lleno que delata df -h barra. Una sexta fila va "
         "tachada y en gris: Secure Boot no tiene nada que ver con Docker y no "
         "hay que apagarlo por esto. Al pie, la fecha de reporte anticipada: si "
-        "el sabado 19 no te funciona, dilo el sabado 19"
+        "el sabado 19 no te funciona, dilo el sabado 19, no el lunes a "
+        "medianoche"
     )
     filas = (
         (ROJO,
-         ("error while creating mount source path", "…/app: permission denied"),
+         ("bind mount fuera de tu home:", "no such file or directory"),
          ("instalaste Docker desde snap y el paquete", "está confinado: no ve fuera de tu home"),
          ("desinstala el snap e instala desde el", "repositorio oficial de Docker")),
         (ROJO,
@@ -1060,7 +1062,7 @@ def cont_planes_b():
         (ROJO,
          ("no space left on device", "a media descarga de la imagen"),
          ("el disco está lleno:", "df -h / lo delata en una línea"),
-         ("docker system df y después prune:", "la página 13 dice qué se lleva cada uno")),
+         ("docker system df y después prune:", "la página 8 dice qué se lleva cada uno")),
         (SUAVE,
          ("Secure Boot está encendido",),
          ("ninguna: no es una causa",),
@@ -1097,13 +1099,13 @@ def cont_planes_b():
                            SUAVE if mito else ACENTO, 12.5, anclaje="start"))
 
     p.append(texto(660, 684, "La fecha de reporte va anticipada a propósito: si el sábado 19 no te funciona, dilo el sábado 19.", SUAVE, 13.5))
-    p.append(texto(660, 708, "No el martes 22 a las 19:00, con la sesión empezando y trece páginas por delante.", SUAVE, 13.5))
+    p.append(texto(660, 708, "No el lunes a medianoche, con la clase del martes encima.", SUAVE, 13.5))
     p.append(cierre())
     return "".join(p)
 
 
 # --------------------------------------------------------------------------
-# 2/3 · El nombre de una imagen, y el viaje al registro
+# 2/12 · El nombre de una imagen, y el viaje al registro
 # --------------------------------------------------------------------------
 
 def cont_registro():
@@ -1211,7 +1213,7 @@ def cont_registro():
 
 
 # --------------------------------------------------------------------------
-# 2/4 · El ciclo de vida de un contenedor
+# 2/2 · El ciclo de vida de un contenedor
 # --------------------------------------------------------------------------
 
 def cont_ciclo_de_vida():
@@ -1226,7 +1228,9 @@ def cont_ciclo_de_vida():
         "derecha, que alcanza cada comando: docker ps solo ve running, docker "
         "ps -a ve las tres, docker logs ve running y exited, y docker exec -it "
         "entra a running y aparece tachado contra exited. Al pie, el caso del "
-        "exited con codigo 127, el comando que no existia"
+        "exited con codigo 127: docker run --name roto ubuntu:24.04 sh -c "
+        "comando-que-no-existe, cuya shell no encuentra el comando, y docker "
+        "logs roto trae la linea sh: 1: comando-que-no-existe: not found"
     )
     p = [marco(ancho, alto, aria)]
     p.append(texto(700, 42, "El ciclo de vida de un contenedor", TEXTO, 21, peso="600"))
@@ -1267,13 +1271,14 @@ def cont_ciclo_de_vida():
         "SIGKILL. No hay una tercera manera.",
     )))
 
-    p.append(caja(40, 528, 700, 110, PANEL, AMBAR))
-    p.append(texto(60, 558, "El caso que vas a ver: Exited (127)", AMBAR, 14.5, anclaje="start", peso="600"))
-    p.append(parrafo(60, 584, (
-        "127 es «command not found»: el contenedor arrancó, su PID 1 no existía",
-        "y salió de inmediato. docker ps no lo muestra; docker ps -a sí, y",
-        "docker logs trae la línea exacta del error.",
-    )))
+    p.append(caja(40, 516, 700, 124, PANEL, AMBAR))
+    p.append(texto(60, 544, "El caso que vas a ver: Exited (127)", AMBAR, 14.5, anclaje="start", peso="600"))
+    p.append(teclado(60, 568, "docker run --name roto ubuntu:24.04 sh -c comando-que-no-existe", TEXTO, 11.5, anclaje="start", peso="normal"))
+    p.append(parrafo(60, 589, (
+        "127 es «command not found»: la shell arrancó, no halló el comando y salió.",
+        "docker ps no lo muestra; docker ps -a sí, y docker logs roto trae la línea:",
+    ), SUAVE, 12.5, 18))
+    p.append(teclado(60, 629, "sh: 1: comando-que-no-existe: not found", AMBAR, 11.5, anclaje="start", peso="normal"))
 
     # -- que alcanza cada comando ------------------------------------------
     p.append(caja(780, 130, 580, 428, PANEL, LINEA))
@@ -1303,27 +1308,30 @@ def cont_ciclo_de_vida():
 
 
 # --------------------------------------------------------------------------
-# 2/5 · El contexto de build
+# 2/3 · El contexto de build
 # --------------------------------------------------------------------------
 
 def cont_build_contexto():
     """Que se lleva exactamente el punto final de docker build."""
     ancho, alto = 1300, 830
     aria = (
-        "Que se lleva exactamente el punto final de docker build -t mi-imagen "
-        "punto: el directorio entero, empaquetado y enviado al daemon como "
-        "contexto. A la izquierda, la carpeta en disco con app.py y "
-        "requirements.txt livianos y el .git, el entorno virtual y los datos "
-        "crudos pesando gigabytes; en medio, .dockerignore como un colador que "
-        "los recorta antes del envio; a la derecha, el contexto ya recortado "
-        "saliendo hacia el daemon. Abajo, tres notas: -f cambia que Dockerfile "
-        "se lee pero no cambia el contexto, --no-cache solo ignora las capas "
-        "previas y manda el contexto igual, y el error de escribir la ruta del "
-        "Dockerfile donde va el contexto"
+        "Que significa el punto final de docker build -t mi-imagen punto: el "
+        "directorio que hace de contexto, el unico lugar de donde el build "
+        "puede leer. Con BuildKit no viaja la carpeta entera: viaja lo que "
+        "piden los COPY, y con COPY punto punto eso es todo, menos lo que "
+        ".dockerignore recorta. A la izquierda, la carpeta en disco con app.py "
+        "y requirements.txt livianos y el .git, el entorno virtual y los datos "
+        "crudos pesando gigabytes; en medio, .dockerignore como un colador; a "
+        "la derecha, lo que llega al daemon. Un COPY de fuera del contexto "
+        "falla con failed to compute cache key, not found. Abajo, tres notas: "
+        "-f cambia que Dockerfile se lee pero no el contexto, --no-cache solo "
+        "ignora las capas previas, y el error de escribir la ruta del "
+        "Dockerfile donde va el contexto: unable to prepare context, path not "
+        "found"
     )
     p = [marco(ancho, alto, aria)]
     p.append(texto(650, 42, "El punto final de docker build no es «aquí»", TEXTO, 21, peso="600"))
-    p.append(texto(650, 68, "es «empaqueta este directorio entero y mándalo»", SUAVE, 14))
+    p.append(texto(650, 68, "es «el build sólo puede leer de este directorio»", SUAVE, 14))
 
     p.append(teclado(472, 152, "docker build -t mi-imagen", TEXTO, 22, anclaje="start"))
     p.append(caja(818, 128, 34, 34, TINTE, ROJO, radio=6, grosor=2.5))
@@ -1341,7 +1349,7 @@ def cont_build_contexto():
         ("Dockerfile", "1 KB", TEXTO, False),
         (".git/", "182 MB", ROJO, True),
         (".venv/", "310 MB", ROJO, True),
-        ("datos/crudos/", "1.2 GB", ROJO, True),
+        ("crudos/", "1.2 GB", ROJO, True),
     )
     for i, (nombre, peso, color, pesado) in enumerate(arbol):
         y = 306 + i * 28
@@ -1362,46 +1370,46 @@ def cont_build_contexto():
     p.append(flecha_punteada(485, 474, 485, 502, ROJO, 1.6))
     p.append(texto(452, 524, "lo que .dockerignore recorta antes del envío:", ROJO, 12, anclaje="start", peso="600"))
     for i, recortado in enumerate((".git/  ·  182 MB", ".venv/  ·  310 MB",
-                                   "datos/crudos/  ·  1.2 GB")):
+                                   "crudos/  ·  1.2 GB")):
         p.append(cruz(468, 548 + i * 24, 7, ROJO, 2))
         p.append(teclado(488, 553 + i * 24, recortado, SUAVE, 11.5, anclaje="start", peso="normal"))
 
     # El contexto y el daemon.
     p.append(caja(572, 300, 250, 124, PANEL, ACENTO))
     p.append(texto(697, 330, "el contexto", ACENTO, 15, peso="600"))
-    p.append(texto(697, 354, "el directorio, empaquetado", SUAVE, 11.5))
+    p.append(texto(697, 354, "lo que piden los COPY", SUAVE, 11.5))
     p.append(teclado(697, 388, "6 KB", ACENTO, 20))
-    p.append(texto(697, 410, "en vez de 1.5 GB", SUAVE, 11))
+    p.append(texto(697, 410, "con COPY . . y el colador", SUAVE, 11))
 
     p.append(flecha(826, 362, 878, 362, ACENTO, 2.5))
     p.append(caja(884, 300, 366, 124, PANEL, VIOLETA))
     p.append(texto(1067, 330, "el daemon (BuildKit)", VIOLETA, 15, peso="600"))
     p.append(parrafo(908, 356, (
-        "Recibe el contexto entero y lo abre ahí.",
-        "COPY y ADD sólo pueden traer de adentro",
-        "de ese bulto: nada de fuera existe.",
+        "Pide sólo lo que nombran los COPY:",
+        "con COPY . . es todo el «.», menos",
+        "lo que .dockerignore recorta.",
     )))
 
     p.append(caja(884, 448, 366, 124, PANEL, ROJO))
     p.append(texto(1067, 478, "y por eso esto falla", ROJO, 14, peso="600"))
-    p.append(teclado(908, 506, "COPY ../secreto.env .", SUAVE, 12, anclaje="start", peso="normal"))
-    p.append(teclado(908, 530, "forbidden path outside the", ROJO, 11.5, anclaje="start", peso="normal"))
-    p.append(teclado(908, 550, "build context", ROJO, 11.5, anclaje="start", peso="normal"))
+    p.append(teclado(908, 506, "COPY ../datos .", SUAVE, 12, anclaje="start", peso="normal"))
+    p.append(teclado(908, 530, "failed to compute cache key:", ROJO, 11.5, anclaje="start", peso="normal"))
+    p.append(teclado(908, 550, "... \"/datos\": not found", ROJO, 11.5, anclaje="start", peso="normal"))
 
     # Las tres notas del pie.
     notas = (
         (40, 400, AMBAR, "-f cambia el Dockerfile, no el contexto",
          ("docker build -f otro/Dockerfile .",
-          "lee ese archivo y sigue mandando el «.» entero.",
+          "lee ese archivo; el contexto sigue siendo el «.».",
           "Son dos argumentos distintos y se confunden todo el tiempo.")),
         (460, 380, CIAN, "--no-cache no toca el contexto",
          ("Sólo ignora las capas ya construidas.",
-          "El directorio se empaqueta y se manda igual,",
-          "así que el build tarda lo mismo en arrancar.")),
+          "Lo que piden los COPY se lee igual,",
+          "del mismo contexto.")),
         (860, 400, ROJO, "el error más común",
          ("docker build -t mi-imagen ./Dockerfile",
           "unable to prepare context: path \"./Dockerfile\"",
-          "is not a directory  — ahí va el contexto, no el archivo.")),
+          "not found  — ahí va el contexto, no el archivo.")),
     )
     for x, w, color, titulo, renglones in notas:
         p.append(caja(x, 616, w, 136, PANEL, color))
@@ -1417,7 +1425,7 @@ def cont_build_contexto():
 
 
 # --------------------------------------------------------------------------
-# 2/6 · Los tres defectos del Dockerfile de roto/
+# 2/9 · Los tres defectos del Dockerfile de roto/
 # --------------------------------------------------------------------------
 
 def _insignia(cx, cy, numero, color=ROJO, r=13):
@@ -1523,7 +1531,7 @@ def cont_dockerfile_roto():
 
 
 # --------------------------------------------------------------------------
-# 2/7 · Donde vive cada byte
+# 2/4 · Donde vive cada byte
 # --------------------------------------------------------------------------
 
 def cont_overlay_volumen():
@@ -1630,7 +1638,7 @@ def cont_overlay_volumen():
 
 
 # --------------------------------------------------------------------------
-# 2/8 · Cuatro maneras de escribir el origen de un -v
+# 2/13 · Cuatro maneras de escribir el origen de un -v
 # --------------------------------------------------------------------------
 
 def cont_rutas():
@@ -1713,7 +1721,7 @@ def cont_rutas():
 
 
 # --------------------------------------------------------------------------
-# 2/9 · De quien queda el archivo, en cuatro plataformas
+# 2/14 · De quien queda el archivo, en cuatro plataformas
 # --------------------------------------------------------------------------
 
 def cont_uid_plataformas():
@@ -1825,7 +1833,7 @@ def cont_uid_plataformas():
 
 
 # --------------------------------------------------------------------------
-# 2/10 · La matriz de ocho casos
+# 2/15 · La matriz de ocho casos
 # --------------------------------------------------------------------------
 
 def cont_matriz_volumen():
@@ -1931,7 +1939,7 @@ def cont_matriz_volumen():
 
 
 # --------------------------------------------------------------------------
-# 2/11 · Tapar contra copiar
+# 2/16 · Tapar contra copiar
 # --------------------------------------------------------------------------
 
 def _contenido_imagen(x, y, w, entradas, color=VIOLETA, apagado=False):
@@ -2070,7 +2078,7 @@ def cont_tapar():
 
 
 # --------------------------------------------------------------------------
-# 2/12 · El estado que sobrevive a su contenedor
+# 2/7 · El estado que sobrevive a su contenedor
 # --------------------------------------------------------------------------
 
 def _tabla_pg(x, y, w, apagada=False):
@@ -2191,7 +2199,7 @@ def cont_estado_postgres():
 
 
 # --------------------------------------------------------------------------
-# 2/13 · Qué se lleva exactamente cada prune
+# 2/8 · Qué se lleva exactamente cada prune
 # --------------------------------------------------------------------------
 
 def _monton(x, y, w, h, bloques, color):
@@ -2207,18 +2215,24 @@ def cont_prune():
     ancho, alto = 1360, 800
     aria = (
         "El mismo disco dibujado como cuatro montones: las imagenes, partidas "
-        "en las que tienen un contenedor encima y las que no usa nadie; los "
+        "en las que tienen un contenedor corriendo y las que no usa nadie; los "
         "contenedores detenidos; las capas huerfanas; y los volumenes sin "
         "dueno. Debajo, una brocha por comando marca exactamente que se lleva "
         "cada uno: docker container prune solo los contenedores detenidos, "
         "docker image prune las capas huerfanas, docker image prune -a ademas "
         "las imagenes que nadie usa, y docker system prune -a todo lo "
         "anterior. Resaltado en rojo, el aviso de que los volumenes no entran "
-        "en ninguno y se piden aparte. Arriba a la izquierda, docker system df "
-        "como el comando que mide antes de borrar"
+        "en ninguno y se piden aparte: docker volume prune y docker system "
+        "prune --volumes solo borran los anonimos, y los que tienen nombre "
+        "piden docker volume prune -a. Arriba a la izquierda, docker system df "
+        "como el comando que mide antes de borrar, con sus columnas TYPE, SIZE "
+        "y RECLAIMABLE. Abajo a la derecha, que una imagen con un contenedor "
+        "corriendo no es candidata para ningun prune, y que si el contenedor "
+        "esta detenido image prune -a la respeta pero system prune -a borra "
+        "primero el contenedor y despues se la lleva"
     )
     montones = (
-        (ACENTO, 4, "2.1 GB", "con un contenedor", "encima"),
+        (ACENTO, 4, "2.1 GB", "con un contenedor", "corriendo"),
         (VIOLETA, 6, "4.8 GB", "que nadie usa", "—"),
         (CIAN, 3, "380 MB", "contenedores", "detenidos"),
         (AMBAR, 4, "1.9 GB", "capas huérfanas", "(dangling)"),
@@ -2241,15 +2255,15 @@ def cont_prune():
     p.append(texto(145, 178, "mide antes de borrar", CIAN, 13, peso="600"))
     p.append(teclado(145, 204, "docker system df", TEXTO, 12.5))
     p.append(linea(58, 218, 232, 218, LINEA, 1))
-    for i, (tipo, tam, libre) in enumerate((("TYPE", "SIZE", "FREE"),
-                                            ("Images", "6.9G", "4.8G"),
+    for i, (tipo, tam, libre) in enumerate((("TYPE", "SIZE", "RECLAIMABLE"),
+                                            ("Images", "8.8G", "6.7G"),
                                             ("Containers", "380M", "380M"),
-                                            ("Volumes", "3.4G", "3.4G"))):
+                                            ("Local Volumes", "3.4G", "3.4G"))):
         y = 240 + i * 22
         color = SUAVE if i == 0 else TEXTO
-        p.append(teclado(58, y, tipo, color, 10.5, anclaje="start", peso="normal"))
-        p.append(teclado(170, y, tam, color, 10.5, anclaje="end", peso="normal"))
-        p.append(teclado(232, y, libre, color, 10.5, anclaje="end", peso="normal"))
+        p.append(teclado(52, y, tipo, color, 10, anclaje="start", peso="normal"))
+        p.append(teclado(166, y, tam, color, 10, anclaje="end", peso="normal"))
+        p.append(teclado(240, y, libre, color, 10, anclaje="end", peso="normal"))
 
     # Los montones.
     p.append(linea(270, 136, 674, 136, VIOLETA, 1.5))
@@ -2278,20 +2292,21 @@ def cont_prune():
 
     p.append(caja(40, 640, 640, 122, PANEL, ROJO))
     p.append(texto(60, 670, "los volúmenes NO entran en ninguno de los cuatro", ROJO, 14.5, anclaje="start", peso="600"))
-    p.append(teclado(60, 698, "docker volume prune", TEXTO, 12.5, anclaje="start", peso="normal"))
-    p.append(teclado(260, 698, "docker system prune --volumes", TEXTO, 12.5, anclaje="start", peso="normal"))
-    p.append(texto(60, 724, "Se piden aparte, a propósito: es la única columna donde borrar es perder", SUAVE, 12, anclaje="start"))
-    p.append(texto(60, 744, "un dato y no rehacer un build.", SUAVE, 12, anclaje="start"))
+    p.append(teclado(60, 696, "docker volume prune · system prune --volumes", TEXTO, 12, anclaje="start", peso="normal"))
+    p.append(texto(660, 696, "sólo los anónimos", AMBAR, 12, anclaje="end", peso="600"))
+    p.append(teclado(60, 720, "docker volume prune -a", TEXTO, 12, anclaje="start", peso="normal"))
+    p.append(texto(660, 720, "también los que tienen nombre", ROJO, 12, anclaje="end", peso="600"))
+    p.append(texto(60, 746, "Se piden aparte, a propósito: aquí borrar es perder un dato, no rehacer un build.", SUAVE, 12, anclaje="start"))
 
     p.append(caja(700, 640, 620, 122, PANEL, ACENTO))
     p.append(texto(720, 670, "y nada de esto toca lo que está en uso", ACENTO, 14.5, anclaje="start", peso="600"))
     p.append(parrafo(720, 698, (
-        "Una imagen con un contenedor encima —aunque ese contenedor esté",
-        "detenido— no es candidata para ningún prune. Por eso el primer montón",
-        "no se marca en ninguna de las cuatro filas.",
+        "Una imagen con un contenedor corriendo no es candidata para ningún prune.",
+        "Si el contenedor está detenido, image prune -a la respeta, pero system",
+        "prune -a borra primero el contenedor y después se la lleva.",
     ), SUAVE, 12))
 
-    p.append(texto(680, 786, "Ningún prune pregunta dos veces lo mismo: cada uno tiene una columna, y docker system df te dice antes cuánto vas a recuperar.", SUAVE, 13.5))
+    p.append(texto(680, 786, "Cada montón tiene su columna, y docker system df te dice antes cuánto vas a recuperar.", SUAVE, 13.5))
     p.append(cierre())
     return "".join(p)
 
@@ -2716,6 +2731,216 @@ def cont_superficie_ataque():
     return "".join(p)
 
 
+# --------------------------------------------------------------------------
+# 2/1 · Repaso: Dockerfile, imagen, contenedor
+# --------------------------------------------------------------------------
+
+def _ficha(x, y, w, nombre, que_es, rasgo, color, filas):
+    """Una de las tres cosas: nombre, que es, y tres preguntas con respuesta."""
+    alto = 300
+    p = [caja(x, y, w, alto, PANEL, color, grosor=2.5)]
+    p.append(teclado(x + w / 2, y + 38, nombre, color, 21))
+    p.append(texto(x + w / 2, y + 66, que_es, TEXTO, 13.5))
+    p.append(texto(x + w / 2, y + 88, rasgo, color, 13, peso="600"))
+    p.append(linea(x + 20, y + 106, x + w - 20, y + 106, LINEA, 1))
+    for i, (pregunta, respuesta) in enumerate(filas):
+        fy = y + 134 + i * 56
+        p.append(texto(x + 24, fy, pregunta, SUAVE, 11.5, anclaje="start"))
+        p.append(teclado(x + 24, fy + 22, respuesta, TEXTO, 13.5,
+                         anclaje="start", peso="normal"))
+    return "".join(p)
+
+
+def cont_repaso_triada():
+    """Las tres cosas, el comando que lleva de una a otra y lo que no regresa."""
+    ancho, alto = 1240, 720
+    aria = (
+        "Tres cajas en fila. Dockerfile: la receta, texto en tu carpeta; lo "
+        "cambia tu editor, lo ves con cat y lo borra rm. Una flecha docker "
+        "build lleva a la imagen: capas de solo lectura, inmutable; no "
+        "cambia, otro docker build hace otra imagen; se lista con docker images y se borra "
+        "con docker rmi. Una flecha docker run lleva al contenedor: un proceso "
+        "mas su capa de escritura, efimero; lo cambia el proceso o docker "
+        "exec, se lista con docker ps -a y se borra con docker rm. Del "
+        "contenedor regresa a la imagen una flecha punteada, docker commit, "
+        "que existe y no se usa, y al Dockerfile una flecha tachada: nunca "
+        "desde su capa de escritura: solo un bind mount escribe en tu carpeta. "
+        "Colgando del contenedor, dos cajas externas, bind mount (tu carpeta) "
+        "y named volume (area de Docker), que no pasan por la imagen"
+    )
+    p = [marco(ancho, alto, aria)]
+    p.append(texto(620, 42, "Dockerfile → imagen → contenedor", TEXTO, 21, peso="600"))
+    p.append(texto(620, 68, "tres cosas distintas: cada una cambia con su propia herramienta", SUAVE, 14))
+
+    y, w = 96, 300
+    xs = (40, 470, 900)
+    p.append(_ficha(xs[0], y, w, "Dockerfile", "la receta", "texto en tu carpeta", CIAN, (
+        ("lo cambia", "tu editor"),
+        ("lo ves con", "cat Dockerfile"),
+        ("lo borra", "rm Dockerfile"),
+    )))
+    p.append(_ficha(xs[1], y, w, "imagen", "capas de sólo lectura", "inmutable", VIOLETA, (
+        ("no cambia:", "otro build hace otra"),
+        ("la ves con", "docker images"),
+        ("la borra", "docker rmi"),
+    )))
+    p.append(_ficha(xs[2], y, w, "contenedor", "un proceso + su capa de escritura", "efímero", ACENTO, (
+        ("lo cambia", "el proceso · docker exec"),
+        ("lo ves con", "docker ps -a"),
+        ("lo borra", "docker rm"),
+    )))
+
+    # Hacia adelante: los dos comandos que si se usan.
+    for x_de, etiqueta in ((xs[0] + w, "docker build"), (xs[1] + w, "docker run")):
+        p.append(teclado(x_de + 65, 176, etiqueta, ACENTO, 13.5))
+        p.append(flecha(x_de + 6, 192, x_de + 124, 192, ACENTO, 2.5))
+
+    # Hacia atras, a la imagen: existe, no se usa.
+    p.append(teclado(835, 296, "docker commit", AMBAR, 12.5))
+    p.append(flecha_punteada(894, 312, 776, 312, AMBAR, 2))
+    p.append(texto(835, 334, "existe, no se usa", AMBAR, 11.5))
+
+    # Hacia atras, al Dockerfile: nunca.
+    p.append(linea(930, 396, 930, 440, ROJO, 2, "6 6"))
+    p.append(linea(930, 440, 190, 440, ROJO, 2, "6 6"))
+    p.append(flecha_punteada(190, 440, 190, 402, ROJO, 2))
+    p.append(caja(482, 427, 256, 26, FONDO, FONDO, radio=6, grosor=0))
+    p.append(cruz(504, 440, 9, ROJO, 3))
+    p.append(texto(524, 445, "nunca desde su capa", ROJO, 13, anclaje="start", peso="600"))
+    p.append(texto(560, 470, "sólo un bind mount escribe en tu carpeta", SUAVE, 11.5))
+
+    # Colgando del contenedor: los dos montajes.
+    for cx, color, nombre, glosa in ((985, CIAN, "bind mount", "tu carpeta"),
+                                     (1135, AMBAR, "named volume", "área de Docker")):
+        p.append(linea(cx, 396, cx, 492, color, 2, "5 5"))
+        p.append(caja(cx - 68, 492, 136, 62, PANEL, color))
+        p.append(texto(cx, 518, nombre, color, 13.5, peso="600"))
+        p.append(texto(cx, 540, glosa, SUAVE, 11.5))
+    p.append(texto(1060, 582, "no pasan por la imagen", AMBAR, 13, peso="600"))
+    p.append(texto(1060, 600, "ni build ni rm los tocan", SUAVE, 11.5))
+
+    p.append(texto(620, 650, "Cada flecha es un comando: si no lo corriste, la caja de la derecha no se enteró.", SUAVE, 14))
+    p.append(texto(620, 676, "Las flechas que se usan van hacia la derecha: lo que pasa adentro no regresa solo a la imagen ni al Dockerfile.", SUAVE, 14))
+    p.append(cierre())
+    return "".join(p)
+
+
+# --------------------------------------------------------------------------
+# 2/5 y 2/6 · Los dos laboratorios de «¿que cambia que?»
+# --------------------------------------------------------------------------
+
+PREDICE = "Predice cada celda antes de correrla; las respuestas están en la tabla del final"
+
+
+def _celda_pregunta(cx, cy):
+    """Una casilla por llenar: el alumno escribe ahi su prediccion."""
+    return (caja_punteada(cx - 26, cy - 20, 52, 40, SUAVE, radio=8, grosor=1.5,
+                          guion="5 5")
+            + texto(cx, cy + 7, "?", AMBAR, 20, peso="600"))
+
+
+def _matriz_predecir(aria, titulo, columnas, filas, ancho=880):
+    """Filas = lo que haces; columnas = tres preguntas; cada celda, un «?».
+
+    La matriz va arriba de la pagina, antes de cada «Predice»: no lleva
+    respuestas a proposito. Las respuestas viven en la tabla del final.
+
+    filas = [(color, accion, comando)]
+    """
+    alto_fila, y0 = 64, 150
+    alto = y0 + alto_fila * len(filas) + 34
+    xs = (490, 630, 770)
+    p = [marco(ancho, alto, aria)]
+    p.append(texto(ancho / 2, 42, titulo, TEXTO, 21, peso="600"))
+    p.append(texto(ancho / 2, 68, PREDICE, SUAVE, 14))
+
+    p.append(texto(64, 124, "lo que haces", SUAVE, 12.5, anclaje="start", peso="600"))
+    for cx, (arriba, abajo) in zip(xs, columnas):
+        p.append(texto(cx, 112, arriba, SUAVE, 12, peso="600"))
+        p.append(texto(cx, 130, abajo, SUAVE, 12, peso="600"))
+    p.append(linea(40, 140, ancho - 40, 140, LINEA, 1.5))
+
+    for k, (color, accion, comando) in enumerate(filas):
+        y = y0 + k * alto_fila
+        cy = y + alto_fila / 2 - 3
+        if k % 2 == 0:
+            p.append(relleno(40, y, ancho - 80, alto_fila - 6, PANEL, radio=8))
+        p.append(relleno(46, y + 12, 7, alto_fila - 30, color, radio=3))
+        p.append(texto(64, cy - 4, accion, TEXTO, 14, anclaje="start", peso="600"))
+        p.append(teclado(64, cy + 17, comando, color, 12.5, anclaje="start", peso="normal"))
+        for cx in xs:
+            p.append(_celda_pregunta(cx, cy))
+    p.append(cierre())
+    return "".join(p)
+
+
+def cont_lab_sin_volumen():
+    """Ocho cosas que puedes hacer sin volumen, para predecir antes de correr."""
+    aria = (
+        "Matriz para predecir, sin respuestas, del laboratorio sin volumen. "
+        "Ocho filas, lo que haces: editar app.py en el host sin build, "
+        "editarlo en el host y hacer docker build, editar el Dockerfile sin "
+        "build, editar adentro con docker exec, editar adentro y luego stop y "
+        "start, editar adentro y luego docker rm, editar adentro y luego "
+        "docker build, y editar adentro y luego docker commit. Tres columnas: "
+        "si lo ve el contenedor que ya corria, si lo ve un contenedor nuevo de "
+        "la imagen y si cambio la imagen. Cada celda lleva un signo de "
+        "interrogacion: se predice antes de correrla, y las respuestas estan "
+        "en la tabla del final de la pagina"
+    )
+    host, dentro = CIAN, ACENTO
+    filas = (
+        (host, "editas app.py en el host", "sin build"),
+        (host, "editas app.py en el host", "+ docker build"),
+        (host, "editas el Dockerfile", "sin build"),
+        (dentro, "editas app.py adentro", "docker exec"),
+        (dentro, "editas adentro y reinicias", "docker stop · docker start"),
+        (dentro, "editas adentro y borras", "docker rm"),
+        (dentro, "editas adentro y reconstruyes", "docker build"),
+        (dentro, "editas adentro y congelas", "docker commit"),
+    )
+    return _matriz_predecir(
+        aria,
+        "Sin volumen: ¿qué cambia qué?",
+        (("¿lo ve el que", "ya corría?"), ("¿lo ve uno nuevo", "de la imagen?"),
+         ("¿cambió", "la imagen?")),
+        filas,
+    )
+
+
+def cont_lab_con_volumen():
+    """Ocho casos con montaje, para predecir antes de correr."""
+    aria = (
+        "Matriz para predecir, sin respuestas, del laboratorio con volumen. "
+        "Ocho filas: bind mount editando en el host, bind mount editando "
+        "adentro, bind mount editando adentro y luego docker build, bind "
+        "mount mas rebuild corriendo con el montaje, bind mount de solo lectura escribiendo adentro, "
+        "named volume sobre barra app la primera vez, named volume sobre barra "
+        "app tras un rebuild con codigo nuevo, y named volume de datos tras "
+        "docker rm. Tres columnas: si se ve adentro, si cambia tu disco y si "
+        "cambia la imagen. Cada celda lleva un signo de interrogacion: se "
+        "predice antes de correrla, y las respuestas estan en la tabla del "
+        "final de la pagina"
+    )
+    bind, named = CIAN, AMBAR
+    filas = (
+        (bind, "bind mount: editas en el host", "-v \"$PWD\":/app"),
+        (bind, "bind mount: editas adentro", "docker exec"),
+        (bind, "bind mount: editas adentro + build", "docker exec · docker build"),
+        (bind, "bind mount + rebuild, con montaje", "docker build · docker run -v"),
+        (bind, "bind mount :ro, escribes adentro", "-v \"$PWD\":/app:ro"),
+        (named, "named volume en /app, 1.ª vez", "-v codigo:/app"),
+        (named, "named volume en /app, tras rebuild", "docker build + run"),
+        (named, "volumen de datos, tras docker rm", "-v datos:/datos"),
+    )
+    return _matriz_predecir(
+        aria,
+        "Con volumen: ¿qué cambia qué?",
+        (("¿se ve", "adentro?"), ("¿cambia", "tu disco?"), ("¿cambia", "la imagen?")),
+        filas,
+    )
+
+
 DIAGRAMAS_CONCEPTUALES = {
     "cont-intermodal": cont_intermodal,
     "cont-ns-cgroups": cont_ns_cgroups,
@@ -2743,9 +2968,12 @@ DIAGRAMAS_CONCEPTUALES = {
     "cont-contrato": cont_contrato,
     "cont-pipeline-servicios": cont_pipeline_servicios,
     "cont-superficie-ataque": cont_superficie_ataque,
+    "cont-repaso-triada": cont_repaso_triada,
+    "cont-lab-sin-volumen": cont_lab_sin_volumen,
+    "cont-lab-con-volumen": cont_lab_con_volumen,
 }
 
-# Las cuatro graficas de benchmark viven en su propio modulo porque dibujan un
+# Las cinco graficas de benchmark viven en su propio modulo porque dibujan un
 # CSV y no una idea. El catalogo se fusiona aqui para que quien importe
 # DIAGRAMAS vea todas las figuras de la unidad.
 DIAGRAMAS = {**DIAGRAMAS_CONCEPTUALES, **DIAGRAMAS_BENCH}

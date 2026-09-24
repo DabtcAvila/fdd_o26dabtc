@@ -198,6 +198,15 @@ en ruidoso; la guarda las comprueba.
    que decirla: **se le añadió material**, no es reflow. Las otras **seis**
    lecciones de la sección **siguen bajo 160** tras la misma reescritura, y
    `anatomia-de-docker-run` cupo en 155.
+   **2026-09-22 — se suman los dos laboratorios de la sección 2**,
+   `lab-sin-volumen` y `lab-con-volumen`, también a 215. No crecieron por
+   reflow sino por aire: cada experimento lleva «Predice / Haz / Deberías ver /
+   Por qué» en líneas propias. A 160 hubo que pegar el «Haz» a la pregunta y
+   quitar los blancos antes de los encabezados, y la página dejó de escanearse.
+   **Mismo día, más tarde — las ocho páginas de la clase 2 pasan a un techo
+   propio de 260** (`CLASE` en la guarda). El profesor pidió que cada bandera y
+   cada subcomando se explique donde se usa; cada bloque lleva su «Qué hace cada
+   pieza», una línea por pieza, y eso sube las líneas sin subir la prosa.
 6. **Forma de página**: `Meta:` de una línea → `::: figure` → `## En corto` con
    **máximo tres viñetas** → cuerpo → **exactamente un `::: problem` con `hint` y
    `answer`** → cierre en **dos líneas** (`> [!NOTE]`, y en la siguiente `> **Si sólo recuerdas una cosa:** …`): con el cuerpo en la misma línea el marcador no casa `_CALLOUT_MARKER_RE` y **sale impreso como texto**, sin fallar el build. Lo vigila `tools/test_callouts.py`. Prohibido
@@ -235,6 +244,17 @@ course/8_contenedores/
   _official/              1 task · 4 assignments
   code/analyze.py
 ```
+
+> **Nota 2026-09-22 — la sección 2 pasa de 13 a 16 páginas (reparto 9 · 16 · 5,
+> 30 lecciones, 38 páginas).** La clase perdía tiempo en instalar, planes B y
+> Docker Hub, que el grupo ya traía de DataCamp. Ahora las páginas 1–8 son la
+> clase (repaso Dockerfile → imagen → contenedor, ciclo de vida, Dockerfile,
+> dónde vive cada byte, dos laboratorios nuevos —`lab-sin-volumen` y
+> `lab-con-volumen`—, Postgres y limpieza), la 9 es la entrega
+> (`arreglar-un-dockerfile`) y la 10–16 quedan como **referencia**: instalar,
+> planes B, Docker Hub, rutas, el archivo compartido, los ocho casos y las
+> cuatro trampas. Ninguna página vieja se borró y ningún objeto oficial cambió.
+> Lo que sigue en este spec describe el reparto original y no se reescribió.
 
 Los prefijos `10_`…`13_` **ordenan numéricamente**: `parse_ordered_name()`
 convierte el prefijo a `int`. Comprobado con una sección de prueba. No rellenar

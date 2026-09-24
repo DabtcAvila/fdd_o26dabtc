@@ -101,7 +101,7 @@ Pregúntate qué viaja dentro de la caja sellada. ¿Viaja el programa? ¿Viajan 
 
 **C2: no.** Un contenedor empaqueta **software, no datos**. Tu CSV no está adentro, y meterlo adentro sería peor, no mejor: la imagen se vuelve pesada e intransferible, y el contenedor es desechable.
 
-- **Dónde vive ese archivo** es la pregunta que abre la sección 2.
+- **Dónde vive ese archivo** es la pregunta que ordena la sección 2.
 - **Por qué no puede vivir adentro** es la de la página 5.
 
 Ése es el corte útil: **el contenedor te quita las diferencias de entorno de encima y te deja, limpia, la única decisión que sí era tuya.**

@@ -20,7 +20,7 @@ Fecha en que lo terminaste: 12 de septiembre de 2026
 
 Se llena en la **segunda** entrega.
 
-Fecha en que lo terminaste:
+Fecha en que lo terminaste:17 de septiembre de 2026
 
 ![Captura del curso Intermediate Git terminado](./git-intermedio.png)
 
@@ -32,5 +32,9 @@ Dos o tres líneas. Algo concreto que salió en alguno de los dos cursos y que
 no habías visto en clase, o que en clase entendiste a medias y ahí se te
 acomodó. Si sientes que no aprendiste nada nuevo, dilo y explica qué parte de
 los cursos te pareció repetida.
+
+En el curso de git aprendi como funcionan las branches, en la clase lo habia visto
+pero no le habia entendido muy bien, con el datacamp termine de entenderlo. En los dos
+cursos aprendi cosas o entendi como son ciertas cosas. Los dos cursos me sirvieron.
 
 

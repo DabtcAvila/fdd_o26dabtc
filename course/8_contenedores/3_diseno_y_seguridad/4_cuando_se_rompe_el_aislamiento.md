@@ -40,7 +40,7 @@ docker run --rm --cap-drop ALL alpine:3.20 grep CapEff /proc/self/status
 
 Las otras dos capas no se ven en un número, pero están: un perfil de **seccomp** que filtra qué `syscall` puede pedirle el proceso al kernel —de las [[anatomia-de-docker-run|syscalls]] de la sesión 1— y un perfil de **AppArmor** (o SELinux, según tu distribución) que restringe qué archivos y qué operaciones toca.
 
-Ésas son tres. **La cuarta no es gratis y por eso va aparte: quién eres adentro.** El `root` recortado de arriba sigue siendo `root`, y la imagen puede pedir otra cosa con un `USER` en su `Dockerfile` —el mismo de [[el-dockerfile-por-dentro|la página 5 de la sección 2]]—. Es la única de las cuatro que depende de quien construyó la imagen y no de tu `docker run`, y la que decide **con qué privilegio sale quien se escape**, que es el segundo eje de [[kata-y-el-espectro|la página que sigue]].
+Ésas son tres. **La cuarta no es gratis y por eso va aparte: quién eres adentro.** El `root` recortado de arriba sigue siendo `root`, y la imagen puede pedir otra cosa con un `USER` en su `Dockerfile` —el mismo de [[el-dockerfile-por-dentro|la página 3 de la sección 2]]—. Es la única de las cuatro que depende de quien construyó la imagen y no de tu `docker run`, y la que decide **con qué privilegio sale quien se escape**, que es el segundo eje de [[kata-y-el-espectro|la página que sigue]].
 
 Y una que **no** es una capa aunque se le parezca: el **cgroup**. Un cgroup mide cuánto puede usar el proceso, no qué puede alcanzar; contra un escape no defiende nada. En esta página aparece del otro lado, como **vector**: el `release_agent` de las dos filas de cgroups v1 de la tabla de abajo es exactamente un cgroup usado para ejecutar algo en el host.
 
