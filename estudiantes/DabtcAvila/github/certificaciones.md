@@ -12,7 +12,7 @@ Llena este archivo en **tu copia**, dentro de `estudiantes/<tu-login>/github/`.
 
 Se llena en la **primera** entrega.
 
-Fecha en que lo terminaste: hace un año
+Fecha en que lo terminaste: 2025-12-08
 
 ![Captura del curso Introduction to Git terminado](./introduccion-a-git.png)
 
