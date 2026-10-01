@@ -23,13 +23,13 @@ Meta: comprobar con tres comandos qué es un ambiente y qué hace «activar».
 
 - **Un ambiente es una carpeta**, normalmente `.venv/`, dentro de tu proyecto.
 - Trae **su propio `python` y su propio `site-packages/`**.
-- **Activar sólo cambia el `PATH`**. Con `uv run` no hace falta activar.
+- **Activar sólo cambia el `PATH`**: la lista de carpetas donde la shell busca programas. Con `uv run` no hace falta activar.
 
 ## Antes: tu ruta
 
-En los comandos, `{tu_fork_de_la_clase}` es **la carpeta donde clonaste tu fork** del repo del curso: cada quien la tiene en otro lado. Escribe la tuya en lugar del marcador, **sin las llaves**. Si no la recuerdas, abre la terminal de VS Code con tu fork abierto y escribe `pwd`.
+En los comandos, `{tu_fork_de_la_clase}` es **la carpeta donde clonaste tu fork** del repo del curso: cada quien la tiene en otro lado. Escribe la tuya en lugar del marcador, **sin las llaves**. Si no la recuerdas, abre la terminal de VS Code con tu fork abierto y escribe `pwd` (imprime la carpeta en la que estás).
 
-`$GHUSER` es tu usuario de GitHub, que guardaste en tu shell en la unidad de Git: `echo $GHUSER` te lo muestra.
+`$GHUSER` es tu usuario de GitHub, que guardaste en tu shell en la unidad de Git: `echo $GHUSER` te lo muestra: `echo` imprime, y el `$` delante de un nombre lo cambia por el valor guardado en esa variable.
 
 ## Prepara un proyecto
 
@@ -43,10 +43,12 @@ uv add rich
 
 **Qué hace cada pieza:**
 
-- `cd …/ambientes` — entras a tu carpeta de labs, la que copiaste de `codigo/` antes de clase.
-- `uv init --no-package hola` — crea la carpeta `hola/` con un proyecto vacío: un `pyproject.toml` (la lista de lo que el proyecto necesita) y un `main.py`. `--no-package` dice que es un proyecto que sólo corre scripts, no una librería para publicar.
-- `&& cd hola` — si lo anterior salió bien, entras a `hola/`.
+- `cd …/ambientes` — entras (`cd`: cambia de carpeta) a tu carpeta de labs, la que copiaste de `codigo/` antes de clase. Ahí están los scripts que usa esta página.
+- `uv` — el programa que instala Python y paquetes y arma ambientes; cada palabra después de `uv` es un subcomando: qué le pides.
+- `uv init --no-package hola` — `init` inicia un proyecto llamado `hola`: crea la carpeta `hola/` con un proyecto vacío: un `pyproject.toml` (la lista de lo que el proyecto necesita) y un `main.py`. `--no-package` dice que es un proyecto que sólo corre scripts, no una librería para publicar; sin la bandera uv arma además una carpeta `src/` que aquí no usas.
+- `&& cd hola` — `&&` encadena: corre lo de la derecha sólo si lo de la izquierda salió bien. Así no entras a una carpeta que no se creó.
 - `uv add rich` — agrega el paquete `rich` al proyecto: lo anota en `pyproject.toml`, fija la versión exacta en `uv.lock` y lo instala en un ambiente nuevo, `.venv/`.
+- `uv.lock` es el **lockfile**: el archivo con la versión exacta de cada paquete instalado, para que otra máquina instale las mismas.
 
 **Deberías ver:** (las versiones pueden ser más nuevas)
 
@@ -75,9 +77,11 @@ ls .venv/lib/python3.*/site-packages/ | head
 
 **Qué hace cada pieza:**
 
-- `ls -a .venv` — lista todo lo que hay en la carpeta del ambiente, también lo oculto (`-a`).
-- `cat .venv/pyvenv.cfg` — muestra el archivo de configuración del ambiente.
-- `ls …/site-packages/ | head` — lista los paquetes instalados en este ambiente; `| head` deja sólo las primeras líneas.
+- `ls -a .venv` — lista todo lo que hay en la carpeta del ambiente, también lo oculto (`-a`: all; en Linux y macOS un nombre que empieza con `.` está oculto).
+- `cat .venv/pyvenv.cfg` — muestra el archivo de configuración del ambiente: dice de qué Python salió.
+- `python3.*` — el `*` completa cualquier texto: sirve igual si tu Python es 3.12 o 3.13.
+- `site-packages/` — la carpeta donde Python busca los paquetes instalados.
+- `| head` — el `|` (pipe) manda la salida de un comando a la entrada del siguiente; `head` deja sólo las primeras 10 líneas.
 
 **Deberías ver:**
 
@@ -93,6 +97,7 @@ include-system-site-packages = false
 _virtualenv.pth  _virtualenv.py  markdown_it  mdurl  pygments  rich  …
 ```
 
+- `.` y `..` aparecen en todo `ls -a`: `.` es esta misma carpeta y `..` la de arriba.
 - `bin/python` es el intérprete del ambiente: un enlace al Python que dice `home`.
 - `site-packages/` tiene **sólo** lo que instalaste aquí: `rich` y sus tres dependencias.
 - `include-system-site-packages = false`: este ambiente no ve los paquetes del sistema.
@@ -118,10 +123,13 @@ uv run quien_soy.py               # 3. sin activar, con uv run
 **Qué hace cada pieza:**
 
 - `cp ../quien_soy.py .` — copia el script de diagnóstico de la carpeta de arriba (`..`) a ésta (`.`).
-- `python3 quien_soy.py` — lo corre con el `python3` que tu shell encuentre primero.
-- `source .venv/bin/activate` — **activa** el ambiente: tu prompt empieza con `(hola)`.
+- `quien_soy.py` — script del curso que imprime qué python corre y si tiene `rich`. Sirve para comparar las tres maneras.
+- `# 1. sin activar` — lo que sigue a `#` es comentario: la shell lo ignora.
+- `python3 quien_soy.py` — lo corre con el `python3` que tu shell encuentre primero. Sin activar se escribe `python3`: en muchos Linux no existe un comando `python` a secas.
+- `source .venv/bin/activate` — **activa** el ambiente: tu prompt empieza con `(hola)`. `source` corre el archivo dentro de tu shell actual; por eso puede cambiarle el `PATH`.
+- `python quien_soy.py` — activado, `.venv/bin/` trae `python` y `python3`; los dos son el del ambiente.
 - `deactivate` — lo desactiva: tu shell vuelve a como estaba.
-- `uv run quien_soy.py` — lo corre con el python del `.venv/` del proyecto, sin activar nada.
+- `uv run quien_soy.py` — lo corre con el python del `.venv/` del proyecto, sin activar nada: uv busca el `.venv/` junto al `pyproject.toml`.
 
 **Deberías ver:** cambian cuatro líneas.
 
@@ -147,8 +155,8 @@ deactivate
 
 **Qué hace cada pieza:**
 
-- `echo $PATH` — imprime la lista de carpetas donde la shell busca programas, separadas por `:`.
-- `| tr ':' '\n'` — cambia cada `:` por un salto de línea: una carpeta por renglón.
+- `echo $PATH` — imprime la lista de carpetas donde la shell busca programas, separadas por `:`. Cuando escribes `python`, la shell usa el primero que encuentre recorriéndolas en orden.
+- `| tr ':' '\n'` — `tr` (translate) cambia cada `:` por `\n`, un salto de línea: una carpeta por renglón. Las comillas evitan que la shell interprete esos caracteres.
 - `| head -2` — deja sólo las dos primeras, las que se revisan antes.
 
 **Deberías ver:** la primera carpeta cambia.

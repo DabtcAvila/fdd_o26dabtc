@@ -17,8 +17,8 @@ Meta: reconocer cada archivo de ambiente que vas a encontrar en un repo, y saber
 
 ## En corto
 
-- **`pyproject.toml` es el estándar** (PEP 621): lo leen uv, poetry, pdm y hatch.
-- **El lock lo escribe la herramienta, nunca tú.**
+- **`pyproject.toml` es el estándar** (PEP 621; un PEP es el documento que fija una regla de Python): lo leen uv, poetry, pdm y hatch.
+- **El lock** (archivo con la versión exacta de cada paquete instalado) **lo escribe la herramienta, nunca tú.**
 - `requirements.txt` es el formato viejo de pip, y sigue en todos lados.
 
 ## Los seis
@@ -36,9 +36,23 @@ Meta: reconocer cada archivo de ambiente que vas a encontrar en un repo, y saber
 
 :::
 
+Lo que dice la tabla:
+
+- `pip freeze` — imprime cada paquete del ambiente activo con su versión exacta (`rich==15.0.0`); `> requirements.txt` lo guarda en el archivo.
+- `uv add rich` — anota `rich` en `pyproject.toml`, fija su versión en `uv.lock` y lo instala en `.venv/`.
+- `conda env export` — imprime en YAML el ambiente conda activo con sus versiones; `> environment.yml` lo guarda.
+- `uv init` — crea un proyecto nuevo: `pyproject.toml`, `main.py` y `.python-version`.
+- `uv python pin 3.13` — escribe `3.13` en `.python-version`; uv usa ese Python en este proyecto.
+- **con hash** — junto a cada versión va una huella (sha256) del archivo; si lo descargado no coincide, la instalación se detiene.
+- **transitivas** — los paquetes que tus paquetes instalan por su cuenta (`rich` trae `pygments`); el lock también las fija.
+
 ## Un pyproject.toml, línea por línea
 
-Éste sale de `uv init --no-package demo`, `uv add rich` y `uv add --dev pytest`:
+Éste sale de tres comandos:
+
+- `uv init --no-package demo` — crea la carpeta `demo/` con un proyecto; `--no-package` dice que sólo corre scripts, no es una librería para publicar.
+- `uv add rich` — anota `rich` en `dependencies`.
+- `uv add --dev pytest` — `--dev` lo anota en el grupo `dev`, no en `dependencies`: sólo lo usas tú al desarrollar.
 
 ```toml
 [project]
@@ -70,7 +84,7 @@ Un rango (`>=15.0.0`) acepta versiones futuras. Por eso hace falta el lock: el r
 
 `[project]` y `[dependency-groups]` son estándar. Las secciones `[tool.uv]`, `[tool.poetry]` o `[tool.ruff]` son configuración propia de cada herramienta: las otras las ignoran.
 
-El mismo proyecto hecho con **poetry 2.5** (salida real de `poetry init` + `poetry add rich`, sin las líneas de descripción y autor):
+El mismo proyecto hecho con **poetry 2.5**: `poetry init` pregunta nombre y versión y escribe el `pyproject.toml`; `poetry add rich` anota `rich` y escribe `poetry.lock`. Salida real, sin las líneas de descripción y autor:
 
 ```toml
 [project]
@@ -86,17 +100,18 @@ requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
 ```
 
-La sección `[project]` es la misma; cambian el formato del rango y el lock (`poetry.lock`). En proyectos de antes de 2025 vas a ver `[tool.poetry.dependencies]` en lugar de `[project]`: es el formato propio que poetry usaba antes de su versión 2.
+La sección `[project]` es la misma; cambian el formato del rango y el lock (`poetry.lock`). `[build-system]` dice con qué programa se empaqueta el proyecto (aquí `poetry-core`). En proyectos de antes de 2025 vas a ver `[tool.poetry.dependencies]` en lugar de `[project]`: es el formato propio que poetry usaba antes de su versión 2.
 
 ## requirements.txt, ida y vuelta
 
-| Quieres | Comando |
-|---|---|
-| De tu proyecto uv a un `requirements.txt` | `uv export --no-hashes > requirements.txt` |
-| De un `requirements.txt` ajeno a tu proyecto uv | `uv add -r requirements.txt` |
+| Quieres | Comando | Qué hace cada pieza |
+|---|---|---|
+| De tu proyecto uv a un `requirements.txt` | `uv export --no-hashes > requirements.txt` | `uv export` imprime las versiones de `uv.lock` en formato de pip; `--no-hashes` quita la línea de hash de cada paquete; `>` manda la salida al archivo |
+| De un `requirements.txt` ajeno a tu proyecto uv | `uv add -r requirements.txt` | `-r` (de *requirements*) lee los paquetes de ese archivo y los agrega todos a `pyproject.toml` y a `uv.lock` |
+| De tu proyecto uv a un `pylock.toml` | `uv export --format pylock.toml -o pylock.toml` | `--format` escoge el formato de salida; `-o` escribe al archivo |
 
 ::: problem {#py-archivos-lock title="El rango no basta"}
-Tu `pyproject.toml` dice `rich>=15.0.0`. Tu compañera clona el repo dentro de seis meses, **sin** `uv.lock`, y corre `uv sync`. ¿Instala lo mismo que tú?
+Tu `pyproject.toml` dice `rich>=15.0.0`. Tu compañera clona el repo dentro de seis meses, **sin** `uv.lock`, y corre `uv sync` (crea `.venv/` e instala lo que pide el proyecto; si hay `uv.lock`, usa sus versiones). ¿Instala lo mismo que tú?
 :::
 
 ::: hint {of="py-archivos-lock"}
@@ -104,7 +119,7 @@ Tu `pyproject.toml` dice `rich>=15.0.0`. Tu compañera clona el repo dentro de s
 :::
 
 ::: answer {of="py-archivos-lock"}
-- No necesariamente: sin lock, uv resuelve otra vez y escoge la versión más nueva que cumpla el rango, por ejemplo una 15.4.
+- No necesariamente: sin lock, uv resuelve otra vez (calcula qué versiones cumplen todos los rangos) y escoge la versión más nueva que cumpla el rango, por ejemplo una 15.4.
 - Con `uv.lock` en el repo, instala exactamente la 15.0.0 que tú probaste.
 :::
 

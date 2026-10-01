@@ -27,15 +27,15 @@ Meta: reconocer el error antes de reinstalar nada.
 
 | Síntoma | Causa | Dónde mirar |
 |---|---|---|
-| `ModuleNotFoundError` con el paquete «instalado» | Corres otro Python: terminal sin activar, o VS Code con otro intérprete | `quien_soy.py`; la barra de estado de VS Code |
+| `ModuleNotFoundError` con el paquete «instalado» | Corres otro Python: terminal sin activar, o VS Code con otro intérprete | `uv run quien_soy.py` (dice qué Python corre); la barra de estado de VS Code (dice qué intérprete eligió) |
 | `error: externally-managed-environment` | `pip install` sobre el Python del sistema (PEP 668) | [[el-problema-de-los-ambientes]] |
-| `pip install` «funcionó» pero el programa no lo ve | `pip` y `python` son de Pythons distintos | `python3 -m pip --version` dice a qué Python pertenece |
-| `ensurepip is not available` al crear un venv | En Ubuntu o WSL falta el paquete `python3-venv` | `sudo apt install python3-venv python3-pip`, una sola vez |
-| `python: command not found` | En tu sistema se llama `python3`, o no hay ambiente activo | `which python3` |
+| `pip install` «funcionó» pero el programa no lo ve | `pip` y `python` son de Pythons distintos | `python3 -m pip --version`: corre el pip **de ese** `python3` e imprime la carpeta donde instala |
+| `ensurepip is not available` al crear un venv | En Ubuntu o WSL falta el paquete `python3-venv` | `sudo apt install python3-venv python3-pip`, una sola vez: instala con permisos de administrador los dos paquetes de Ubuntu que traen `venv` y `pip` |
+| `python: command not found` | En tu sistema se llama `python3`, o no hay ambiente activo | `which python3`: imprime la ruta del `python3` que tu shell encuentra primero; si no imprime nada, no hay ninguno |
 | La revisión de entregas rechaza tu PR por `.venv` | Subiste el ambiente al repo | [[lab-uv]], «Qué subes a git» |
-| La imagen de Docker trae un `.venv` que no corre | Copiaste todo el proyecto a la imagen, y con él tu `.venv/` local | `.dockerignore`; [[entregas-ambientes]] |
-| `uv sync --locked` falla: «The lockfile at `uv.lock` needs to be updated» | Cambiaste `pyproject.toml` y no regeneraste el lock | `uv lock` |
-| Dos proyectos y las versiones «se mezclan» | Los dos usan el mismo ambiente, o ninguno | `ls -a` en cada proyecto: ¿cada uno tiene su `.venv/`? |
+| La imagen de Docker trae un `.venv` que no corre | Copiaste todo el proyecto a la imagen, y con él tu `.venv/` local | `.dockerignore`: lista de rutas que `docker build` no copia; debe traer `.venv`. Ver [[entregas-ambientes]] |
+| `uv sync --locked` falla: «The lockfile at `uv.lock` needs to be updated» | Cambiaste `pyproject.toml` y no regeneraste el lock | `uv lock`: vuelve a calcular las versiones desde `pyproject.toml` y reescribe `uv.lock`; luego `uv sync` |
+| Dos proyectos y las versiones «se mezclan» | Los dos usan el mismo ambiente, o ninguno | `ls -a` en cada proyecto: lista también lo oculto (`-a`), y `.venv/` empieza con punto. ¿Cada uno tiene el suyo? |
 
 :::
 
@@ -48,6 +48,12 @@ which python3
 python3 -m pip --version
 uv run quien_soy.py
 ```
+
+**Qué hace cada pieza:**
+
+- `which python3` — la ruta del `python3` que corre esta terminal cuando escribes `python3`.
+- `python3 -m pip --version` — `-m pip` corre el pip que pertenece a ese mismo `python3`; `--version` imprime su versión y la carpeta donde instala.
+- `uv run quien_soy.py` — corre el script con el Python del `.venv/` del proyecto y dice cuál es.
 
 **Deberías ver:** si las dos primeras apuntan fuera de tu proyecto y la tercera dice `.venv`, el problema es la terminal, no el paquete.
 

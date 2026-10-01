@@ -27,6 +27,8 @@ prerequisites: [contenedores]
 
 ## Antes de empezar
 
+**uv** es un programa de terminal, publicado en 2024 por la empresa Astral, que hace con un solo comando lo que antes pedía cuatro herramientas: crear el ambiente, instalar paquetes, fijar sus versiones e instalar Python mismo.
+
 Necesitas **uv instalado antes de clase**, en la terminal donde trabajas el repo: Linux, WSL2 o macOS, la misma donde instalaste Docker en la unidad 8.
 
 ```bash
@@ -36,12 +38,16 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 **Qué hace cada pieza:**
 
 - `curl -LsSf <url>` — descarga el instalador oficial de uv (`-L` sigue redirecciones, `-sS` sin barra de progreso pero con errores, `-f` falla si el servidor responde con error).
-- `| sh` — se lo pasa a la shell, que lo ejecuta: instala `uv` en tu carpeta personal.
+- `| sh` — se lo pasa a la shell, que lo ejecuta: instala `uv` en `~/.local/bin` y agrega esa carpeta a tu `PATH`.
 
-Cierra la terminal, abre otra y comprueba:
+El `PATH` es la lista de carpetas donde la shell busca un programa cuando escribes su nombre. El instalador lo cambia en el archivo de configuración de tu shell, y ese archivo sólo se lee al abrir una terminal. Por eso: cierra la terminal, abre otra y comprueba:
 
 ```bash
 uv --version
 ```
+
+**Qué hace cada pieza:**
+
+- `uv --version` — `--version` le pide a uv que imprima su versión y salga. Si responde, uv está instalado y la shell lo encuentra.
 
 **Deberías ver** una línea `uv 0.12.…` o más nueva. Docker, de la unidad anterior, lo necesitas para una de las entregas.

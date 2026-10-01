@@ -17,6 +17,16 @@ Meta: que sepas en qué Python y con qué paquetes corre tu código, y cómo hac
 ![Tres cajas en fila. Lo que pides, pyproject.toml, con rangos como rich>=15, que escribes tú o uv add. Una flecha uv lock lleva a lo que se resolvió, uv.lock, con versión exacta y hash de cada paquete, también las transitivas, que se bajan de PyPI. Una flecha uv sync lleva a lo que está instalado, la carpeta .venv con su python y su site-packages, desechable. De .venv sale uv run hacia tu programa, y uv python install pone el intérprete. Abajo: pyproject.toml y uv.lock van a git; .venv no va a git, se borra y se recrea con uv sync.](../_assets/py-mapa.svg)
 :::
 
+**Los comandos del mapa**, en el orden en que los vas a usar:
+
+- `uv add rich` — anota `rich` en `pyproject.toml` y, sin que lo pidas, corre `uv lock` y `uv sync`.
+- `uv lock` — escoge una versión de cada paquete que encaje con todas las demás y la escribe en `uv.lock`.
+- `uv sync` — instala en `.venv/` exactamente lo que dice `uv.lock`; si `.venv/` no existe, lo crea.
+- `uv run main.py` — corre tu programa con el `python` de `.venv/`, sin activar nada.
+- `uv python install` — descarga un intérprete de Python propio de uv, aparte del que trae tu sistema.
+
+**PyPI** (`pypi.org`) es el registro público de donde se bajan los paquetes. El **hash** es una huella del archivo descargado: si cambia un byte, la huella no coincide y uv no lo instala.
+
 ## En corto
 
 - **Un ambiente es una carpeta (`.venv/`) con su propio `python` y sus propios paquetes.**
@@ -71,11 +81,14 @@ ls estudiantes/$GHUSER/09_python/ambientes
 **Qué hace cada pieza:**
 
 - `cd {tu_fork_de_la_clase}` — entras a la carpeta donde clonaste tu fork. Cada quien la tiene en otro lado: escribe la tuya, **sin las llaves**. Si no la recuerdas, `pwd` en la terminal de VS Code con tu fork abierto te la dice.
-- `git switch main && git fetch upstream && git merge upstream/main` — te pones en `main` y le traes lo nuevo del repo del curso (`upstream`), como en cada unidad.
-- `git switch -c tarea-09-uv-docker` — creas la branch de la entrega y te cambias a ella. Ahí trabajas labs y entrega.
-- `mkdir -p estudiantes/$GHUSER/09_python` — creas tu carpeta de la unidad. `$GHUSER` es tu usuario de GitHub, guardado en tu shell desde la unidad de Git.
+- `git switch main` — te pones en tu branch `main`.
+- `&&` — corre el comando siguiente sólo si el anterior salió bien.
+- `git fetch upstream` — descarga lo nuevo del repo del curso (`upstream`, el remoto que agregaste en la unidad de Git) sin tocar tus archivos.
+- `git merge upstream/main` — mete eso nuevo en tu `main`.
+- `git switch -c tarea-09-uv-docker` — `-c` crea la branch de la entrega y te cambia a ella. Ahí trabajas labs y entrega.
+- `mkdir -p estudiantes/$GHUSER/09_python` — creas tu carpeta de la unidad; `-p` crea también las carpetas intermedias y no falla si ya existe. `$GHUSER` es tu usuario de GitHub, guardado en tu shell desde la unidad de Git.
 - `cp -r codigo/09_python/. estudiantes/$GHUSER/09_python/` — copias todo lo que publiqué (`-r`: con subcarpetas). La barra y el punto al final del origen copian el *contenido*, no la carpeta.
-- `ls …/ambientes` — compruebas que llegaron los archivos de los labs.
+- `ls estudiantes/$GHUSER/09_python/ambientes` — lista la carpeta: compruebas que llegaron los archivos de los labs.
 
 **Deberías ver** `hola.py`, `quien_soy.py`, `requirements.txt` y `script_autonomo.py`.
 

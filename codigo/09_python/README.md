@@ -24,8 +24,18 @@ cp -r codigo/09_python/. estudiantes/$GHUSER/09_python/
 cd estudiantes/$GHUSER/09_python && ls
 ```
 
-Fíjate en la barra y el punto al final del origen: sin ellos, `cp` copia la
-carpeta en vez de su contenido.
+Qué hace cada pieza:
+
+- `git switch main` — te cambias a `main`; `&&` corre lo siguiente sólo si
+  salió bien.
+- `git fetch upstream` y `git merge upstream/main` — bajas lo nuevo del repo
+  del curso (`upstream`) y lo mezclas en tu `main`: así llega esta carpeta.
+- `git switch -c tarea-09-uv-docker` — `-c` crea la branch y te cambia a ella.
+- `mkdir -p …` — crea tu carpeta; `-p` crea las intermedias y no truena si ya
+  existe. `$GHUSER` es tu login de GitHub (`echo $GHUSER`).
+- `cp -r codigo/09_python/. …` — `-r` copia con subcarpetas; el `/.` final
+  copia el *contenido*: sin él quedaría `09_python/09_python/`.
+- `cd … && ls` — entras y compruebas que llegaron `ambientes/` y `uv_docker/`.
 
 Los labs crean `.venv/` dentro de tu carpeta. No pasa nada: el `.gitignore`
 del curso lo deja fuera de git, y lo que sí se sube (`pyproject.toml`,
@@ -50,6 +60,13 @@ git status        # .venv/ NO debe aparecer
 git commit -m "unidad 09: labs de ambientes y mi ambiente uv en Docker"
 git push -u origin tarea-09-uv-docker
 ```
+
+- `git add estudiantes/$GHUSER/09_python` — elige para el commit labs y
+  entrega, nada más del repo.
+- `git status` — lista lo que entrará; si ves `.venv/`, detente.
+- `git commit -m "…"` — guarda los cambios con ese mensaje.
+- `git push -u origin tarea-09-uv-docker` — sube la branch a tu fork
+  (`origin`); `-u` la enlaza para que después baste `git push`.
 
 Lo que tiene cada archivo y los pasos, en el tablero:
 https://rayalucaria.org/fdd_o26/python/ambientes/b-entregas/

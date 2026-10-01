@@ -18,12 +18,12 @@ Meta: reconocer el flujo de `venv` + `pip` que trae casi todo README, y ver dón
 ## En corto
 
 - **`python -m venv` + `pip` es la forma clásica**, y la vas a ver en casi todo README.
-- **`pip` instala en el Python que esté primero en el `PATH`**, haya ambiente activo o no.
-- uv hace lo mismo con menos pasos y con lock.
+- **`pip` instala en el Python que esté primero en el `PATH`** (la lista de carpetas donde la shell busca programas), haya ambiente activo o no.
+- uv hace lo mismo con menos pasos y con lock (`uv.lock`: versiones exactas y hashes).
 
 ### 1. Crear y activar
 
-En Ubuntu o WSL recién instalados, `python3 -m venv` falla con `ensurepip is not available`: falta un paquete del sistema. Se arregla una vez con `sudo apt install python3-venv python3-pip`.
+En Ubuntu o WSL recién instalados, `python3 -m venv` falla con `ensurepip is not available`: falta un paquete del sistema. Se arregla una vez con `sudo apt install python3-venv python3-pip`: `apt` es el instalador de paquetes de Ubuntu y Debian, y `sudo` lo corre como administrador porque toca el sistema. En macOS no hace falta.
 
 **Haz:**
 
@@ -37,9 +37,9 @@ python quien_soy.py
 **Qué hace cada pieza:**
 
 - `cd …/ambientes` — entras a tu carpeta de labs. `{tu_fork_de_la_clase}` es donde clonaste tu fork: pon la tuya, sin llaves.
-- `python3 -m venv .venv` — corre el módulo `venv` de Python (`-m`) y crea un ambiente vacío en la carpeta `.venv/`.
-- `source .venv/bin/activate` — lo activa: tu shell encuentra primero el `python` y el `pip` de `.venv/`.
-- `python quien_soy.py` — comprueba qué Python corre ahora.
+- `python3 -m venv .venv` — `-m` (module) corre un módulo de Python como programa; el módulo `venv` crea un ambiente vacío en la carpeta `.venv/`. Se llama `.venv` porque es el nombre que uv y VS Code buscan.
+- `source .venv/bin/activate` — lo activa: tu shell encuentra primero el `python` y el `pip` de `.venv/`. `source` corre el archivo dentro de tu shell actual; por eso puede cambiarle el `PATH`.
+- `python quien_soy.py` — `quien_soy.py` imprime qué Python corre y si tiene `rich`. Activado ya existe `python` a secas: el de `.venv/bin/`.
 
 **Deberías ver:** el prompt empieza con `(.venv)`, y (recortado)
 
@@ -64,9 +64,10 @@ pip freeze
 
 **Qué hace cada pieza:**
 
-- `pip install -r requirements.txt` — instala cada paquete de la lista (`-r`: lee los nombres de ese archivo) en el ambiente activo.
-- `python hola.py` — corre el hola mundo, que necesita `rich`.
-- `pip freeze` — lista todo lo instalado en el ambiente activo, con su versión.
+- `requirements.txt` — archivo de texto con un paquete por línea; viene en tu carpeta de labs.
+- `pip install -r requirements.txt` — baja de PyPI (el repositorio público de paquetes de Python) e instala cada paquete de la lista (`-r`: lee los nombres de ese archivo) en el ambiente activo.
+- `python hola.py` — corre el hola mundo, que necesita `rich`: comprueba que la instalación sirvió.
+- `pip freeze` — lista todo lo instalado en el ambiente activo, con su versión exacta (`==`).
 
 **Deberías ver:**
 
@@ -78,7 +79,7 @@ Pygments==2.21.0
 rich==15.0.0
 ```
 
-`pip freeze` lista **todo** lo instalado con su versión. `pip freeze > requirements.txt` es la forma clásica de «fijar» versiones: copia lo que hay, sin hash y sin distinguir lo que pediste de lo que vino arrastrado.
+`pip freeze` lista **todo** lo instalado con su versión. `pip freeze > requirements.txt` es la forma clásica de «fijar» versiones: `>` guarda la salida en ese archivo (lo sobrescribe). Copia lo que hay, sin hash (la huella que comprueba que el archivo bajado es el mismo) y sin distinguir lo que pediste de lo que vino arrastrado (las dependencias **transitivas**: `rich` pidió las otras tres).
 
 ### 3. El experimento: pip sin activar
 
@@ -96,8 +97,8 @@ python3 quien_soy.py
 **Qué hace cada pieza:**
 
 - `deactivate` — sales del ambiente: tu shell vuelve a encontrar el Python del sistema.
-- `python3 hola.py` — intentas correr el hola mundo fuera del ambiente.
-- `python3 -m pip install rich` — usa el `pip` de ese mismo `python3` para instalar `rich`.
+- `python3 hola.py` — intentas correr el hola mundo fuera del ambiente. Sin activar se escribe `python3`: en muchos Linux no existe `python` a secas.
+- `python3 -m pip install rich` — usa el `pip` de ese mismo `python3` para instalar `rich`. Con `-m pip` sabes a qué Python le instalas; un `pip` a secas puede ser de otro.
 - `python3 quien_soy.py` — compruebas dónde quedó.
 
 **Deberías ver:** `python3 hola.py` truena con `ModuleNotFoundError: No module named 'rich'`, porque ya no estás en el ambiente. Y luego, una de dos cosas según tu sistema:
@@ -126,8 +127,8 @@ ls -a
 
 **Qué hace cada pieza:**
 
-- `rm -rf .venv` — borra la carpeta del ambiente con todo lo de adentro.
-- `ls -a` — lista lo que queda, también lo oculto.
+- `rm -rf .venv` — borra la carpeta del ambiente con todo lo de adentro (`-r`: recursivo; `-f`: sin preguntar).
+- `ls -a` — lista lo que queda, también lo oculto (`-a`): `.venv` empieza con punto y `ls` a secas no lo mostraría.
 
 **Deberías ver:** ya no está `.venv`; tus archivos sí. Borrar el ambiente es borrar la carpeta.
 
@@ -140,6 +141,8 @@ ls -a
 | Instalar | `pip install rich` | `uv add rich` |
 | Fijar versiones | `pip freeze > requirements.txt` | `uv.lock`, automático |
 | Recrear en otra máquina | `python3 -m venv .venv` + activar + `pip install -r requirements.txt` | `uv sync` |
+
+- `uv sync` — deja `.venv/` idéntico a `uv.lock`, sin activar nada.
 
 ::: problem {#py-pip-global title="Instaló, pero ¿dónde?"}
 Abres una terminal, entras a tu proyecto (que tiene `.venv/`), corres `pip install pandas` y sale bien. Luego `uv run analisis.py` dice `ModuleNotFoundError: No module named 'pandas'`. ¿Dónde quedó pandas?

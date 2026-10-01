@@ -224,3 +224,27 @@ def test_el_tablero_no_resuelve_los_huecos_del_dockerfile():
     """El tablero dice qué va en cada hueco, nunca la instrucción."""
     t = TABLERO.read_text(encoding="utf-8")
     assert "uv sync --locked" not in t and "COPY pyproject.toml" not in t
+
+
+INDICES_9 = [UNIDAD / "0_index.md", SECCION / "0_index.md"]
+
+
+@pytest.mark.parametrize("ruta", [r for r, _ in TODAS] + INDICES_9,
+                         ids=lambda p: f"{p.parent.name}-{p.stem}")
+def test_todo_bloque_de_comandos_se_explica(ruta):
+    """Pedido del profesor: que se entienda qué se escribe, cómo y por qué.
+    Tras cada bloque bash viene su explicación: «Qué hace cada pieza» o las
+    viñetas de cada comando."""
+    lineas = ruta.read_text(encoding="utf-8").splitlines()
+    i = 0
+    while i < len(lineas):
+        if lineas[i].startswith("```bash"):
+            inicio = i
+            i += 1
+            while not lineas[i].startswith("```"):
+                i += 1
+            siguientes = [l for l in lineas[i + 1:i + 6] if l.strip()][:2]
+            assert any(l.startswith(("**Qué hace cada pieza:**", "- `", "Son las mismas piezas"))
+                       for l in siguientes), (
+                f"{ruta.name}:{inicio + 1}: bloque de comandos sin explicar")
+        i += 1

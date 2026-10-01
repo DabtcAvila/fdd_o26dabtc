@@ -34,7 +34,7 @@ uv --version
 
 **Qué hace cada pieza:**
 
-- `uv self update` — actualiza uv a su última versión.
+- `uv self update` — actualiza uv a su última versión (`self`: el subcomando que actúa sobre uv mismo). Las banderas y salidas cambian entre versiones; así ves lo mismo que esta página.
 - `uv --version` — imprime la versión que quedó.
 
 **Deberías ver:** `uv 0.12.21` o más nuevo. Las salidas de esta página se capturaron con **uv 0.12.21** y Python 3.13.15; tus números de versión pueden ser mayores. Si instalaste uv con otro gestor (Homebrew, pipx), `uv self update` te lo dice: actualiza con ese gestor.
@@ -49,7 +49,8 @@ uv python install 3.13
 
 **Qué hace cada pieza:**
 
-- `uv python install 3.13` — baja e instala Python 3.13 en una carpeta de uv. No toca el Python de tu sistema.
+- `uv python install 3.13` — baja e instala Python 3.13 en una carpeta de uv (`~/.local/share/uv/python/`). No toca el Python de tu sistema.
+- Por qué: así todos usan la misma versión de Python, sin importar cuál traiga tu sistema.
 
 **Deberías ver:**
 
@@ -73,9 +74,10 @@ ls -a && cat pyproject.toml
 **Qué hace cada pieza:**
 
 - `cd …/ambientes` — entras a tu carpeta de labs. `{tu_fork_de_la_clase}` es donde clonaste tu fork: pon la tuya, sin llaves.
-- `uv init --no-package demo` — crea la carpeta `demo/` con un proyecto vacío: `pyproject.toml`, `main.py`, `README.md` y `.python-version`.
-- `&& cd demo` — si salió bien, entras a `demo/`.
-- `ls -a && cat pyproject.toml` — lista lo que se creó y muestra el `pyproject.toml`.
+- `uv init --no-package demo` — `init` inicia un proyecto llamado `demo`: crea la carpeta `demo/` con `pyproject.toml` (lo que el proyecto necesita), `main.py`, `README.md` y `.python-version` (qué versión de Python usa).
+- `--no-package` — el proyecto sólo corre scripts; no es una librería para publicar.
+- `&&` — corre lo de la derecha sólo si lo de la izquierda salió bien: no entras a una carpeta que no se creó.
+- `ls -a && cat pyproject.toml` — lista lo que se creó, también lo oculto (`-a`), y muestra el `pyproject.toml` (`cat`). En la salida, `.` es esta carpeta y `..` la de arriba.
 
 **Deberías ver:**
 
@@ -90,7 +92,7 @@ requires-python = ">=3.13"
 dependencies = []
 ```
 
-**En el mapa:** existe `pyproject.toml`; todavía no hay `uv.lock` ni `.venv/`. `--no-package` es para un proyecto que sólo corre scripts; sin la bandera, uv 0.12 arma un paquete instalable con carpeta `src/`.
+**En el mapa:** existe `pyproject.toml`; todavía no hay `uv.lock` ni `.venv/`. Sin `--no-package`, uv 0.12 arma un paquete instalable con carpeta `src/`.
 
 ### 3. Un paquete
 
@@ -103,8 +105,9 @@ ls -a && grep -A2 dependencies pyproject.toml
 
 **Qué hace cada pieza:**
 
-- `uv add rich` — agrega `rich`: lo anota en `pyproject.toml`, fija versiones exactas en `uv.lock` y lo instala en `.venv/` (si no existe, lo crea).
-- `grep -A2 dependencies pyproject.toml` — muestra la línea `dependencies` y las dos siguientes (`-A2`).
+- `uv add rich` — agrega `rich`: lo anota en `pyproject.toml`, **resuelve** (escoge una versión de cada paquete compatible con todos los demás), fija esas versiones exactas en `uv.lock` y las instala en `.venv/` (si no existe, lo crea).
+- `uv.lock` — el **lockfile**: el archivo con la versión exacta de cada paquete, para que otra máquina instale las mismas.
+- `grep -A2 dependencies pyproject.toml` — `grep` imprime las líneas del archivo que contienen `dependencies`; `-A2` (after) agrega las dos siguientes.
 
 **Deberías ver:** (recortado)
 
@@ -116,7 +119,7 @@ dependencies = [
 ]
 ```
 
-**En el mapa:** un comando tocó las tres cajas. `pyproject.toml` ganó un **rango** (`>=15.0.0`); `uv.lock` y `.venv/` nacieron.
+**En el mapa:** un comando tocó las tres cajas. `pyproject.toml` ganó un **rango** (`>=15.0.0`: la 15.0.0 o una más nueva); `uv.lock` y `.venv/` nacieron.
 
 ### 4. Correr
 
@@ -129,8 +132,8 @@ uv run hola.py
 
 **Qué hace cada pieza:**
 
-- `cp ../hola.py .` — copia `hola.py` de la carpeta de arriba a ésta.
-- `uv run hola.py` — lo corre con el python de `.venv/`. Si el ambiente no coincide con el lock, primero lo pone al día.
+- `cp ../hola.py .` — copia (`cp`) `hola.py` de la carpeta de arriba (`..`) a ésta (`.`).
+- `uv run hola.py` — lo corre con el python de `.venv/`, sin activar. Si el ambiente no coincide con el lock, primero lo pone al día.
 
 **Deberías ver:** `Hola desde un Python que sí tiene rich instalado.`, con colores.
 
@@ -147,8 +150,9 @@ uv tree
 
 **Qué hace cada pieza:**
 
-- `grep -c '^\[\[package\]\]' uv.lock` — cuenta (`-c`) cuántos paquetes fija el lock: cada uno empieza con `[[package]]`.
-- `uv tree` — dibuja quién necesita a quién.
+- `grep -c '^\[\[package\]\]' uv.lock` — cuenta (`-c`: count) cuántos paquetes fija el lock: cada uno empieza con `[[package]]`.
+- En el patrón, `^` es «al inicio de la línea» y `\[` es un corchete literal (`[` a secas es especial para `grep`). Las comillas simples evitan que la shell toque el patrón.
+- `uv tree` — dibuja, a partir del lock, quién necesita a quién.
 
 **Deberías ver:**
 
@@ -161,7 +165,7 @@ demo v0.1.0
     └── pygments v2.21.0
 ```
 
-**En el mapa:** pediste un paquete y el lock fija cinco entradas: tu proyecto, `rich` y tres **transitivas** que `rich` necesita. Cada una con versión exacta y hash.
+**En el mapa:** pediste un paquete y el lock fija cinco entradas: tu proyecto, `rich` y tres **transitivas**: no las pediste tú, las pide `rich`. Cada una con versión exacta y **hash**: una huella del archivo descargado; si el archivo cambia, el hash no coincide y uv se niega a instalarlo.
 
 ### 6. Romperlo
 
@@ -176,6 +180,7 @@ uv run hola.py
 
 - `rm -rf .venv` — borra la carpeta del ambiente completa (`-r`: con todo lo de adentro; `-f`: sin preguntar).
 - `uv run hola.py` — al no encontrar `.venv/`, uv lo recrea desde `uv.lock` y luego corre el script.
+- Por qué: para comprobar que `.venv/` se puede tirar sin perder nada.
 
 **Deberías ver:**
 
@@ -199,7 +204,8 @@ tail -4 pyproject.toml
 **Qué hace cada pieza:**
 
 - `uv add --dev pytest` — agrega `pytest` como dependencia **de desarrollo** (`--dev`): la usas tú, no tu programa.
-- `tail -4 pyproject.toml` — muestra las últimas 4 líneas del archivo.
+- `tail -4 pyproject.toml` — muestra las últimas 4 líneas del archivo (`tail`: el final; `head`: el principio).
+- `[dependency-groups]` — la sección de `pyproject.toml` para dependencias que no viajan con el programa; `--dev` llena el grupo `dev`.
 
 **Deberías ver:**
 
@@ -224,7 +230,7 @@ uv run hola.py
 **Qué hace cada pieza:**
 
 - `uv remove rich` — lo quita de `pyproject.toml`, de `uv.lock` y de `.venv/`.
-- `uv run hola.py` — lo intentas correr sin `rich`.
+- `uv run hola.py` — lo intentas correr sin `rich`, para comprobar que de verdad se fue.
 
 **Deberías ver:**
 
@@ -245,8 +251,9 @@ uvx cowsay -t hola
 
 **Qué hace cada pieza:**
 
-- `uvx cowsay` — corre el programa `cowsay` sin instalarlo en tu proyecto: uv lo baja a un ambiente temporal.
-- `-t hola` — el texto que dice la vaca.
+- `uvx cowsay` — corre el programa `cowsay` (una vaca en ASCII que repite un texto) sin instalarlo en tu proyecto: uv lo baja a un ambiente temporal. `uvx` es la forma corta de `uv tool run`.
+- `-t hola` — bandera de `cowsay`, no de uv: lo que va después del nombre del programa es para el programa. `-t` es el texto que dice la vaca.
+- Por qué: herramientas que usas de vez en cuando (un formateador, un linter) no tienen por qué entrar en `pyproject.toml`.
 
 **Deberías ver:** una vaca que dice `hola`.
 
@@ -266,11 +273,11 @@ uv run script_autonomo.py
 
 - `cd ..` — subes a `ambientes/`, donde está `script_autonomo.py`.
 - `head -4 script_autonomo.py` — muestra sus primeras 4 líneas: el bloque `# /// script`.
-- `uv run script_autonomo.py` — uv lee ese bloque, arma un ambiente temporal con `rich` y corre el script.
+- `uv run script_autonomo.py` — uv lee ese bloque, arma un ambiente temporal con `rich` en su caché (`~/.cache/uv/`) y corre el script.
 
 **Deberías ver:** el bloque `# /// script` con `dependencies = ["rich"]`, y una tabla cuya fila «Ambiente» apunta a `~/.cache/uv/environments-v2/…`.
 
-**En el mapa:** el bloque del archivo hace de `pyproject.toml` (PEP 723). Sirve para scripts sueltos: no hay proyecto ni `.venv/` en tu carpeta.
+**En el mapa:** el bloque del archivo cumple el papel de `pyproject.toml`. Lo define el PEP 723, el estándar de Python para declarar dependencias dentro de un script. Sirve para scripts sueltos: no hay proyecto ni `.venv/` en tu carpeta.
 
 ## Puente al mundo de pip
 
@@ -278,6 +285,12 @@ uv run script_autonomo.py
 |---|---|
 | `uv pip install rich` | La interfaz de pip, más rápida, sobre el ambiente activo o `.venv/` |
 | `uv export --no-hashes --no-dev > requirements.txt` | Para quien sólo tiene pip; `--no-dev` deja fuera `pytest` y lo demás de desarrollo |
+
+- `uv pip install` — uv con los mismos comandos que `pip`; no toca `pyproject.toml` ni `uv.lock`.
+- `uv export` — escribe el contenido de `uv.lock` en el formato de `requirements.txt`: la lista de paquetes que lee `pip install -r`.
+- `--no-hashes` — omite los hashes: el archivo queda legible y `pip` no exige verificar cada paquete.
+- `--no-dev` — deja fuera el grupo `dev`.
+- `> requirements.txt` — `>` manda la salida a ese archivo en vez de a la pantalla; si ya existía, lo sobrescribe.
 
 La salida (recortada) lista cada paquete con su versión exacta y, debajo, quién lo pidió:
 
@@ -296,6 +309,9 @@ rich==15.0.0
 | `uv.lock` | ✅ | Las versiones exactas: sin él, otra máquina resuelve otras |
 | `.python-version` | ✅ | Qué Python usa el proyecto |
 | `.venv/` | ❌ | Se recrea con `uv sync`; el `.gitignore` del curso lo excluye y la revisión de entregas lo rechaza |
+
+- `uv sync` — deja `.venv/` idéntico a `uv.lock`: instala lo que falta y quita lo que sobra. Si no hay `uv.lock`, primero lo resuelve.
+- `.gitignore` — la lista de archivos que git no sube.
 
 ::: problem {#py-lab-uv-clon title="Lo clonaste en otra máquina"}
 Tu compañero clona tu repo: trae `pyproject.toml` y `uv.lock`, sin `.venv/`. ¿Qué comando corre para tener exactamente tus versiones, y por qué no `uv add rich`?
