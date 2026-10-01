@@ -30,7 +30,7 @@ Meta: comprobar con tres comandos qué es un ambiente y qué hace «activar».
 **Haz:**
 
 ```bash
-cd ~/lab-ambientes
+cd ~/fdd/fdd_o26/estudiantes/$GHUSER/09_python/ambientes
 uv init --no-package hola && cd hola
 uv add rich
 ```
@@ -38,7 +38,7 @@ uv add rich
 **Deberías ver:** (las versiones pueden ser más nuevas)
 
 ```text
-Initialized project `hola` at `/home/ana/lab-ambientes/hola`
+Initialized project `hola` at `/home/ana/fdd/fdd_o26/estudiantes/ana/09_python/ambientes/hola`
 Using CPython 3.13.15 interpreter at: /usr/local/bin/python3.13
 Creating virtual environment at: .venv
 Resolved 5 packages in 455ms
@@ -130,7 +130,7 @@ deactivate
 ```text
 /usr/local/bin
 /usr/local/sbin
-/home/ana/lab-ambientes/hola/.venv/bin
+/home/ana/fdd/fdd_o26/estudiantes/ana/09_python/ambientes/hola/.venv/bin
 /usr/local/bin
 ```
 
@@ -138,7 +138,7 @@ deactivate
 - `uv run` usa el `.venv/` del proyecto **sin tocar tu shell**. Por eso en este curso no hace falta activar.
 
 ::: problem {#py-activado title="¿Dónde quedó rich?"}
-Abres una terminal nueva, entras a `~/lab-ambientes/hola` y corres `python hola.py`. Sale `ModuleNotFoundError: No module named 'rich'`. Ayer funcionaba. ¿Qué pasó?
+Abres una terminal nueva, entras a `estudiantes/<tu-login>/09_python/ambientes/hola` y corres `python hola.py`. Sale `ModuleNotFoundError: No module named 'rich'`. Ayer funcionaba. ¿Qué pasó?
 :::
 
 ::: hint {of="py-activado"}

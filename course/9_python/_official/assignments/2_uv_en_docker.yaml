@@ -9,11 +9,14 @@ content:
     ambiente en el que corre, qué intérprete usa, dónde está su ambiente y qué
     paquetes tiene, cada uno con su versión. El punto de la entrega es comparar
     las dos salidas y explicar qué fijó el lock y qué no.
-    El material está en la carpeta uv guion bajo docker, dentro de la carpeta
-    cero nueve guion bajo python que publiqué en codigo, y se copia a la misma
-    ruta dentro de tu carpeta de estudiante, con la barra y el punto al final
-    del origen. Copia sólo uv guion bajo docker. La carpeta de ambientes, la de
-    los laboratorios de clase, se copió fuera del repositorio y no se sube.
+    Todo se trabaja en tu carpeta de estudiante. La carpeta cero nueve guion
+    bajo python que publiqué en codigo se copia completa a la misma ruta dentro
+    de tu carpeta, con la barra y el punto al final del origen; si ya la
+    copiaste en clase, no la vuelvas a copiar, porque pisarías tus cambios. La
+    entrega va en la subcarpeta uv guion bajo docker. Los laboratorios de
+    clase, en la subcarpeta ambientes, se suben en este mismo pull request: los
+    dos viven en cero nueve guion bajo python. Los punto venv que crean no se
+    suben, porque el gitignore del curso los deja fuera.
     Deben quedar seis archivos tuyos dentro de uv guion bajo docker. Uno,
     reporte punto py, con tu fila: la plantilla trae una fila de ejemplo que
     reemplazas por una que use un paquete que tú elijas, importado arriba con

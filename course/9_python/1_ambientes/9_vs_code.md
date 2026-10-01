@@ -27,10 +27,10 @@ La extensión **Python** de Microsoft (`ms-python.python`). Si no la tienes: pan
 
 ## Elegir el ambiente que hizo uv
 
-1. Abre **la carpeta del proyecto**, no un archivo suelto: `code ~/lab-ambientes/demo`.
+1. Abre **tu fork** en VS Code, igual que en las otras unidades: `code ~/fdd/fdd_o26`.
 2. **Ctrl+Shift+P** abre la paleta de comandos.
 3. Escribe `Python: Select Interpreter` y presiona Enter.
-4. Elige la opción que dice `./.venv/bin/python` (Windows: `.\.venv\Scripts\python.exe`). Suele salir marcada como recomendada.
+4. Elige el `.venv` **del proyecto en el que trabajas**. Con varios labs vas a ver varios; la ruta dice cuál es: `./estudiantes/<tu-login>/09_python/ambientes/demo/.venv/bin/python`.
 5. Abre un archivo `.py` y mira la barra de estado, abajo a la derecha: ahora dice la versión y el nombre del ambiente. Sin un archivo de Python abierto, no aparece.
 
 Si el `.venv` no aparece en la lista: `uv sync` en la terminal para crearlo, y repite desde el paso 2.
@@ -39,7 +39,7 @@ Si el `.venv` no aparece en la lista: `uv sync` en la terminal para crearlo, y r
 
 **Ctrl+Shift+P** → `Python: Create Environment` → *Venv* → la versión de Python → (opcional) marca `requirements.txt` para instalarlo.
 
-Ese comando crea un `.venv` **con venv y pip, no con uv**: no escribe `pyproject.toml` ni `uv.lock`. En este curso el proyecto lo crea uv y VS Code **sólo lo elige**.
+Ese comando crea un `.venv` **con venv y pip, no con uv**, y lo crea en la **raíz de lo que tengas abierto**: con tu fork abierto, en la raíz del repo, no en tu carpeta. Por eso en este curso el ambiente lo crea uv, en la terminal y dentro de tu carpeta; VS Code **sólo lo elige**.
 
 ## Comprobar que está bien
 

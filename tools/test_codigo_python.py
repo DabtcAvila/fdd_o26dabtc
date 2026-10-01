@@ -82,3 +82,9 @@ def test_reporte_es_python_valido():
 def test_la_imagen_de_uv_esta_fijada_a_una_version_menor():
     df = (UVD / "Dockerfile").read_text(encoding="utf-8")
     assert "ghcr.io/astral-sh/uv:0.12 " in df, "fija la imagen de uv: latest cambia sin aviso"
+
+
+def test_el_readme_manda_los_labs_a_la_carpeta_del_alumno():
+    t = (RAIZ / "codigo/09_python/README.md").read_text(encoding="utf-8")
+    assert "lab-ambientes" not in t and "fuera del repo" not in t.lower()
+    assert "estudiantes/$GHUSER/09_python/" in t

@@ -1,7 +1,8 @@
 """Guarda de forma de la seccion 9.1 Ambientes (unidad 9, Python).
 
 Las paginas se escriben contra esta guarda: lectores con ADHD, sin analogias,
-labs con Haz / Deberias ver, y los labs fuera del repo.
+labs con Haz / Deberias ver, y los labs dentro de la carpeta del alumno
+(regla del curso: todo se trabaja en estudiantes/<login>/, nunca fuera del repo).
 """
 import re
 from pathlib import Path
@@ -139,15 +140,13 @@ def test_los_labs_alternan_haz_y_deberias_ver(ruta, ident):
 
 
 @pytest.mark.parametrize("ruta,ident", TODAS, ids=IDS)
-def test_los_labs_no_trabajan_dentro_del_repo(ruta, ident):
+def test_los_labs_se_trabajan_en_la_carpeta_del_alumno(ruta, ident):
     cuerpo = _front(ruta)[1]
-    for b in _bloques(cuerpo, ("bash",)):
-        for l in b.splitlines():
-            if re.search(r"\b(uv init|-m venv)\b", l):
-                assert "fdd_o26" not in l and "estudiantes" not in l, (
-                    f"{ident}: lab dentro del repo: {l}")
+    assert not re.search(r"~/lab-|lab-ambientes|fuera del repo", cuerpo), (
+        f"{ident}: los labs viven en estudiantes/<login>/, nunca fuera del repo")
     if ident in LABS:
-        assert "~/lab-ambientes" in cuerpo, f"{ident}: el lab no dice dónde trabajar"
+        assert "estudiantes/$GHUSER/09_python/ambientes" in cuerpo, (
+            f"{ident}: el lab no dice que se trabaja en tu carpeta de estudiante")
 
 
 @pytest.mark.parametrize("ruta,ident", TODAS, ids=IDS)

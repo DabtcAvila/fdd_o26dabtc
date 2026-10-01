@@ -56,7 +56,7 @@ Installed Python 3.13.15 in 1.99s
 **Haz:**
 
 ```bash
-cd ~/lab-ambientes
+cd ~/fdd/fdd_o26/estudiantes/$GHUSER/09_python/ambientes
 uv init --no-package demo && cd demo
 ls -a && cat pyproject.toml
 ```
@@ -206,7 +206,7 @@ uvx cowsay -t hola
 **Haz:**
 
 ```bash
-cd ~/lab-ambientes
+cd ..
 head -4 script_autonomo.py
 uv run script_autonomo.py
 ```

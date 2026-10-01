@@ -28,7 +28,7 @@ En Ubuntu o WSL recién instalados, `python3 -m venv` falla con `ensurepip is no
 **Haz:**
 
 ```bash
-cd ~/lab-ambientes
+cd ~/fdd/fdd_o26/estudiantes/$GHUSER/09_python/ambientes
 python3 -m venv .venv
 source .venv/bin/activate          # Linux y macOS
 python quien_soy.py
@@ -43,8 +43,8 @@ En Windows (PowerShell), el paso de activar es:
 **Deberías ver:** el prompt empieza con `(.venv)`, y (recortado)
 
 ```text
-python que corre  : /home/ana/lab-ambientes/.venv/bin/python
-sys.prefix        : /home/ana/lab-ambientes/.venv
+python que corre  : /home/ana/fdd/fdd_o26/estudiantes/ana/09_python/ambientes/.venv/bin/python
+sys.prefix        : /home/ana/fdd/fdd_o26/estudiantes/ana/09_python/ambientes/.venv
 ¿en un ambiente?  : sí
 rich              : NO instalado en este Python
 ```

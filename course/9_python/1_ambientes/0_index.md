@@ -57,16 +57,19 @@ Meta: que sepas en qué Python y con qué paquetes corre tu código, y cómo hac
 ## Antes de clase
 
 1. **uv instalado**: `uv --version` responde (instrucciones en [[python]]).
-2. **Los archivos del lab, fuera del repo**:
+2. **Tu carpeta lista**: abre tu fork en VS Code y, en su terminal, el ritual de la unidad, que deja la branch de la entrega y copia todo:
 
 ```bash
-mkdir -p ~/lab-ambientes
-cp -r ~/fdd/fdd_o26/codigo/09_python/ambientes/. ~/lab-ambientes/
-ls ~/lab-ambientes
+cd ~/fdd/fdd_o26
+git switch main && git fetch upstream && git merge upstream/main
+git switch -c tarea-09-uv-docker
+mkdir -p estudiantes/$GHUSER/09_python
+cp -r codigo/09_python/. estudiantes/$GHUSER/09_python/
+ls estudiantes/$GHUSER/09_python/ambientes
 ```
 
 **Deberías ver** `hola.py`, `quien_soy.py`, `requirements.txt` y `script_autonomo.py`.
 
-Los labs trabajan en `~/lab-ambientes/`, **fuera** del repo del curso: crean `.venv/` y archivos que no deben acabar en un `git add`.
+**Todo se trabaja en tu carpeta de estudiante**, como el resto del curso: los labs en `09_python/ambientes/` y la entrega en `09_python/uv_docker/`. Los dos se suben juntos, en el pull request de `tarea-09-uv-docker`. Los `.venv/` que creen los labs no se suben: el `.gitignore` del curso los deja fuera.
 
 Los comandos suponen una terminal de Linux o macOS. **En Windows, trabaja dentro de WSL**, como en la unidad 8: `rm`, `ls`, `which` y `source` no existen en PowerShell. Las líneas de PowerShell que aparecen son para reconocerlas, no el camino del curso.

@@ -229,7 +229,7 @@ senales = [
   "rich en el lock o en las salidas con versión menor a 15, que contradice rich>=15",
   "la tabla de paquetes del contenedor trae pip, setuptools o reporte: un ambiente de uv no instala pip y el proyecto virtual no se instala",
   "Python del contenedor distinto de 3.13.x, que es lo que trae la imagen base",
-  "el pull request trae archivos de python/ o de ambientes/: la branch nació de otra entrega, o se subieron los labs",
+  "el pull request trae archivos de python/: la branch nació de la entrega de DataCamp y no de main",
 ]
 donde_investigar = [
   "https://rayalucaria.org/fdd_o26/python/ambientes/b-entregas/",

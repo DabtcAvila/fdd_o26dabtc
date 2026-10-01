@@ -161,7 +161,7 @@ def py_path():
     izquierda = (("/usr/local/bin", "no hay python", SUAVE, LINEA),
                  ("/usr/bin", "aquí está python3 → gana", AMBAR, AMBAR),
                  ("/bin", "ya no se busca", SUAVE, LINEA))
-    derecha = (("~/lab-ambientes/demo/.venv/bin", "aquí está python → gana", ACENTO, ACENTO),
+    derecha = (("…/09_python/ambientes/demo/.venv/bin", "aquí está python → gana", ACENTO, ACENTO),
                ("/usr/local/bin", "ya no se busca", SUAVE, LINEA),
                ("/usr/bin", "ya no se busca", SUAVE, LINEA))
     for x0, filas in ((50, izquierda), (590, derecha)):

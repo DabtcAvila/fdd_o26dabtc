@@ -69,7 +69,7 @@ git push -u origin tarea-09-datacamp-python
 | **Vence** | 2026-10-06 |
 | **Vale** | 10 puntos |
 | **Branch** | `tarea-09-uv-docker` |
-| **Carpeta** | `estudiantes/<tu-login>/09_python/uv_docker/` |
+| **Carpeta** | `estudiantes/<tu-login>/09_python/`: la entrega en `uv_docker/`, tus labs en `ambientes/` |
 
 Un programa que reporta su propio ambiente. Lo corres en tu máquina y dentro de un contenedor, y explicas qué salió igual y qué no.
 
@@ -88,12 +88,22 @@ Un programa que reporta su propio ambiente. Lo corres en tu máquina y dentro de
 
 **El ritual**
 
+Si ya hiciste el ritual en clase ([[ambientes-python]], «Antes de clase»), **no lo repitas**: la branch ya existe y volver a copiar pisaría tus cambios. Sólo entra:
+
+```bash
+cd ~/fdd/fdd_o26
+git switch tarea-09-uv-docker
+cd estudiantes/$GHUSER/09_python/uv_docker
+```
+
+Si no lo hiciste:
+
 ```bash
 cd ~/fdd/fdd_o26
 git switch main && git fetch upstream && git merge upstream/main
 git switch -c tarea-09-uv-docker
-mkdir -p estudiantes/$GHUSER/09_python/uv_docker
-cp -r codigo/09_python/uv_docker/. estudiantes/$GHUSER/09_python/uv_docker/
+mkdir -p estudiantes/$GHUSER/09_python
+cp -r codigo/09_python/. estudiantes/$GHUSER/09_python/
 cd estudiantes/$GHUSER/09_python/uv_docker
 ```
 
@@ -111,13 +121,13 @@ cd estudiantes/$GHUSER/09_python/uv_docker
 
 ```bash
 cd ~/fdd/fdd_o26
-git add estudiantes/$GHUSER/09_python/uv_docker
+git add estudiantes/$GHUSER/09_python
 git status        # .venv/ NO debe aparecer
-git commit -m "unidad 09: mi ambiente uv en Docker"
+git commit -m "unidad 09: labs de ambientes y mi ambiente uv en Docker"
 git push -u origin tarea-09-uv-docker
 ```
 
-**No se entrega**: `.venv/`, `__pycache__/`, la imagen como archivo, ni la salida de `docker login`. Tampoco nada de `ambientes/`: los labs viven fuera del repo.
+**No se entrega**: `.venv/`, `__pycache__/`, la imagen como archivo, ni la salida de `docker login`. Los labs de `ambientes/` **sí** van, en este mismo pull request: viven en tu carpeta `09_python/`, igual que la entrega.
 
 **Tres cosas que se rompen**
 
