@@ -33,7 +33,7 @@ Meta: reconocer el error antes de reinstalar nada.
 | `python: command not found` | En tu sistema se llama `python3`, o no hay ambiente activo | `which python3` |
 | PowerShell: «la ejecución de scripts está deshabilitada» al activar | La política de ejecución de Windows bloquea `Activate.ps1` | `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned`, una sola vez |
 | La revisión de entregas rechaza tu PR por `.venv` | Subiste el ambiente al repo | [[lab-uv]], «Qué subes a git» |
-| La imagen de Docker trae un `.venv` que no corre | Copiaste todo el proyecto a la imagen, y con él tu `.venv/` local | `.dockerignore` |
+| La imagen de Docker trae un `.venv` que no corre | Copiaste todo el proyecto a la imagen, y con él tu `.venv/` local | `.dockerignore`; [[entregas-ambientes]] |
 | `uv sync --locked` falla: «The lockfile at `uv.lock` needs to be updated» | Cambiaste `pyproject.toml` y no regeneraste el lock | `uv lock` |
 | Dos proyectos y las versiones «se mezclan» | Los dos usan el mismo ambiente, o ninguno | `ls -a` en cada proyecto: ¿cada uno tiene su `.venv/`? |
 

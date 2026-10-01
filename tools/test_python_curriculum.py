@@ -180,3 +180,29 @@ def test_el_indice_de_la_seccion_enlaza_cada_pagina_existente():
     indice = (SECCION / "0_index.md").read_text(encoding="utf-8")
     for _, ident in TODAS:
         assert f"[[{ident}" in indice, f"el índice no enlaza {ident}"
+
+
+TABLERO = SECCION / "12_B_entregas.md"
+
+
+def test_el_tablero_nombra_branch_carpeta_y_fecha_de_cada_entrega():
+    t = TABLERO.read_text(encoding="utf-8")
+    for b, c in (("tarea-09-datacamp-python", "python/"),
+                 ("tarea-09-uv-docker", "09_python/")):
+        assert f"`{b}`" in t and f"`{c}" in t
+    assert t.count("2026-10-06") >= 2
+
+
+def test_el_tablero_de_uv_docker_menciona_platform():
+    assert "--platform linux/amd64" in TABLERO.read_text(encoding="utf-8")
+
+
+def test_el_tablero_dice_que_no_se_entrega_y_acabaste_cuando():
+    t = TABLERO.read_text(encoding="utf-8")
+    assert t.count("**Acabaste cuando**") == 2 and ".venv" in t
+
+
+def test_el_tablero_no_resuelve_los_huecos_del_dockerfile():
+    """El tablero dice qué va en cada hueco, nunca la instrucción."""
+    t = TABLERO.read_text(encoding="utf-8")
+    assert "uv sync --locked" not in t and "COPY pyproject.toml" not in t

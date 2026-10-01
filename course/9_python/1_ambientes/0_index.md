@@ -38,11 +38,12 @@ Meta: que sepas en qué Python y con qué paquetes corre tu código, y cómo hac
 | 9 | [[ambientes-en-vs-code]] | Que VS Code use el `.venv` de tu proyecto | 10 | clase |
 | 10 | [[trampas-de-ambientes]] | Nueve errores con su causa y dónde mirar | 8 | lectura |
 
-## El anexo
+## Los anexos
 
 | Anexo | Qué es | Cuándo lo abres | Min |
 |---|---|---|---:|
 | [[cheatsheet-ambientes]] | La misma tarea en uv, venv + pip, poetry y conda | En clase, y cada vez que leas un README ajeno | 5 |
+| [[entregas-ambientes]] | Las dos entregas: qué vence, con qué branch y en qué carpeta | Antes de cada entrega | 8 |
 
 ## La clase de hoy, en 60 minutos
 

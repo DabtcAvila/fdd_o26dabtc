@@ -52,7 +52,7 @@ La comparación entre `venv` y un contenedor ya apareció en [[en-mi-maquina-si-
 
 ## Se combinan
 
-No se elige uno: se apilan. En la entrega de esta sección construyes una imagen de Docker y, **dentro** de ella, uv crea un `.venv` desde tu `uv.lock`. Docker fija el sistema; el lock fija los paquetes.
+No se elige uno: se apilan. En la [[entregas-ambientes|entrega de esta sección]] construyes una imagen de Docker y, **dentro** de ella, uv crea un `.venv` desde tu `uv.lock`. Docker fija el sistema; el lock fija los paquetes.
 
 ::: figure {#py-uv-docker title="El ambiente primero, el código al final"}
 ![Las cinco etapas de un Dockerfile con uv, apiladas en orden: una imagen base que ya trae Python; el binario de uv, copiado de su imagen oficial; los dos archivos que describen el ambiente; crear el ambiente desde el lock, sin dejar que cambie; y al final el programa. La tercera y la cuarta forman una capa en caché que sólo se rehace si cambia el lock; la quinta cambia cada vez que editas el código. Abajo, en rojo: el .venv de tu máquina nunca entra a la imagen.](../_assets/py-uv-docker.svg)
