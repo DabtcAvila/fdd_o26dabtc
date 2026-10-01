@@ -29,7 +29,7 @@ La columna **uv** es la del curso. Las otras tres sirven para traducir el README
 | Instalar desde el lock | `uv sync` | `pip install -r requirements.txt` | `poetry install` | `conda env create -f environment.yml` |
 | Correr | `uv run x.py` | `python x.py`, activado | `poetry run python x.py` | `python x.py`, activado |
 | Ver qué hay | `uv tree` | `pip list` | `poetry show --tree` | `conda list` |
-| Exportar a requirements | `uv export > requirements.txt` | `pip freeze > requirements.txt` | requiere el plugin `poetry-plugin-export` | `conda env export > environment.yml` |
+| Exportar a requirements | `uv export --no-dev > requirements.txt` | `pip freeze > requirements.txt` | requiere el plugin `poetry-plugin-export` | `conda env export > environment.yml` |
 | Una herramienta suelta | `uvx ruff` | `pipx run ruff` | — | — |
 | Borrar el ambiente | `rm -rf .venv` | `deactivate && rm -rf .venv` | `poetry env remove --all` | `conda env remove -n x` |
 

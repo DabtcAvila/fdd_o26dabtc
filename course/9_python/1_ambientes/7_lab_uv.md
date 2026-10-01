@@ -220,13 +220,15 @@ uv run script_autonomo.py
 | Comando | Para qué |
 |---|---|
 | `uv pip install rich` | La interfaz de pip, más rápida, sobre el ambiente activo o `.venv/` |
-| `uv export --no-hashes > requirements.txt` | Para quien sólo tiene pip |
+| `uv export --no-hashes --no-dev > requirements.txt` | Para quien sólo tiene pip; `--no-dev` deja fuera `pytest` y lo demás de desarrollo |
+
+La salida (recortada) lista cada paquete con su versión exacta y, debajo, quién lo pidió:
 
 ```text
 markdown-it-py==4.2.0
-mdurl==0.1.2
-pygments==2.21.0
+    # via rich
 rich==15.0.0
+    # via demo
 ```
 
 ## Qué subes a git

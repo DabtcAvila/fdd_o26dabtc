@@ -30,6 +30,7 @@ Meta: reconocer el error antes de reinstalar nada.
 | `ModuleNotFoundError` con el paquete «instalado» | Corres otro Python: terminal sin activar, o VS Code con otro intérprete | `quien_soy.py`; la barra de estado de VS Code |
 | `error: externally-managed-environment` | `pip install` sobre el Python del sistema (PEP 668) | [[el-problema-de-los-ambientes]] |
 | `pip install` «funcionó» pero el programa no lo ve | `pip` y `python` son de Pythons distintos | `python3 -m pip --version` dice a qué Python pertenece |
+| `ensurepip is not available` al crear un venv | En Ubuntu o WSL falta el paquete `python3-venv` | `sudo apt install python3-venv python3-pip`, una sola vez |
 | `python: command not found` | En tu sistema se llama `python3`, o no hay ambiente activo | `which python3` |
 | PowerShell: «la ejecución de scripts está deshabilitada» al activar | La política de ejecución de Windows bloquea `Activate.ps1` | `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned`, una sola vez |
 | La revisión de entregas rechaza tu PR por `.venv` | Subiste el ambiente al repo | [[lab-uv]], «Qué subes a git» |

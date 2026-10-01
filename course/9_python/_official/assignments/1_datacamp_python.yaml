@@ -42,8 +42,8 @@ content:
     La fecha se escribe como año, guion, mes, guion, día: por ejemplo, el
     cinco de octubre se escribe dos mil veintiséis guion diez guion cero
     cinco. Otra forma, como cinco de octubre o cinco diagonal diez, la rechaza
-    la revisión automática, porque no se puede comparar contra la fecha en que
-    abriste el pull request.
+    la revisión automática, porque esa forma se lee igual en cualquier país y
+    se puede comparar con otras fechas sin adivinar.
     Puedes usar inteligencia artificial para estudiar, pero tienes que poder
     explicar sin ayuda qué diferencia hay entre una lista y un diccionario y
     cuándo usar cada uno, qué recorre un for sobre un diccionario y cómo

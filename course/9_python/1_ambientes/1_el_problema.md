@@ -45,7 +45,7 @@ En Ubuntu 24.04, `pip install` sobre el Python del sistema:
 pip install rich
 ```
 
-**Sale esto** (salida real, recortada):
+Si tu sistema tiene su `pip` instalado (paquete `python3-pip`), **sale esto** (salida real, recortada):
 
 ```text
 error: externally-managed-environment
@@ -59,6 +59,8 @@ error: externally-managed-environment
     create a virtual environment using python3 -m venv path/to/venv.
 hint: See PEP 668 for the detailed specification.
 ```
+
+Si no lo tiene, sale `pip: command not found`: el sistema tampoco te da un `pip` global.
 
 Ese Python lo usa el propio sistema operativo para sus herramientas. Si le cambias paquetes, las puedes romper. Por eso, desde 2023, Debian, Ubuntu y Homebrew lo bloquean.
 

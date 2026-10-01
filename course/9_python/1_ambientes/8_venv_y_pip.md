@@ -23,6 +23,8 @@ Meta: reconocer el flujo de `venv` + `pip` que trae casi todo README, y ver dón
 
 ### 1. Crear y activar
 
+En Ubuntu o WSL recién instalados, `python3 -m venv` falla con `ensurepip is not available`: falta un paquete del sistema. Se arregla una vez con `sudo apt install python3-venv python3-pip`.
+
 **Haz:**
 
 ```bash
@@ -89,6 +91,7 @@ python3 quien_soy.py
 | Tu sistema | Qué pasa |
 |---|---|
 | Ubuntu 24.04, Debian 12, macOS con Homebrew | `error: externally-managed-environment` ([[el-problema-de-los-ambientes]]): el sistema te frena |
+| Ubuntu o WSL sin `python3-pip` | `No module named pip`: no hay `pip` global en dónde instalar |
 | Windows, o un Python instalado a mano | **Instala en el Python global**, y `quien_soy.py` lo confirma: |
 
 ```text

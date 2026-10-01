@@ -75,7 +75,7 @@ nivel = "falla"
 
 [[patrones]]
 archivo = "uv_docker/Dockerfile"
-debe = '^\s*COPY\s[^\n]*uv\.lock'
+debe = '^\s*COPY\s[^\n#]*uv\.lock|type=bind[^\n#]*uv\.lock'
 que = "el Dockerfile no copia a la imagen los dos archivos que describen el ambiente (primer hueco)"
 porque = "sin ellos, la imagen no sabe qué paquetes ni qué versiones instalar; una línea comentada no cuenta"
 investiga = "Página «Lab: uv», «Qué subes a git»: ¿qué dos archivos bastan para recrear un ambiente en otra máquina?"
@@ -83,7 +83,7 @@ nivel = "falla"
 
 [[patrones]]
 archivo = "uv_docker/Dockerfile"
-debe = '^\s*RUN\s[^\n]*uv\s+sync[^\n]*--locked'
+debe = '^\s*RUN\b(?:[^\n]*\\\n)*[^#\n]*\buv\W+sync\b[^#\n]*--locked'
 que = "el Dockerfile no crea el ambiente desde el lock exigiendo que coincida con el proyecto (segundo hueco)"
 porque = "sin esa exigencia, la construcción puede resolver otras versiones, o usar un lock viejo sin avisar, y la imagen deja de ser lo que dice tu proyecto"
 investiga = "Página «Las trampas», fila del lock: ¿qué opción hace que la construcción falle si el lock ya no coincide con pyproject.toml?"
@@ -91,7 +91,7 @@ nivel = "falla"
 
 [[patrones]]
 archivo = "uv_docker/Dockerfile"
-debe = '^\s*COPY\s[^\n]*(reporte\.py|\s\.\s)'
+debe = '^\s*COPY\s(?![^\n]*uv\.lock)[^\n#]*(reporte\.py|\s\.\s)'
 que = "el Dockerfile no copia el programa a la imagen (tercer hueco)"
 porque = "la imagen tendría el ambiente pero no el programa que debe correr"
 investiga = "Página «Las entregas de ambientes», entrega 2: ¿qué archivo corre la última línea del Dockerfile?"
@@ -107,7 +107,7 @@ nivel = "aviso"
 
 [[patrones]]
 archivo = "uv_docker/.dockerignore"
-debe = '^\s*/?\.venv/?\s*$'
+debe = '^\s*(\*\*/|/)?\.venv/?\s*$'
 que = ".dockerignore no deja fuera el ambiente de tu máquina"
 porque = "si tu ambiente local entra a la imagen, trae enlaces a un intérprete que dentro de la imagen no existe"
 investiga = "Página «Las trampas»: ¿qué carpeta de tu proyecto existe sólo en tu máquina?"
@@ -201,7 +201,7 @@ nivel = "aviso"
 foco = [
   "bajar la imagen de la URL pública y correrla: que salgan las dos tablas y la fila propia funcione",
   "construir la imagen desde los archivos entregados y comparar con la publicada: la imagen pudo salir de otro lado; el CI no puede construirla porque sería ejecutar código del pull request",
-  "que las versiones de paquetes de la salida local y la del contenedor coincidan entre sí y con uv.lock",
+  "que las versiones de paquetes de la salida local y la del contenedor coincidan con uv.lock; diferencias legítimas: paquetes con marcador de plataforma (colorama sólo en Windows) y la versión de Python, porque la plantilla no la fija",
   "que «Qué cambió y qué no» use los valores reales: paquetes iguales por el lock; intérprete, sys.prefix y quizá la versión de Python distintos",
   "que la imagen esté construida para linux/amd64",
 ]

@@ -1268,3 +1268,36 @@ def test_uvd_salida_del_contenedor_sin_su_venv_solo_avisa(monkeypatch, capsys):
 def test_fecha_iso_que_no_existe_no_cuenta():
     assert rf.tiene_fecha_iso("Fecha: 2026-10-01")
     assert not rf.tiene_fecha_iso("Fecha: 2026-13-45")
+
+
+# Hallazgos de la revision final: Dockerfiles correctos que no deben fallar,
+# y huecos vacios que no deben pasar.
+
+DF_DOCS_CACHE = _df(h2="RUN --mount=type=cache,target=/root/.cache/uv \\\n    uv sync --locked")
+DF_EXEC = _df(h2='RUN ["uv", "sync", "--locked"]')
+DF_BIND = _df(
+    h1="# los archivos del ambiente entran por bind mount",
+    h2=("RUN --mount=type=bind,source=uv.lock,target=uv.lock \\\n"
+        "    --mount=type=bind,source=pyproject.toml,target=pyproject.toml \\\n"
+        "    uv sync --locked"))
+
+
+@pytest.mark.parametrize("df", [DF_DOCS_CACHE, DF_EXEC, DF_BIND],
+                         ids=["cache-multilinea", "exec", "bind-mount"])
+def test_uvd_dockerfile_al_estilo_de_la_guia_de_uv_pasa(monkeypatch, capsys, df):
+    assert _main(monkeypatch, "tarea-09-uv-docker", _uvd(Dockerfile=df)) == 0, \
+        capsys.readouterr().out
+
+
+@pytest.mark.parametrize("linea", [".venv", "/.venv/", "**/.venv", ".venv/"])
+def test_uvd_dockerignore_valido_pasa(monkeypatch, capsys, linea):
+    di = DI_PLANTILLA + linea + "\n"
+    assert _main(monkeypatch, "tarea-09-uv-docker", _uvd(**{".dockerignore": di})) == 0
+
+
+@pytest.mark.parametrize("df", [
+    _df(h1="COPY pyproject.toml uv.lock .", h3=""),
+    _df(h2="RUN uv sync  # --locked"),
+], ids=["hueco3-vacio-con-punto", "locked-en-comentario"])
+def test_uvd_huecos_falsos_fallan(monkeypatch, capsys, df):
+    assert _main(monkeypatch, "tarea-09-uv-docker", _uvd(Dockerfile=df)) == 1
