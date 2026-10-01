@@ -19,7 +19,7 @@ Dos entregas, las dos por pull request. Esta página es la versión en tabla de 
 
 | # | Entrega | Vence | Vale | Branch | Carpeta |
 |---:|---|---|---:|---|---|
-| 1 | DataCamp: *Introduction to Python for Developers* | 2026-10-06 | 10 | `tarea-09-datacamp-python` | `python/` |
+| 1 | DataCamp: *Introduction to Python for Developers* | 2026-10-06 | 20 | `tarea-09-datacamp-python` | `python/` |
 | 2 | Tu ambiente uv dentro de Docker | 2026-10-06 | 10 | `tarea-09-uv-docker` | `09_python/uv_docker/` |
 
 :::
@@ -35,7 +35,7 @@ Los comandos suponen la terminal de Linux o macOS, o **WSL en Windows**, la mism
 | | |
 |---|---|
 | **Vence** | 2026-10-06 |
-| **Vale** | 10 puntos |
+| **Vale** | 20 puntos |
 | **Branch** | `tarea-09-datacamp-python` |
 | **Carpeta** | `estudiantes/<tu-login>/python/` |
 
