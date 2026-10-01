@@ -53,3 +53,32 @@ def test_requirements_fija_rich_con_doble_igual():
 
 def test_codigo_readme_lista_09_python():
     assert "`09_python/`" in (RAIZ / "codigo/README.md").read_text(encoding="utf-8")
+
+
+UVD = RAIZ / "codigo/09_python/uv_docker"
+
+
+def test_la_plantilla_trae_los_tres_huecos_y_la_fila_por_llenar():
+    df = (UVD / "Dockerfile").read_text(encoding="utf-8")
+    assert df.count("HUECO") == 3
+    assert "<tu fila>" in (UVD / "reporte.py").read_text(encoding="utf-8")
+
+
+def test_la_plantilla_no_trae_lock_ni_venv():
+    assert not (UVD / "uv.lock").exists() and not (UVD / ".venv").exists()
+
+
+def test_dockerignore_de_la_plantilla_no_trae_venv():
+    """Agregarlo es parte de la tarea."""
+    lineas = (UVD / ".dockerignore").read_text(encoding="utf-8").splitlines()
+    assert not any(l.strip().strip("/") == ".venv" for l in lineas)
+
+
+def test_reporte_es_python_valido():
+    import ast
+    ast.parse((UVD / "reporte.py").read_text(encoding="utf-8"))
+
+
+def test_la_imagen_de_uv_esta_fijada_a_una_version_menor():
+    df = (UVD / "Dockerfile").read_text(encoding="utf-8")
+    assert "ghcr.io/astral-sh/uv:0.12 " in df, "fija la imagen de uv: latest cambia sin aviso"
