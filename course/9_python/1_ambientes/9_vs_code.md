@@ -66,7 +66,7 @@ La terminal integrada sólo se activa sola si la abres **después** de elegir el
 - Arreglo: Ctrl+Shift+P → *Python: Select Interpreter* → `.venv`. El código estaba bien.
 :::
 
-Sigue con [[ambientes-python|el índice de la sección]], que lista las páginas de lectura.
+Sigue con [[trampas-de-ambientes]]: los errores de ambientes y dónde mirar.
 
 > [!NOTE]
 > **Si sólo recuerdas una cosa:** VS Code no adivina tu ambiente: se lo dices con Select Interpreter y lo compruebas en la barra de estado.

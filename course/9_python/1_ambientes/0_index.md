@@ -28,9 +28,21 @@ Meta: que sepas en qué Python y con qué paquetes corre tu código, y cómo hac
 | # | Página | Qué agrega | Min | Dónde |
 |---:|---|---|---:|---|
 | 1 | [[el-problema-de-los-ambientes]] | Los dos errores que hacen necesarios los ambientes | 5 | clase |
+| 2 | [[las-piezas-de-un-ambiente]] | Nueve palabras y el comando que muestra cada una | 8 | lectura |
 | 3 | [[un-ambiente-por-dentro]] | Tres comandos que muestran qué es un ambiente y qué hace «activar» | 15 | clase |
+| 4 | [[los-archivos-del-ambiente]] | `requirements.txt`, `pyproject.toml` y los locks: quién escribe cada uno | 8 | lectura |
+| 5 | [[las-herramientas-de-ambientes]] | Doce herramientas con pros y contras, y por qué uv | 12 | lectura |
+| 6 | [[ambiente-conda-docker]] | Qué aísla un `.venv`, conda y Docker | 6 | lectura |
 | 7 | [[lab-uv]] | Un proyecto uv de punta a punta: crear, usar, romper y recrear | 30 | clase |
+| 8 | [[lab-venv-y-pip]] | La forma clásica, y dónde instala `pip` sin ambiente activo | 10 | lectura |
 | 9 | [[ambientes-en-vs-code]] | Que VS Code use el `.venv` de tu proyecto | 10 | clase |
+| 10 | [[trampas-de-ambientes]] | Nueve errores con su causa y dónde mirar | 8 | lectura |
+
+## El anexo
+
+| Anexo | Qué es | Cuándo lo abres | Min |
+|---|---|---|---:|
+| [[cheatsheet-ambientes]] | La misma tarea en uv, venv + pip, poetry y conda | En clase, y cada vez que leas un README ajeno | 5 |
 
 ## La clase de hoy, en 60 minutos
 

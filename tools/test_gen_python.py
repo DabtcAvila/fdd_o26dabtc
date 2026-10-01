@@ -112,3 +112,26 @@ def test_el_generador_rechaza_un_nombre_desconocido():
     r = subprocess.run([sys.executable, str(GENERADOR), "py-no-existe"],
                        capture_output=True, text=True)
     assert r.returncode != 0 and "desconocido" in r.stderr
+
+
+def test_la_matriz_nombra_las_herramientas_y_los_cinco_trabajos():
+    svg = (ASSETS / "py-trabajos.svg").read_text(encoding="utf-8")
+    for h in ("pip", "venv", "poetry", "pdm", "hatch", "conda", "pixi",
+              "pyenv", "pipx", "uv"):
+        assert h in svg, h
+    for t in ("instalar paquetes", "aislar", "proyecto + lock",
+              "versiones de Python", "herramientas de terminal"):
+        assert t in svg, t
+
+
+def test_el_dockerfile_copia_el_lock_antes_que_el_codigo():
+    svg = (ASSETS / "py-uv-docker.svg").read_text(encoding="utf-8")
+    assert (svg.index("describen el ambiente") < svg.index("desde el lock")
+            < svg.index("el programa"))
+
+
+def test_la_figura_del_dockerfile_no_resuelve_los_huecos():
+    """La figura acompana la tarea: dice el orden, nunca las instrucciones."""
+    svg = (ASSETS / "py-uv-docker.svg").read_text(encoding="utf-8")
+    for receta in ("COPY", "RUN", "uv sync", "--locked", "FROM"):
+        assert receta not in svg, receta

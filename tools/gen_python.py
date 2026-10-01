@@ -214,11 +214,191 @@ def py_venv_arbol():
     return "".join(p)
 
 
+HERRAMIENTAS = (
+    # nombre, (instalar, aislar, proyecto+lock, versiones Py, CLIs); 2 = a medias
+    ("pip", (1, 0, 0, 0, 0)),
+    ("venv", (0, 1, 0, 0, 0)),
+    ("pip-tools", (0, 0, 2, 0, 0)),
+    ("pipenv", (1, 1, 1, 0, 0)),
+    ("poetry", (1, 1, 1, 0, 0)),
+    ("pdm", (1, 1, 1, 1, 0)),
+    ("hatch", (1, 1, 1, 1, 0)),
+    ("conda", (1, 1, 2, 1, 0)),
+    ("pixi", (1, 1, 1, 1, 1)),
+    ("pyenv", (0, 0, 0, 1, 0)),
+    ("pipx", (1, 1, 0, 0, 1)),
+    ("uv", (1, 1, 1, 1, 1)),
+)
+TRABAJOS = ("instalar paquetes", "aislar", "proyecto + lock",
+            "versiones de Python", "herramientas de terminal")
+
+
+def py_trabajos():
+    """Matriz: que trabajos hace cada herramienta."""
+    ancho, alto = 1080, 640
+    aria = (
+        "Matriz de herramientas contra cinco trabajos: instalar paquetes, "
+        "aislar, proyecto + lock, versiones de Python y herramientas de "
+        "terminal. pip solo instala; venv solo aisla; pip-tools solo fija "
+        "versiones; pipenv y poetry instalan, aislan y manejan proyecto con "
+        "lock; pdm y hatch ademas instalan versiones de Python; conda hace "
+        "casi todo y su lock es a medias; pixi y uv hacen los cinco; pyenv solo "
+        "versiones de Python; pipx instala herramientas de terminal aisladas. "
+        "La fila de uv esta resaltada. Al pie: conda y pixi instalan ademas "
+        "paquetes que no son de Python"
+    )
+    p = [marco(ancho, alto, aria)]
+    p.append(texto(ancho / 2, 44, "Cinco trabajos, doce herramientas", TEXTO, 21, peso="600"))
+    x0, y0, col, fila = 200, 110, 172, 38
+    for j, trabajo in enumerate(TRABAJOS):
+        cx = x0 + j * col + col / 2
+        palabras = trabajo.split(" ", 1) if len(trabajo) > 14 else [trabajo]
+        for k, w in enumerate(palabras):
+            p.append(texto(cx, y0 - 22 + k * 17 - (8 if len(palabras) > 1 else 0), w, SUAVE, 13.5, peso="600"))
+    for i, (nombre, hace) in enumerate(HERRAMIENTAS):
+        y = y0 + i * fila
+        if nombre == "uv":
+            p.append(caja(40, y - 2, 1000, fila - 2, TINTE, ACENTO, radio=6, grosor=1.5))
+        p.append(teclado(60, y + 22, nombre, ACENTO if nombre == "uv" else TEXTO, 15, anclaje="start"))
+        for j, v in enumerate(hace):
+            cx = x0 + j * col + col / 2
+            if v == 1:
+                p.append(f'<circle cx="{cx}" cy="{y + 17}" r="8" fill="{ACENTO}"/>')
+            elif v == 2:
+                p.append(f'<circle cx="{cx}" cy="{y + 17}" r="8" fill="none" stroke="{AMBAR}" stroke-width="2"/>')
+            else:
+                p.append(f'<circle cx="{cx}" cy="{y + 17}" r="3" fill="{LINEA}"/>')
+    yp = y0 + len(HERRAMIENTAS) * fila + 24
+    p.append(f'<circle cx="60" cy="{yp - 5}" r="7" fill="{ACENTO}"/>')
+    p.append(texto(74, yp, "lo hace", SUAVE, 13, anclaje="start"))
+    p.append(f'<circle cx="160" cy="{yp - 5}" r="7" fill="none" stroke="{AMBAR}" stroke-width="2"/>')
+    p.append(texto(174, yp, "a medias", SUAVE, 13, anclaje="start"))
+    p.append(texto(280, yp, "conda y pixi instalan además paquetes que no son de Python (CUDA, GDAL); uv no.", SUAVE, 13, anclaje="start"))
+    p.append(cierre())
+    return "".join(p)
+
+
+def py_cual_uso():
+    """Arbol de decision: que herramienta usar."""
+    ancho, alto = 1080, 470
+    aria = (
+        "Arbol de decision de tres preguntas. Necesitas paquetes que no son de "
+        "Python, como CUDA o GDAL? Si: pixi, o conda. No: el proyecto ya usa "
+        "poetry, pdm o hatch? Si: usa esa y lee su pyproject.toml. No: es un "
+        "script suelto? Si: uv run script.py con sus dependencias dentro, PEP "
+        "723. No: uv init y uv add, que es el caso de este curso"
+    )
+    p = [marco(ancho, alto, aria)]
+    p.append(texto(ancho / 2, 44, "¿Cuál uso?", TEXTO, 21, peso="600"))
+    preguntas = (
+        "¿Necesitas paquetes que no son de Python (CUDA, GDAL)?",
+        "¿El proyecto ya usa poetry, pdm o hatch?",
+        "¿Es un script suelto, de un solo archivo?",
+    )
+    respuestas = ("pixi (o conda)", "usa esa: lee su pyproject.toml", "uv run script.py (PEP 723)")
+    for i, (preg, resp) in enumerate(zip(preguntas, respuestas)):
+        y = 84 + i * 110
+        p.append(caja(40, y, 560, 60, PANEL, CIAN))
+        p.append(texto(320, y + 36, preg, TEXTO, 15))
+        p.append(flecha(604, y + 30, 690, y + 30, AMBAR, 2.2))
+        p.append(chip(647, y + 10, "sí", AMBAR, tam=13))
+        p.append(caja(694, y + 8, 346, 44, FONDO, AMBAR, radio=8))
+        p.append(teclado(867, y + 36, resp, AMBAR, 14))
+        p.append(flecha(320, y + 64, 320, y + 104, SUAVE, 2))
+        p.append(chip(356, y + 84, "no", SUAVE, tam=13))
+    p.append(caja(170, 414, 300, 44, TINTE, ACENTO, radio=8, grosor=2.5))
+    p.append(teclado(320, 442, "uv init + uv add", ACENTO, 16))
+    p.append(texto(500, 442, "← el caso de este curso", ACENTO, 14, anclaje="start"))
+    p.append(cierre())
+    return "".join(p)
+
+
+def py_aislamiento():
+    """Que capa aisla cada herramienta."""
+    ancho, alto = 1080, 480
+    aria = (
+        "Cuatro capas apiladas de abajo hacia arriba: kernel, librerias y "
+        "programas del sistema, interprete de Python y paquetes de Python. A "
+        "la derecha, tres barras verticales muestran que cubre cada "
+        "herramienta: el .venv de uv cubre los paquetes y el interprete si uv "
+        "lo instalo; conda y pixi cubren paquetes, interprete y parte de las "
+        "librerias del sistema; Docker cubre todo menos el kernel. Al pie: "
+        "ninguno aisla el kernel, eso es una maquina virtual"
+    )
+    p = [marco(ancho, alto, aria)]
+    p.append(texto(ancho / 2, 44, "Qué capa aísla cada uno", TEXTO, 21, peso="600"))
+    capas = ("paquetes de Python", "intérprete de Python",
+             "librerías y programas del sistema", "kernel")
+    y0, h = 90, 70
+    for i, c in enumerate(capas):
+        y = y0 + i * (h + 8)
+        p.append(caja(40, y, 420, h, PANEL, LINEA))
+        p.append(texto(250, y + h / 2 + 6, c, TEXTO, 15))
+    columnas = (
+        (".venv (uv)", ACENTO, 0, 1.5),
+        ("conda / pixi", CIAN, 0, 2.5),
+        ("Docker", VIOLETA, 0, 3.0),
+    )
+    for k, (nombre, color, desde, hasta) in enumerate(columnas):
+        x = 520 + k * 180
+        p.append(texto(x + 60, y0 - 14, nombre, color, 14, peso="600"))
+        top = y0 + desde * (h + 8)
+        alto_barra = hasta * (h + 8) - 8
+        p.append(f'<rect x="{x + 30}" y="{top}" width="60" height="{alto_barra}" rx="8" fill="{color}" fill-opacity="0.35" stroke="{color}" stroke-width="2"/>')
+    p.append(texto(616, y0 + 1.5 * (h + 8) - 14, "el intérprete,", SUAVE, 11.5, anclaje="start"))
+    p.append(texto(616, y0 + 1.5 * (h + 8) + 2, "si uv lo instaló", SUAVE, 11.5, anclaje="start"))
+    p.append(texto(796, y0 + 2.5 * (h + 8) - 14, "sólo las que", SUAVE, 11.5, anclaje="start"))
+    p.append(texto(796, y0 + 2.5 * (h + 8) + 2, "empaqueta", SUAVE, 11.5, anclaje="start"))
+    p.append(texto(ancho / 2, 440, "Ninguno aísla el kernel: eso lo hace una máquina virtual.", SUAVE, 14))
+    p.append(cierre())
+    return "".join(p)
+
+
+def py_uv_docker():
+    """El orden del Dockerfile de la tarea, sin dar los comandos."""
+    ancho, alto = 1080, 520
+    aria = (
+        "Las cinco etapas del Dockerfile de la entrega, apiladas en orden: una "
+        "imagen base que ya trae Python; el binario de uv, copiado de su imagen "
+        "oficial; los dos archivos que describen el ambiente; crear el ambiente "
+        "desde el lock, sin dejar que cambie; y al final el programa. Una llave "
+        "junto a la tercera y la cuarta dice que esa capa queda en cache y solo "
+        "se rehace si cambia el lock; junto a la quinta, que cambia cada vez que "
+        "editas el codigo. Abajo, en rojo: el .venv de tu maquina se queda "
+        "fuera de la imagen"
+    )
+    p = [marco(ancho, alto, aria)]
+    p.append(texto(ancho / 2, 44, "El ambiente primero, el código al final", TEXTO, 21, peso="600"))
+    pasos = (
+        ("1 · una imagen base que ya trae Python", SUAVE),
+        ("2 · el binario de uv, de su imagen oficial", SUAVE),
+        ("3 · los dos archivos que describen el ambiente", CIAN),
+        ("4 · crear el ambiente desde el lock, sin dejar que cambie", CIAN),
+        ("5 · el programa", AMBAR),
+    )
+    for i, (linea, color) in enumerate(pasos):
+        y = 80 + i * 66
+        p.append(caja(40, y, 640, 52, PANEL, color))
+        p.append(texto(60, y + 32, linea, color, 15, anclaje="start"))
+    p.append(f'<path d="M 700 214 Q 716 214 716 230 L 716 316 Q 716 332 700 332" fill="none" stroke="{CIAN}" stroke-width="2"/>')
+    p.append(texto(732, 262, "capa en caché:", CIAN, 14, anclaje="start", peso="600"))
+    p.append(texto(732, 284, "sólo se rehace si cambia el lock", CIAN, 13.5, anclaje="start"))
+    p.append(texto(700, 380, "← cambia cada vez que editas el código", AMBAR, 13.5, anclaje="start"))
+    p.append(caja(40, 430, 1000, 56, FONDO, ROJO, radio=10))
+    p.append(teclado(60, 464, ".venv/", ROJO, 15, anclaje="start"))
+    p.append(texto(130, 464, "de tu máquina: nunca entra a la imagen", ROJO, 14, anclaje="start"))
+    p.append(cierre())
+    return "".join(p)
+
 DIAGRAMAS = {
     "py-mapa": py_mapa,
     "py-choque": py_choque,
     "py-path": py_path,
     "py-venv-arbol": py_venv_arbol,
+    "py-trabajos": py_trabajos,
+    "py-cual-uso": py_cual_uso,
+    "py-aislamiento": py_aislamiento,
+    "py-uv-docker": py_uv_docker,
 }
 
 

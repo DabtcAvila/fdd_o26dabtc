@@ -84,7 +84,7 @@ Instalaste `pandas==1.5` para la tarea del lunes y el jueves `pandas==2.2` para 
 - Con un `.venv/` por proyecto, cada uno guarda la suya y no se tocan.
 :::
 
-Sigue con [[un-ambiente-por-dentro]]: qué hay en esa carpeta y cómo sabes cuál estás usando.
+Sigue con [[las-piezas-de-un-ambiente]]: las nueve palabras que vas a leer en todo README de Python.
 
 > [!NOTE]
 > **Si sólo recuerdas una cosa:** sin ambientes, todos tus proyectos comparten los mismos paquetes, y el último que instala gana.

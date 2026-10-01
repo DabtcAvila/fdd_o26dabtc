@@ -251,7 +251,7 @@ Tu compañero clona tu repo: trae `pyproject.toml` y `uv.lock`, sin `.venv/`. ¿
 - `uv add rich` volvería a resolver y podría escoger una versión más nueva que la tuya.
 :::
 
-Sigue con [[ambientes-en-vs-code]]: que el editor use este mismo `.venv/`.
+Sigue con [[lab-venv-y-pip]]: la forma clásica, para reconocerla en un README.
 
 > [!NOTE]
 > **Si sólo recuerdas una cosa:** pyproject.toml dice lo que pides, uv.lock lo que exactamente se instaló, y .venv/ se tira y se recrea con uv sync.

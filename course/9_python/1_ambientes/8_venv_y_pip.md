@@ -1,0 +1,141 @@
+---
+id: lab-venv-y-pip
+title: "Lab corto: venv y pip, la forma clásica"
+nav_title: "Lab: venv y pip"
+summary: "Crear, activar, instalar, congelar y borrar un ambiente con python -m venv y pip, y comprobar dónde instala pip cuando no hay ambiente activo."
+status: ready
+estimated_time: 10m
+tags: [venv, pip, requirements, freeze, activate]
+prerequisites: [lab-uv]
+---
+
+# Lab corto: venv y pip, la forma clásica
+
+**Página 8 de 10 · Ambientes**
+
+Meta: reconocer el flujo de `venv` + `pip` que trae casi todo README, y ver dónde instala `pip` cuando no hay ambiente activo.
+
+## En corto
+
+- **`python -m venv` + `pip` es la forma clásica**, y la vas a ver en casi todo README.
+- **`pip` instala en el Python que esté primero en el `PATH`**, haya ambiente activo o no.
+- uv hace lo mismo con menos pasos y con lock.
+
+### 1. Crear y activar
+
+**Haz:**
+
+```bash
+cd ~/lab-ambientes
+python3 -m venv .venv
+source .venv/bin/activate          # Linux y macOS
+python quien_soy.py
+```
+
+En Windows (PowerShell), el paso de activar es:
+
+```powershell
+.venv\Scripts\activate
+```
+
+**Deberías ver:** el prompt empieza con `(.venv)`, y (recortado)
+
+```text
+python que corre  : /home/ana/lab-ambientes/.venv/bin/python
+sys.prefix        : /home/ana/lab-ambientes/.venv
+¿en un ambiente?  : sí
+rich              : NO instalado en este Python
+```
+
+El ambiente existe y está activo, pero vacío: `venv` no instala nada.
+
+### 2. Instalar y congelar
+
+**Haz:**
+
+```bash
+pip install -r requirements.txt
+python hola.py
+pip freeze
+```
+
+**Deberías ver:**
+
+```text
+Hola desde un Python que sí tiene rich instalado.
+markdown-it-py==4.2.0
+mdurl==0.1.2
+Pygments==2.21.0
+rich==15.0.0
+```
+
+`pip freeze` lista **todo** lo instalado con su versión. `pip freeze > requirements.txt` es la forma clásica de «fijar» versiones: copia lo que hay, sin hash y sin distinguir lo que pediste de lo que vino arrastrado.
+
+### 3. El experimento: pip sin activar
+
+Antes de correrlo, **escribe tu predicción**: sin ambiente activo, ¿dónde va a instalar `pip`?
+
+**Haz:**
+
+```bash
+deactivate
+python3 hola.py
+python3 -m pip install rich
+python3 quien_soy.py
+```
+
+**Deberías ver:** `python3 hola.py` truena con `ModuleNotFoundError: No module named 'rich'`, porque ya no estás en el ambiente. Y luego, una de dos cosas según tu sistema:
+
+| Tu sistema | Qué pasa |
+|---|---|
+| Ubuntu 24.04, Debian 12, macOS con Homebrew | `error: externally-managed-environment` ([[el-problema-de-los-ambientes]]): el sistema te frena |
+| Windows, o un Python instalado a mano | **Instala en el Python global**, y `quien_soy.py` lo confirma: |
+
+```text
+¿en un ambiente?  : no
+rich              : instalado, versión 15.0.0
+```
+
+Ésa es la trampa: `pip` no te avisa que no hay ambiente. Instaló en el Python de todo tu sistema. Si te pasó, `python3 -m pip uninstall rich` lo deshace.
+
+### 4. Borrar
+
+**Haz:**
+
+```bash
+rm -rf .venv
+ls -a
+```
+
+En Windows: `Remove-Item -Recurse .venv`.
+
+**Deberías ver:** ya no está `.venv`; tus archivos sí. Borrar el ambiente es borrar la carpeta.
+
+## venv + pip contra uv
+
+| Paso | venv + pip | uv |
+|---|---|---|
+| Crear el ambiente | `python3 -m venv .venv` | automático con `uv add` o `uv run` |
+| Activar | `source .venv/bin/activate` | no hace falta: `uv run` |
+| Instalar | `pip install rich` | `uv add rich` |
+| Fijar versiones | `pip freeze > requirements.txt` | `uv.lock`, automático |
+| Recrear en otra máquina | `python3 -m venv .venv` + activar + `pip install -r requirements.txt` | `uv sync` |
+
+::: problem {#py-pip-global title="Instaló, pero ¿dónde?"}
+Abres una terminal, entras a tu proyecto (que tiene `.venv/`), corres `pip install pandas` y sale bien. Luego `uv run analisis.py` dice `ModuleNotFoundError: No module named 'pandas'`. ¿Dónde quedó pandas?
+:::
+
+::: hint {of="py-pip-global"}
+¿La terminal estaba activada cuando corriste `pip`?
+:::
+
+::: answer {of="py-pip-global"}
+- Sin activar, `pip` instaló en el Python que encontró primero en el `PATH`: el del sistema (o el de otro ambiente).
+- `uv run` usa el `.venv/` del proyecto, que no tiene pandas.
+- Arreglo: `uv add pandas`. Y, si quedó en el global, `python3 -m pip uninstall pandas`.
+:::
+
+Sigue con [[ambientes-en-vs-code]]: que el editor use el ambiente correcto.
+
+> [!NOTE]
+> **Si sólo recuerdas una cosa:** pip instala donde apunta tu PATH; si no sabes dónde es, corre quien_soy.py antes.

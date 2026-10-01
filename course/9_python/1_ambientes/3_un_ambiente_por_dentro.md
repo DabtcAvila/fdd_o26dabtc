@@ -150,7 +150,7 @@ Abres una terminal nueva, entras a `~/lab-ambientes/hola` y corres `python hola.
 - Arreglo: `uv run hola.py`, o activar primero.
 :::
 
-Sigue con [[lab-uv]]: el ciclo completo de un proyecto uv.
+Sigue con [[los-archivos-del-ambiente]]: qué archivos describen un ambiente y cuáles van a git.
 
 > [!NOTE]
 > **Si sólo recuerdas una cosa:** un ambiente es una carpeta con su propio python; activar sólo cambia cuál python encuentra tu shell.
