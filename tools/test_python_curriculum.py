@@ -1,0 +1,182 @@
+"""Guarda de forma de la seccion 9.1 Ambientes (unidad 9, Python).
+
+Las paginas se escriben contra esta guarda: lectores con ADHD, sin analogias,
+labs con Haz / Deberias ver, y los labs fuera del repo.
+"""
+import re
+from pathlib import Path
+
+import pytest
+import yaml
+
+RAIZ = Path(__file__).resolve().parent.parent
+UNIDAD = RAIZ / "course/9_python"
+SECCION = UNIDAD / "1_ambientes"
+
+ORDEN = [  # (archivo, id) en orden de lectura
+    ("1_el_problema.md", "el-problema-de-los-ambientes"),
+    ("2_las_piezas.md", "las-piezas-de-un-ambiente"),
+    ("3_un_ambiente_por_dentro.md", "un-ambiente-por-dentro"),
+    ("4_los_archivos.md", "los-archivos-del-ambiente"),
+    ("5_las_herramientas.md", "las-herramientas-de-ambientes"),
+    ("6_ambiente_conda_docker.md", "ambiente-conda-docker"),
+    ("7_lab_uv.md", "lab-uv"),
+    ("8_venv_y_pip.md", "lab-venv-y-pip"),
+    ("9_vs_code.md", "ambientes-en-vs-code"),
+    ("10_las_trampas.md", "trampas-de-ambientes"),
+]
+ANEXOS = [("11_A_cheatsheet.md", "cheatsheet-ambientes"),
+          ("12_B_entregas.md", "entregas-ambientes")]
+LABS = {"un-ambiente-por-dentro", "lab-uv", "lab-venv-y-pip"}
+TOPE = {"las-herramientas-de-ambientes": 260, "lab-uv": 260,
+        "entregas-ambientes": 260, "cheatsheet-ambientes": 320}
+ANALOGIAS = ("imagina", "es como", "como si", "analogía", "piensa en",
+             "receta", "despensa")
+
+_FENCE = re.compile(r"^\s{0,3}(```+|~~~+)")
+
+
+def _existentes(pares):
+    return [(SECCION / a, i) for a, i in pares if (SECCION / a).is_file()]
+
+
+LECCIONES = _existentes(ORDEN)
+TODAS = LECCIONES + _existentes(ANEXOS)
+IDS = [i for _, i in TODAS]
+LABS_EXISTENTES = [(r, i) for r, i in LECCIONES if i in LABS]
+
+
+def _front(p):
+    texto = p.read_text(encoding="utf-8")
+    return yaml.safe_load(texto.split("---", 2)[1]), texto.split("---", 2)[2]
+
+
+def _prosa(cuerpo):
+    """El cuerpo sin bloques de codigo ni code spans."""
+    fuera, dentro = [], False
+    for l in cuerpo.splitlines():
+        if _FENCE.match(l):
+            dentro = not dentro
+            continue
+        if not dentro:
+            fuera.append(re.sub(r"`[^`\n]*`", "", l))
+    return "\n".join(fuera)
+
+
+def _bloques(cuerpo, lenguaje=("bash", "powershell", "text")):
+    return re.findall(r"^```(?:%s)\n(.*?)^```" % "|".join(lenguaje),
+                      cuerpo, flags=re.M | re.S)
+
+
+def test_las_paginas_de_clase_existen():
+    for a in ("1_el_problema.md", "3_un_ambiente_por_dentro.md",
+              "7_lab_uv.md", "9_vs_code.md", "0_index.md"):
+        assert (SECCION / a).is_file(), f"falta {a}"
+    assert (UNIDAD / "0_index.md").is_file()
+
+
+@pytest.mark.parametrize("ruta,ident", TODAS, ids=IDS)
+def test_el_id_es_el_del_plan(ruta, ident):
+    assert _front(ruta)[0]["id"] == ident
+
+
+@pytest.mark.parametrize("ruta,ident", LECCIONES, ids=[i for _, i in LECCIONES])
+def test_forma_de_leccion(ruta, ident):
+    _, cuerpo = _front(ruta)
+    n = int(ruta.name.split("_")[0])
+    lineas = [l for l in cuerpo.splitlines() if l.strip()]
+    assert f"**Página {n} de 10 · Ambientes**" in cuerpo
+    assert any(l.startswith("Meta: ") for l in lineas)
+    en_corto = cuerpo.split("## En corto", 1)[1].split("\n## ", 1)[0]
+    vinetas = [l for l in en_corto.splitlines() if l.startswith("- ")]
+    assert 1 <= len(vinetas) <= 3, f"{ident}: En corto con {len(vinetas)} viñetas"
+    problemas = re.findall(r"^::: problem \{#(py-[a-z0-9-]+)", cuerpo, flags=re.M)
+    assert len(problemas) == 1, f"{ident}: {len(problemas)} problemas"
+    for k in ("hint", "answer"):
+        assert f'::: {k} {{of="{problemas[0]}"}}' in cuerpo
+    assert lineas[-2] == "> [!NOTE]"
+    assert lineas[-1].startswith("> **Si sólo recuerdas una cosa:**")
+
+
+@pytest.mark.parametrize("i", range(len(ORDEN)))
+def test_el_puente_apunta_a_la_siguiente(i):
+    ruta = SECCION / ORDEN[i][0]
+    if not ruta.is_file():
+        pytest.skip("pagina aun no escrita")
+    if i + 1 < len(ORDEN) and not (SECCION / ORDEN[i + 1][0]).is_file():
+        pytest.xfail("la siguiente pagina aun no existe")
+    siguiente = ORDEN[i + 1][1] if i + 1 < len(ORDEN) else "cheatsheet-ambientes"
+    assert f"Sigue con [[{siguiente}" in ruta.read_text(encoding="utf-8")
+
+
+@pytest.mark.parametrize("ruta,ident", TODAS, ids=IDS)
+def test_tope_de_lineas(ruta, ident):
+    n = len(ruta.read_text(encoding="utf-8").splitlines())
+    assert n <= TOPE.get(ident, 160), f"{ident}: {n} líneas"
+
+
+@pytest.mark.parametrize("ruta,ident", TODAS, ids=IDS)
+def test_sin_analogias(ruta, ident):
+    prosa = _prosa(_front(ruta)[1]).lower()
+    for a in ANALOGIAS:
+        assert a not in prosa, f"{ident}: «{a}» — sin analogías: di qué es y muéstralo"
+
+
+@pytest.mark.parametrize("ruta,ident", TODAS, ids=IDS)
+def test_sin_html_crudo_ni_dos_pesos_en_prosa(ruta, ident):
+    prosa = _prosa(_front(ruta)[1])
+    assert not re.search(r"<(?:div|br|iframe|details|span|img)\b", prosa, re.I)
+    for l in prosa.splitlines():
+        assert l.count("$") < 2, f"{ident}: dos $ en prosa: {l!r}"
+
+
+@pytest.mark.parametrize("ruta,ident", LABS_EXISTENTES,
+                         ids=[i for _, i in LABS_EXISTENTES])
+def test_los_labs_alternan_haz_y_deberias_ver(ruta, ident):
+    cuerpo = _front(ruta)[1]
+    assert cuerpo.count("**Haz:**") >= 3
+    assert cuerpo.count("**Deberías ver:**") >= cuerpo.count("**Haz:**")
+
+
+@pytest.mark.parametrize("ruta,ident", TODAS, ids=IDS)
+def test_los_labs_no_trabajan_dentro_del_repo(ruta, ident):
+    cuerpo = _front(ruta)[1]
+    for b in _bloques(cuerpo, ("bash",)):
+        for l in b.splitlines():
+            if re.search(r"\b(uv init|-m venv)\b", l):
+                assert "fdd_o26" not in l and "estudiantes" not in l, (
+                    f"{ident}: lab dentro del repo: {l}")
+    if ident in LABS:
+        assert "~/lab-ambientes" in cuerpo, f"{ident}: el lab no dice dónde trabajar"
+
+
+@pytest.mark.parametrize("ruta,ident", TODAS, ids=IDS)
+def test_toda_activacion_trae_su_linea_de_windows(ruta, ident):
+    cuerpo = _front(ruta)[1]
+    if "source .venv/bin/activate" in cuerpo:
+        assert ".venv\\Scripts\\activate" in cuerpo, (
+            f"{ident}: activa en Linux/macOS sin decir cómo en Windows")
+
+
+def test_el_lab_de_uv_dice_su_version():
+    texto = (SECCION / "7_lab_uv.md").read_text(encoding="utf-8")
+    assert "uv self update" in texto and "uv --version" in texto
+    assert re.search(r"uv \d+\.\d+", texto), "di con qué versión se capturaron las salidas"
+
+
+@pytest.mark.parametrize("ruta,ident", TODAS, ids=IDS)
+def test_ningun_bloque_pide_sudo(ruta, ident):
+    for b in _bloques(_front(ruta)[1]):
+        assert not re.search(r"^\s*sudo\b", b, re.M), f"{ident}: sudo en un bloque"
+
+
+def test_ids_numerados_con_prefijo_py():
+    for ruta, ident in TODAS:
+        for oid in re.findall(r"\{#([a-z0-9-]+)", ruta.read_text(encoding="utf-8")):
+            assert oid.startswith("py-"), f"{ident}: {oid} sin prefijo py-"
+
+
+def test_el_indice_de_la_seccion_enlaza_cada_pagina_existente():
+    indice = (SECCION / "0_index.md").read_text(encoding="utf-8")
+    for _, ident in TODAS:
+        assert f"[[{ident}" in indice, f"el índice no enlaza {ident}"
