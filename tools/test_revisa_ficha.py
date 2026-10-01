@@ -255,7 +255,7 @@ def test_las_secciones_existen_en_la_plantilla_y_la_url_concuerda(ruta):
 
 
 PALABRAS_DE_RECETA = ("git ", "docker ", "podman ", "cp ", "mkdir", "`",
-                      "sudo", "chmod", "pip ", "cambia la linea", "escribe ")
+                      "sudo", "chmod", "pip ", "uv ", "cambia la linea", "escribe ")
 
 
 @pytest.mark.parametrize("ruta", FICHAS, ids=lambda p: p.stem)
@@ -1045,3 +1045,70 @@ def test_la_ficha_no_es_mas_estricta_que_el_catalogo(caso):
 def test_lo_que_el_catalogo_exigia_de_verdad_sigue_fallando(caso):
     assert _viejo_falla(*caso)
     assert _nuevo_falla(*caso)
+
+
+# --------------------------------------------------------------------------
+# tarea-09-datacamp-python
+# --------------------------------------------------------------------------
+
+PLANTILLA_PY = (RAIZ / "codigo/python/certificaciones.md").read_text(encoding="utf-8")
+URL_SOA = "https://www.datacamp.com/completed/statement-of-accomplishment/course/abc123"
+CAP_PY = "estudiantes/ana/python/introduccion-python-developers.png"
+CERT_PY = "estudiantes/ana/python/certificaciones.md"
+
+
+def _py(fecha="2026-10-01", url=URL_SOA,
+        aprendi="Que un dict conserva el orden en que insertas las llaves."):
+    """La plantilla llena como la llenaria un alumno. La fecha por omision es
+    la de apertura: nunca es futura, corra el test el dia que corra."""
+    t = PLANTILLA_PY
+    t = t.replace("- Nombre:", "- Nombre: Ana")
+    t = t.replace("- Usuario de GitHub:", "- Usuario de GitHub: ana")
+    t = t.replace("Fecha en que lo terminaste (AAAA-MM-DD):",
+                  f"Fecha en que lo terminaste (AAAA-MM-DD): {fecha}")
+    t = t.replace("URL del Statement of Accomplishment:",
+                  f"URL del Statement of Accomplishment: {url}")
+    marca = "## Una cosa que aprendiste y no sabías\n"
+    assert marca in t
+    return t.replace(marca, marca + "\n" + aprendi + "\n") if aprendi else t
+
+
+def test_py_bien_entregada_pasa(monkeypatch, capsys):
+    assert _main(monkeypatch, "tarea-09-datacamp-python", {
+        CERT_PY: _py(), CAP_PY: PNG}) == 0, capsys.readouterr().out
+
+
+def test_py_plantilla_sin_tocar_falla(monkeypatch, capsys):
+    assert _main(monkeypatch, "tarea-09-datacamp-python", {
+        CERT_PY: PLANTILLA_PY, CAP_PY: PNG}) == 1
+
+
+def test_py_fecha_que_no_es_iso_falla(monkeypatch, capsys):
+    assert _main(monkeypatch, "tarea-09-datacamp-python", {
+        CERT_PY: _py(fecha="1 de octubre de 2026"), CAP_PY: PNG}) == 1
+
+
+def test_py_sin_url_falla(monkeypatch, capsys):
+    assert _main(monkeypatch, "tarea-09-datacamp-python", {
+        CERT_PY: _py(url=""), CAP_PY: PNG}) == 1
+
+
+def test_py_sin_captura_falla(monkeypatch, capsys):
+    assert _main(monkeypatch, "tarea-09-datacamp-python", {CERT_PY: _py()}) == 1
+
+
+def test_py_sin_aprendiste_falla(monkeypatch, capsys):
+    assert _main(monkeypatch, "tarea-09-datacamp-python", {
+        CERT_PY: _py(aprendi=""), CAP_PY: PNG}) == 1
+
+
+def test_py_url_que_no_es_de_datacamp_solo_avisa(monkeypatch, capsys):
+    assert _main(monkeypatch, "tarea-09-datacamp-python", {
+        CERT_PY: _py(url="https://example.com/mi-certificado"), CAP_PY: PNG}) == 0
+    assert "AVISO" in capsys.readouterr().out
+
+
+def test_py_en_la_carpeta_de_la_otra_entrega_falla(monkeypatch, capsys):
+    assert _main(monkeypatch, "tarea-09-datacamp-python", {
+        "estudiantes/ana/09_python/certificaciones.md": _py(),
+        "estudiantes/ana/09_python/introduccion-python-developers.png": PNG}) == 1
