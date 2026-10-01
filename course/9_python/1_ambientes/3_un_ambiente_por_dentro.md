@@ -77,6 +77,7 @@ _virtualenv.pth  _virtualenv.py  markdown_it  mdurl  pygments  rich  …
 - `bin/python` es el intérprete del ambiente: un enlace al Python que dice `home`.
 - `site-packages/` tiene **sólo** lo que instalaste aquí: `rich` y sus tres dependencias.
 - `include-system-site-packages = false`: este ambiente no ve los paquetes del sistema.
+- `lib64` sólo aparece en Linux; en macOS no está.
 - En Windows: `.venv\Scripts\` en vez de `bin/`, y `.venv\Lib\site-packages\`.
 
 ## Hecho 3: activar cambia el PATH

@@ -28,6 +28,8 @@ Dos entregas, las dos por pull request. Esta página es la versión en tabla de 
 
 Se entrega tarde con un punto menos por día, contando el día en que entregas.
 
+Los comandos suponen la terminal de Linux o macOS, o **WSL en Windows**, la misma donde instalaste Docker en la unidad 8. Si uv lo instalaste en PowerShell, instálalo también dentro de WSL con el comando de Linux de [[python]].
+
 ## 1 · DataCamp: Introduction to Python for Developers
 
 | | |
@@ -39,12 +41,13 @@ Se entrega tarde con un punto menos por día, contando el día en que entregas.
 
 **Entregas dos archivos**
 
-- `certificaciones.md` con sus tres secciones llenas: quién eres; la fecha en que lo terminaste, **en formato `AAAA-MM-DD`**, y la **URL del Statement of Accomplishment**; y una cosa concreta que aprendiste.
-- `introduccion-python-developers.png`: el curso terminado, con **tu nombre y el 100 % visibles**. Con ese nombre exacto, porque la plantilla ya lo enlaza.
+- `certificaciones.md` con sus tres secciones llenas: tus usuarios de GitHub y de DataCamp (nada de nombre completo ni correo: el repo es público); la fecha en que lo terminaste, **en formato `AAAA-MM-DD`**, y la **URL del Statement of Accomplishment**; y una cosa concreta que aprendiste.
+- `introduccion-python-developers.png`: el curso terminado, con **tu nombre y el 100 % visibles**. Con ese nombre exacto, porque la plantilla ya lo enlaza. Si te sale en `jpg`, corrige el enlace dentro del archivo.
 
 **El ritual**
 
 ```bash
+cd ~/fdd/fdd_o26
 git switch main && git fetch upstream && git merge upstream/main
 git switch -c tarea-09-datacamp-python
 mkdir -p estudiantes/$GHUSER/python
@@ -77,15 +80,16 @@ Un programa que reporta su propio ambiente. Lo corres en tu máquina y dentro de
 | Archivo | Qué debe tener |
 |---|---|
 | `reporte.py` | Tu fila en `fila_propia()`, usando un paquete que tú elegiste |
-| `pyproject.toml` | `rich` y tu paquete, agregado con uv |
+| `pyproject.toml` | `rich` y tu paquete, agregado con uv. **No corras `uv init`**: la plantilla ya es el proyecto |
 | `uv.lock` | El que genera uv. Nunca a mano |
-| `Dockerfile` | Los tres huecos llenos, en el orden de la figura |
+| `Dockerfile` | Los tres huecos llenos, cada instrucción debajo de su comentario, en el orden de la figura. Los comentarios pueden quedarse |
 | `.dockerignore` | La línea que deja fuera tu ambiente local. La plantilla no la trae a propósito |
 | `bitacora.md` | Todas sus secciones llenas |
 
 **El ritual**
 
 ```bash
+cd ~/fdd/fdd_o26
 git switch main && git fetch upstream && git merge upstream/main
 git switch -c tarea-09-uv-docker
 mkdir -p estudiantes/$GHUSER/09_python/uv_docker
@@ -98,10 +102,12 @@ cd estudiantes/$GHUSER/09_python/uv_docker
 1. `uv add <tu-paquete>`: escribe `pyproject.toml`, genera `uv.lock` y crea `.venv/`.
 2. Escribe tu fila en `reporte.py` y córrela: `uv run reporte.py`. Pega la salida en la bitácora.
 3. Llena los tres huecos del `Dockerfile` y la línea de `.dockerignore`.
-4. Construye para la arquitectura del revisor: `docker buildx build --platform linux/amd64 -t <tu-usuario>/reporte .`
-5. Córrela: `docker run --rm <tu-usuario>/reporte`. Pega la salida en la bitácora.
-6. Publícala: `docker push <tu-usuario>/reporte`.
-7. La prueba, en este orden: `docker logout`, `docker rmi -f <tu-usuario>/reporte`, `docker run --rm <tu-usuario>/reporte`.
+4. Construye para la arquitectura del revisor: `docker buildx build --platform linux/amd64 -t <usuario-docker-hub>/reporte .`
+5. Córrela: `docker run --rm --platform linux/amd64 <usuario-docker-hub>/reporte`. Pega la salida en la bitácora.
+6. Inicia sesión y publícala: `docker login`, luego `docker push <usuario-docker-hub>/reporte`. Pega en la bitácora la línea `digest: sha256:…` que imprime el push.
+7. La prueba, en este orden: `docker logout`, `docker rmi -f <usuario-docker-hub>/reporte`, `docker run --rm --platform linux/amd64 <usuario-docker-hub>/reporte`.
+
+`<usuario-docker-hub>` es tu usuario de **Docker Hub**, no el de GitHub: con otro usuario, el push se rechaza.
 
 ```bash
 cd ~/fdd/fdd_o26
@@ -133,9 +139,11 @@ Traceback (most recent call last):
 ModuleNotFoundError: No module named 'humanize'
 ```
 
-La URL que sirve es la pública, `hub.docker.com/r/<tu-usuario>/reporte`; la de tu panel (`/repository/…`) da 404 a los demás. Ábrela en una ventana privada.
+La URL que sirve es la pública, `https://hub.docker.com/r/<usuario-docker-hub>/reporte`, con su `https://`; la de tu panel (`/repository/…`) da 404 a los demás. Ábrela en una ventana privada.
 
-**Acabaste cuando** el pull request está abierto, su revisión en verde, y tu imagen se baja y corre en una máquina que no es la tuya.
+**Acabaste cuando** el pull request está abierto y su revisión en verde. La prueba del paso 7 es lo que muestra que tu imagen se baja del registro y no de tu disco.
+
+Si la revisión sale roja, corrige y haz push a la **misma** branch: no vuelvas a correr `git switch -c`, que ya existe.
 
 ## Qué revisa la revisión automática
 
@@ -143,8 +151,8 @@ La URL que sirve es la pública, `hub.docker.com/r/<tu-usuario>/reporte`; la de 
 |---|---|
 | Que estén los archivos y la captura, con su nombre | Que la captura sea tuya y de este curso |
 | Que las secciones estén llenas; fecha `AAAA-MM-DD`; URL presente | Que la URL abra tu certificado |
-| Los tres huecos llenos; el ambiente creado sin dejar que el lock cambie | Que la imagen exista y corra |
-| `.venv` en `.dockerignore`; tu fila; dos dependencias; `rich` en el lock | Que las salidas pegadas salgan de tu imagen y coincidan con tu lock |
-| URL pública; prueba con `Unable to find image` y `Pulling from`; sin `Login Succeeded` | Lo que debes poder explicar sin ayuda |
+| Imagen base y los tres huecos llenos con instrucciones, no comentarios; el ambiente creado exigiendo que el lock coincida | Que la imagen exista, corra y salga de tus archivos |
+| `.venv` en `.dockerignore`; tu fila con un paquete importado; una dependencia además de `rich`; un `uv.lock` con la forma que genera uv | Que las salidas pegadas salgan de tu imagen y coincidan con tu lock |
+| URL pública con `https://`; digest completo; prueba con `Unable to find image` y `Pulling from`; sin `Login Succeeded` | Lo que debes poder explicar sin ayuda |
 
 Los mensajes dicen **qué** está mal, **por qué** importa y **dónde investigar**; no dicen cómo arreglarlo.

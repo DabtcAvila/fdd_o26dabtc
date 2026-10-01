@@ -46,7 +46,7 @@ def main():
     consola = Console()
     ambiente = Table(title="Mi ambiente")
     ambiente.add_column("Qué")
-    ambiente.add_column("Valor")
+    ambiente.add_column("Valor", overflow="fold")  # rutas largas completas
     for que, valor in filas_del_ambiente() + [fila_propia()]:
         ambiente.add_row(que, str(valor))
     consola.print(ambiente)

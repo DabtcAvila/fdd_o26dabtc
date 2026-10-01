@@ -5,8 +5,10 @@ COPY --from=ghcr.io/astral-sh/uv:0.12 /uv /usr/local/bin/uv
 
 WORKDIR /app
 
+# Escribe cada instrucción debajo de su hueco. Los comentarios pueden quedarse.
 # HUECO 1: copia aquí los dos archivos que describen el ambiente.
-# HUECO 2: crea el ambiente desde el lock, sin dejar que cambie.
+# HUECO 2: crea el ambiente desde el lock, y que la construcción falle si el
+#          lock ya no coincide con pyproject.toml.
 # HUECO 3: copia el programa.
 
 CMD ["uv", "run", "--no-sync", "reporte.py"]

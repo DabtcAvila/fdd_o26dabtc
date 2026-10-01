@@ -13,7 +13,7 @@ ia = "permitida-revisada"
 debe_explicar = [
   "qué diferencia hay entre una lista y un diccionario, y cuándo usar cada uno",
   "qué recorre un for sobre un diccionario, y cómo recorrer llaves y valores a la vez",
-  "qué hace una función con return y qué pasa si no lo lleva",
+  "cuándo conviene un while en lugar de un for, y qué hace break",
   "la cosa que escribió en «Una cosa que aprendiste»: debe poder contarla sin leerla",
 ]
 pagina = "Página «Las entregas de ambientes» (https://rayalucaria.org/fdd_o26/python/ambientes/b-entregas/)"
@@ -24,7 +24,7 @@ prohibidos = []
 
 [[capturas]]
 nombre = "introduccion-python-developers"
-extensiones = [".png", ".jpg", ".jpeg", ".pdf"]
+extensiones = [".png", ".jpg", ".jpeg"]
 minimo_bytes = 5000
 
 [[secciones]]
@@ -45,7 +45,7 @@ pide = []
 [[patrones]]
 archivo = "certificaciones.md"
 seccion = "Introduction to Python for Developers"
-debe = 'datacamp\.com/(completed|statement)'
+debe = 'https?://(www\.)?datacamp\.com/(completed|statement)\S+'
 que = "la URL de la sección del curso no es la de un Statement of Accomplishment de DataCamp"
 porque = "quien revisa verifica el curso en un clic con esa URL; una dirección de otro sitio no prueba nada"
 investiga = "Página «Las entregas de ambientes», entrega 1: ¿qué dirección te da DataCamp al terminar el curso, y cuál pegaste?"
@@ -73,7 +73,7 @@ senales = [
   "captura sin nombre visible, o con otro nombre",
   "captura idéntica en bytes a la de otra entrega",
   "URL de Statement of Accomplishment de otro curso",
-  "«Una cosa que aprendiste» con un tema que no está en el curso",
+  "«Una cosa que aprendiste» con un tema que no está en el curso: el curso tiene tres capítulos (introducción, tipos de datos, control de flujo y ciclos); funciones, clases o comprehensions no están",
   "el pull request trae archivos de 09_python/: la branch nació de la otra entrega y no de main",
 ]
 donde_investigar = [

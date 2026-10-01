@@ -31,7 +31,7 @@ La extensión **Python** de Microsoft (`ms-python.python`). Si no la tienes: pan
 2. **Ctrl+Shift+P** abre la paleta de comandos.
 3. Escribe `Python: Select Interpreter` y presiona Enter.
 4. Elige la opción que dice `./.venv/bin/python` (Windows: `.\.venv\Scripts\python.exe`). Suele salir marcada como recomendada.
-5. Mira la barra de estado, abajo a la derecha: ahora dice la versión y el nombre del ambiente.
+5. Abre un archivo `.py` y mira la barra de estado, abajo a la derecha: ahora dice la versión y el nombre del ambiente. Sin un archivo de Python abierto, no aparece.
 
 Si el `.venv` no aparece en la lista: `uv sync` en la terminal para crearlo, y repite desde el paso 2.
 
@@ -45,7 +45,7 @@ Ese comando crea un `.venv` **con venv y pip, no con uv**: no escribe `pyproject
 
 | Dónde | Qué ves si está bien |
 |---|---|
-| Barra de estado, abajo a la derecha | La versión de Python y `.venv`, por ejemplo `3.13.15 (.venv)` |
+| Barra de estado, abajo a la derecha, con un `.py` abierto | La versión de Python y el ambiente; el rótulo exacto cambia con la versión de la extensión |
 | Una terminal integrada nueva (Ctrl+ñ o Ctrl+\`) | El prompt empieza con `(demo)` |
 | `quien_soy.py` corrido con el botón ▶ | `¿en un ambiente?  : sí` |
 | Un notebook `.ipynb` → *Select Kernel* | El mismo `.venv`. Necesita `uv add --dev ipykernel` antes |

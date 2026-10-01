@@ -67,24 +67,40 @@ pide = []
 
 [[patrones]]
 archivo = "uv_docker/Dockerfile"
-no_debe = 'HUECO'
-que = "el Dockerfile todavía trae al menos un hueco marcado de la plantilla"
-porque = "un hueco sin llenar es una instrucción que no existe: la imagen se queda sin ambiente o sin programa"
-investiga = "Página «Las entregas de ambientes», entrega 2: ¿qué tiene que pasar en cada uno de los tres huecos, y en qué orden?"
+debe = '^\s*FROM\s'
+que = "el Dockerfile no tiene una imagen base"
+porque = "sin la instrucción de base no hay sistema ni Python sobre el cual construir: la imagen no se puede crear"
+investiga = "Página «Las entregas de ambientes», entrega 2: ¿qué trae la plantilla en su primera línea, y sigue ahí?"
 nivel = "falla"
 
 [[patrones]]
 archivo = "uv_docker/Dockerfile"
-debe = 'uv\s+sync[^\n]*--locked'
-que = "el Dockerfile crea el ambiente sin exigir que el lock coincida con el proyecto"
-porque = "sin esa exigencia, la construcción puede resolver otras versiones y la imagen deja de ser lo que dice tu lock"
-investiga = "Página «Las trampas», fila del lock: ¿qué garantiza uv.lock, y qué pasa si se le permite cambiar al construir?"
+debe = '^\s*COPY\s[^\n]*uv\.lock'
+que = "el Dockerfile no copia a la imagen los dos archivos que describen el ambiente (primer hueco)"
+porque = "sin ellos, la imagen no sabe qué paquetes ni qué versiones instalar; una línea comentada no cuenta"
+investiga = "Página «Lab: uv», «Qué subes a git»: ¿qué dos archivos bastan para recrear un ambiente en otra máquina?"
 nivel = "falla"
 
 [[patrones]]
 archivo = "uv_docker/Dockerfile"
-debe = 'COPY[^\n]*uv\.lock[\s\S]*RUN[^\n]*sync[\s\S]*COPY[^\n]*reporte\.py'
-que = "el Dockerfile no copia el lock, crea el ambiente y copia el programa, en ese orden"
+debe = '^\s*RUN\s[^\n]*uv\s+sync[^\n]*--locked'
+que = "el Dockerfile no crea el ambiente desde el lock exigiendo que coincida con el proyecto (segundo hueco)"
+porque = "sin esa exigencia, la construcción puede resolver otras versiones, o usar un lock viejo sin avisar, y la imagen deja de ser lo que dice tu proyecto"
+investiga = "Página «Las trampas», fila del lock: ¿qué opción hace que la construcción falle si el lock ya no coincide con pyproject.toml?"
+nivel = "falla"
+
+[[patrones]]
+archivo = "uv_docker/Dockerfile"
+debe = '^\s*COPY\s[^\n]*(reporte\.py|\s\.\s)'
+que = "el Dockerfile no copia el programa a la imagen (tercer hueco)"
+porque = "la imagen tendría el ambiente pero no el programa que debe correr"
+investiga = "Página «Las entregas de ambientes», entrega 2: ¿qué archivo corre la última línea del Dockerfile?"
+nivel = "falla"
+
+[[patrones]]
+archivo = "uv_docker/Dockerfile"
+debe = '^\s*COPY\s[^\n]*uv\.lock[\s\S]*^\s*RUN\s[^\n]*sync[\s\S]*^\s*COPY\s[^\n]*reporte\.py'
+que = "el Dockerfile no copia el lock, crea el ambiente y copia sólo el programa, en ese orden"
 porque = "con otro orden, cada cambio al programa vuelve a instalar todos los paquetes, o a la imagen entran archivos de tu máquina"
 investiga = "Página «Ambiente, conda y Docker», figura del Dockerfile: ¿qué capas se reusan cuando sólo cambia reporte.py?"
 nivel = "aviso"
@@ -106,9 +122,17 @@ investiga = "Página «Las entregas de ambientes», entrega 2: ¿qué muestra tu
 nivel = "falla"
 
 [[patrones]]
+archivo = "uv_docker/reporte.py"
+debe = '^\s*(import|from)\s+(?!os\b|platform\b|sys\b|importlib\b|rich\b)\w+'
+que = "reporte.py no importa ningún paquete además de los de la plantilla"
+porque = "la fila propia debe usar el paquete que agregaste; si no se importa, nada prueba que el ambiente lo tenga"
+investiga = "Página «Las entregas de ambientes», entrega 2: ¿de qué paquete sale el valor de tu fila, y dónde lo traes al programa?"
+nivel = "falla"
+
+[[patrones]]
 archivo = "uv_docker/pyproject.toml"
-debe = '^dependencies\s*=\s*\[[^\]]*"[^"]+"[^\]]*"[^"]+"'
-que = "pyproject.toml declara una sola dependencia"
+debe = '^dependencies\s*=\s*\[[^\]]*"(?!rich[\s<>=!~;,"\[(])[A-Za-z0-9]'
+que = "pyproject.toml no declara ninguna dependencia además de rich"
 porque = "la tarea pide rich y un paquete elegido por ti; sin el segundo no hay fila propia que lo use"
 investiga = "Página «Lab: uv», paso 3: ¿qué cambia en pyproject.toml cuando agregas una dependencia?"
 nivel = "falla"
@@ -122,12 +146,29 @@ investiga = "Página «Los archivos de un proyecto»: ¿quién genera el lock, y
 nivel = "falla"
 
 [[patrones]]
+archivo = "uv_docker/uv.lock"
+debe = '^revision = \d+[\s\S]*sha256:[0-9a-f]{64}'
+que = "uv.lock no tiene la forma de un lock generado por la herramienta: le falta su cabecera o el hash de los paquetes"
+porque = "un lock escrito a mano no fija nada: sin hash, otra máquina no puede comprobar que baja exactamente los mismos archivos"
+investiga = "Página «Los archivos de un proyecto»: ¿quién genera el lock, y qué guarda de cada paquete?"
+nivel = "falla"
+
+[[patrones]]
 archivo = "uv_docker/bitacora.md"
 seccion = "Tu imagen en Docker Hub"
-debe = 'hub\.docker\.com/r/[^/\s]+/[^/\s]+'
+debe = 'https?://hub\.docker\.com/r/[^/\s]+/[^/\s]+'
 que = "la dirección de tu imagen no es la pública del registro"
 porque = "la dirección de tu panel sólo la ve tu sesión; a quien revisa le da error 404"
 investiga = "Página «Las entregas de ambientes», entrega 2: ¿qué ve alguien sin tu sesión cuando abre esa dirección?"
+nivel = "falla"
+
+[[patrones]]
+archivo = "uv_docker/bitacora.md"
+seccion = "Tu imagen en Docker Hub"
+debe = 'sha256:[0-9a-f]{64}'
+que = "la sección de tu imagen no trae su digest completo"
+porque = "el digest identifica exactamente la imagen que publicaste; sin él no se puede comprobar que la imagen revisada es la tuya"
+investiga = "Página «Las entregas de ambientes», entrega 2: ¿qué te imprimió el registro al publicar, y qué identifica esa cadena larga?"
 nivel = "falla"
 
 [[patrones]]
@@ -159,6 +200,7 @@ nivel = "aviso"
 [revision]
 foco = [
   "bajar la imagen de la URL pública y correrla: que salgan las dos tablas y la fila propia funcione",
+  "construir la imagen desde los archivos entregados y comparar con la publicada: la imagen pudo salir de otro lado; el CI no puede construirla porque sería ejecutar código del pull request",
   "que las versiones de paquetes de la salida local y la del contenedor coincidan entre sí y con uv.lock",
   "que «Qué cambió y qué no» use los valores reales: paquetes iguales por el lock; intérprete, sys.prefix y quizá la versión de Python distintos",
   "que la imagen esté construida para linux/amd64",
@@ -182,7 +224,11 @@ senales = [
   "salida local con rutas de otra persona, o idéntica a la de otra entrega",
   "uv.lock con forma que la herramienta no produce: sin version ni revision, paquetes sin source ni hash",
   "el paquete elegido no aparece en uv.lock, o no se importa en reporte.py",
-  "imagen publicada sólo para arm64",
+  "imagen publicada sólo para arm64, o «Sistema» en la salida del contenedor que no dice Linux x86_64",
+  "en el lock, el paquete reporte con source editable o registry: sin build-system, la herramienta escribe source = { virtual = \".\" }",
+  "rich en el lock o en las salidas con versión menor a 15, que contradice rich>=15",
+  "la tabla de paquetes del contenedor trae pip, setuptools o reporte: un ambiente de uv no instala pip y el proyecto virtual no se instala",
+  "Python del contenedor distinto de 3.13.x, que es lo que trae la imagen base",
   "el pull request trae archivos de python/ o de ambientes/: la branch nació de otra entrega, o se subieron los labs",
 ]
 donde_investigar = [

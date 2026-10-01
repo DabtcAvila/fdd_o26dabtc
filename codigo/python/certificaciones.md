@@ -4,9 +4,10 @@ Llena este archivo en **tu copia**, dentro de `estudiantes/<tu-login>/python/`.
 
 ## Quién soy
 
-- Nombre:
 - Usuario de GitHub:
-- Correo con el que entraste a DataCamp:
+- Usuario de DataCamp:
+
+El repositorio es público: no escribas aquí tu nombre completo ni tu correo.
 
 ## Introduction to Python for Developers
 

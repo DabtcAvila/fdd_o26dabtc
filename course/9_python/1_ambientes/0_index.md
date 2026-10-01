@@ -68,3 +68,5 @@ ls ~/lab-ambientes
 **Deberías ver** `hola.py`, `quien_soy.py`, `requirements.txt` y `script_autonomo.py`.
 
 Los labs trabajan en `~/lab-ambientes/`, **fuera** del repo del curso: crean `.venv/` y archivos que no deben acabar en un `git add`.
+
+Los comandos suponen una terminal de Linux o macOS. **En Windows, trabaja dentro de WSL**, como en la unidad 8: `rm`, `ls`, `which` y `source` no existen en PowerShell. Las líneas de PowerShell que aparecen son para reconocerlas, no el camino del curso.

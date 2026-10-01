@@ -27,7 +27,7 @@ prerequisites: [contenedores]
 
 ## Antes de empezar
 
-Necesitas **uv instalado antes de clase**. Un solo comando:
+Necesitas **uv instalado antes de clase**, en la **misma terminal donde trabajas el repo**. En Windows eso es **WSL**, igual que Docker en la unidad 8: dentro de WSL usa el comando de Linux. El de PowerShell sólo sirve si trabajas fuera de WSL.
 
 ```bash
 curl -LsSf https://astral.sh/uv/install.sh | sh      # Linux y macOS

@@ -41,7 +41,7 @@ Meta: reconocer cada herramienta cuando la veas en un repo ajeno, y saber por qu
 | **conda** / mamba | 2012 | Paquetes de Python **y de fuera de Python**, con su propio Python | CUDA, GDAL, R | Pesado; otro registro de paquetes; la distribución Anaconda cobra licencia a organizaciones grandes (términos de 2024) | Ciencia, academia |
 | pixi | 2023 | Paquetes de conda, rápido, con lockfile | Lo de conda con un flujo moderno | Joven | GPU, geoespacial |
 | pyenv | 2012 | Instala versiones de Python | Hace bien una sola cosa | uv ya lo hace | Máquinas de desarrolladores |
-| pipx | 2017 | Instala programas de terminal, cada uno aislado | Sencillo | uv tiene `uvx` | `pipx install ruff` |
+| pipx | 2018 | Instala programas de terminal, cada uno aislado | Sencillo | uv tiene `uvx` | `pipx install ruff` |
 | **uv** | 2024 | **Los cinco trabajos** | 10 a 100 veces más rápido que pip; un solo binario; sigue los estándares | Es de una empresa (Astral), cuya compra anunció OpenAI el 2026-03-19; no instala paquetes de fuera de Python | **Este curso** |
 
 :::
