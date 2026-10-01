@@ -27,7 +27,7 @@ La extensión **Python** de Microsoft (`ms-python.python`). Si no la tienes: pan
 
 ## Elegir el ambiente que hizo uv
 
-1. Abre **tu fork** en VS Code, igual que en las otras unidades: `code ~/fdd/fdd_o26`.
+1. Abre **tu fork** en VS Code, igual que en las otras unidades: `code {tu_fork_de_la_clase}` (la carpeta donde clonaste tu fork; escribe la tuya, sin llaves).
 2. **Ctrl+Shift+P** abre la paleta de comandos.
 3. Escribe `Python: Select Interpreter` y presiona Enter.
 4. Elige el `.venv` **del proyecto en el que trabajas**. Con varios labs vas a ver varios; la ruta dice cuál es: `./estudiantes/<tu-login>/09_python/ambientes/demo/.venv/bin/python`.

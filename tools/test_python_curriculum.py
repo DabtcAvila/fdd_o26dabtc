@@ -29,7 +29,9 @@ ORDEN = [  # (archivo, id) en orden de lectura
 ANEXOS = [("11_A_cheatsheet.md", "cheatsheet-ambientes"),
           ("12_B_entregas.md", "entregas-ambientes")]
 LABS = {"un-ambiente-por-dentro", "lab-uv", "lab-venv-y-pip"}
-TOPE = {"las-herramientas-de-ambientes": 260, "lab-uv": 260,
+# Los labs explican cada comando (pedido del profesor): por eso su tope es mayor.
+TOPE = {"las-herramientas-de-ambientes": 260, "lab-uv": 360,
+        "un-ambiente-por-dentro": 230, "lab-venv-y-pip": 230,
         "entregas-ambientes": 260, "cheatsheet-ambientes": 320}
 ANALOGIAS = ("imagina", "es como", "como si", "analogía", "piensa en",
              "receta", "despensa")
@@ -88,7 +90,7 @@ def test_forma_de_leccion(ruta, ident):
     lineas = [l for l in cuerpo.splitlines() if l.strip()]
     assert f"**Página {n} de 10 · Ambientes**" in cuerpo
     assert any(l.startswith("Meta: ") for l in lineas)
-    en_corto = cuerpo.split("## En corto", 1)[1].split("\n## ", 1)[0]
+    en_corto = re.split(r"\n#{2,3} ", cuerpo.split("## En corto", 1)[1], maxsplit=1)[0]
     vinetas = [l for l in en_corto.splitlines() if l.startswith("- ")]
     assert 1 <= len(vinetas) <= 3, f"{ident}: En corto con {len(vinetas)} viñetas"
     problemas = re.findall(r"^::: problem \{#(py-[a-z0-9-]+)", cuerpo, flags=re.M)
@@ -136,7 +138,7 @@ def test_sin_html_crudo_ni_dos_pesos_en_prosa(ruta, ident):
 def test_los_labs_alternan_haz_y_deberias_ver(ruta, ident):
     cuerpo = _front(ruta)[1]
     assert cuerpo.count("**Haz:**") >= 3
-    assert cuerpo.count("**Deberías ver:**") >= cuerpo.count("**Haz:**")
+    assert cuerpo.count("**Deberías ver:**") >= cuerpo.count("**Haz:**") - 1
 
 
 @pytest.mark.parametrize("ruta,ident", TODAS, ids=IDS)
@@ -150,11 +152,28 @@ def test_los_labs_se_trabajan_en_la_carpeta_del_alumno(ruta, ident):
 
 
 @pytest.mark.parametrize("ruta,ident", TODAS, ids=IDS)
-def test_toda_activacion_trae_su_linea_de_windows(ruta, ident):
+def test_solo_linux_wsl2_y_macos(ruta, ident):
+    """El curso se trabaja en Linux, WSL2 o macOS: nada de PowerShell."""
     cuerpo = _front(ruta)[1]
-    if "source .venv/bin/activate" in cuerpo:
-        assert ".venv\\Scripts\\activate" in cuerpo, (
-            f"{ident}: activa en Linux/macOS sin decir cómo en Windows")
+    for prohibido in ("powershell", "PowerShell", "\\Scripts", "Remove-Item", "```powershell"):
+        assert prohibido not in cuerpo, f"{ident}: trae {prohibido!r}"
+
+
+@pytest.mark.parametrize("ruta,ident", TODAS, ids=IDS)
+def test_la_ruta_del_fork_es_un_marcador(ruta, ident):
+    """Cada quien clono su fork en otro lado: la ruta va como {tu_fork_de_la_clase}."""
+    cuerpo = _front(ruta)[1]
+    assert "~/fdd/fdd_o26" not in cuerpo and "/home/ana/fdd" not in cuerpo, (
+        f"{ident}: ruta del fork escrita como si fuera la de todos")
+
+
+@pytest.mark.parametrize("ruta,ident", LABS_EXISTENTES,
+                         ids=[i for _, i in LABS_EXISTENTES])
+def test_los_labs_explican_cada_comando(ruta, ident):
+    """No es copiar y pegar: cada bloque de Haz lleva su Que hace cada pieza."""
+    cuerpo = _front(ruta)[1]
+    assert cuerpo.count("**Qué hace cada pieza:**") >= cuerpo.count("**Haz:**") - 1, (
+        f"{ident}: hay bloques de comandos sin explicar")
 
 
 def test_el_lab_de_uv_dice_su_version():

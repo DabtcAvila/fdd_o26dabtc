@@ -16,7 +16,7 @@ Los labs y la entrega viajan **juntos**, en el pull request de
 Abre tu fork en VS Code y, en su terminal:
 
 ```bash
-cd ~/fdd/fdd_o26
+cd {tu_fork_de_la_clase}     # la carpeta donde clonaste tu fork, sin llaves
 git switch main && git fetch upstream && git merge upstream/main
 git switch -c tarea-09-uv-docker
 mkdir -p estudiantes/$GHUSER/09_python
@@ -44,7 +44,7 @@ del curso lo deja fuera de git, y lo que sí se sube (`pyproject.toml`,
 Cuando termines los labs y la entrega, desde la raíz del repo:
 
 ```bash
-cd ~/fdd/fdd_o26
+cd {tu_fork_de_la_clase}     # la carpeta donde clonaste tu fork, sin llaves
 git add estudiantes/$GHUSER/09_python
 git status        # .venv/ NO debe aparecer
 git commit -m "unidad 09: labs de ambientes y mi ambiente uv en Docker"

@@ -28,7 +28,7 @@ Dos entregas, las dos por pull request. Esta página es la versión en tabla de 
 
 Se entrega tarde con un punto menos por día, contando el día en que entregas.
 
-Los comandos suponen la terminal de Linux o macOS, o **WSL en Windows**, la misma donde instalaste Docker en la unidad 8. Si uv lo instalaste en PowerShell, instálalo también dentro de WSL con el comando de Linux de [[python]].
+Los comandos son para la terminal de **Linux, WSL2 o macOS**, la misma donde instalaste Docker en la unidad 8. `{tu_fork_de_la_clase}` es la carpeta donde clonaste tu fork: escribe la tuya, sin las llaves.
 
 ## 1 · DataCamp: Introduction to Python for Developers
 
@@ -47,7 +47,7 @@ Los comandos suponen la terminal de Linux o macOS, o **WSL en Windows**, la mism
 **El ritual**
 
 ```bash
-cd ~/fdd/fdd_o26
+cd {tu_fork_de_la_clase}
 git switch main && git fetch upstream && git merge upstream/main
 git switch -c tarea-09-datacamp-python
 mkdir -p estudiantes/$GHUSER/python
@@ -91,7 +91,7 @@ Un programa que reporta su propio ambiente. Lo corres en tu máquina y dentro de
 Si ya hiciste el ritual en clase ([[ambientes-python]], «Antes de clase»), **no lo repitas**: la branch ya existe y volver a copiar pisaría tus cambios. Sólo entra:
 
 ```bash
-cd ~/fdd/fdd_o26
+cd {tu_fork_de_la_clase}
 git switch tarea-09-uv-docker
 cd estudiantes/$GHUSER/09_python/uv_docker
 ```
@@ -99,7 +99,7 @@ cd estudiantes/$GHUSER/09_python/uv_docker
 Si no lo hiciste:
 
 ```bash
-cd ~/fdd/fdd_o26
+cd {tu_fork_de_la_clase}
 git switch main && git fetch upstream && git merge upstream/main
 git switch -c tarea-09-uv-docker
 mkdir -p estudiantes/$GHUSER/09_python
@@ -120,7 +120,7 @@ cd estudiantes/$GHUSER/09_python/uv_docker
 `<usuario-docker-hub>` es tu usuario de **Docker Hub**, no el de GitHub: con otro usuario, el push se rechaza.
 
 ```bash
-cd ~/fdd/fdd_o26
+cd {tu_fork_de_la_clase}
 git add estudiantes/$GHUSER/09_python
 git status        # .venv/ NO debe aparecer
 git commit -m "unidad 09: labs de ambientes y mi ambiente uv en Docker"

@@ -187,16 +187,15 @@ def py_venv_arbol():
         "rama, que es: bin/python es el interprete, un enlace al Python base; "
         "bin/activate es lo que corre source; lib/python3.13/site-packages "
         "guarda los paquetes de este ambiente y de ningun otro, como rich y "
-        "pygments; pyvenv.cfg dice de que Python salio y su version. En "
-        "Windows bin se llama Scripts. Al pie: borrar el ambiente es borrar la "
-        "carpeta"
+        "pygments; pyvenv.cfg dice de que Python salio y su version. Al pie: "
+        "borrar el ambiente es borrar la carpeta"
     )
     p = [marco(ancho, alto, aria)]
     p.append(texto(ancho / 2, 44, "Un ambiente es una carpeta", TEXTO, 21, peso="600"))
     p.append(caja(40, 76, 1000, 300, PANEL, LINEA))
     ramas = (
         (".venv/", "", ACENTO),
-        ("├── bin/", "en Windows se llama Scripts\\", TEXTO),
+        ("├── bin/", "los programas del ambiente", TEXTO),
         ("│   ├── python", "el intérprete: un enlace al Python base", CIAN),
         ("│   └── activate", "lo que corre source (sólo cambia el PATH)", CIAN),
         ("├── lib/python3.13/site-packages/", "los paquetes de este ambiente y de ningún otro", AMBAR),

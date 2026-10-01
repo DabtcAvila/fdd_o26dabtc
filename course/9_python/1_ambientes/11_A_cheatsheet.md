@@ -22,7 +22,7 @@ La columna **uv** es la del curso. Las otras tres sirven para traducir el README
 | Instalar Python | `uv python install 3.13` | el instalador de tu sistema | `poetry python install 3.13` (experimental desde 2.1) | `conda create -n x python=3.13` |
 | Nuevo proyecto | `uv init --no-package x` | `mkdir x && cd x` | `poetry new x` | — |
 | Crear el ambiente | automático; o `uv venv` | `python3 -m venv .venv` | automático | `conda create -n x` |
-| Activar | no hace falta: `uv run` | `source .venv/bin/activate` · Windows: `.venv\Scripts\activate` | `eval $(poetry env activate)` | `conda activate x` |
+| Activar | no hace falta: `uv run` | `source .venv/bin/activate` | `eval $(poetry env activate)` | `conda activate x` |
 | Agregar un paquete | `uv add rich` | `pip install rich` | `poetry add rich` | `conda install rich` |
 | Quitarlo | `uv remove rich` | `pip uninstall rich` | `poetry remove rich` | `conda remove rich` |
 | Dependencia de desarrollo | `uv add --dev pytest` | un segundo `requirements-dev.txt` | `poetry add --group dev pytest` | — |

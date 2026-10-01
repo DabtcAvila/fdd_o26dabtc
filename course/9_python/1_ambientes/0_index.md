@@ -60,7 +60,7 @@ Meta: que sepas en qué Python y con qué paquetes corre tu código, y cómo hac
 2. **Tu carpeta lista**: abre tu fork en VS Code y, en su terminal, el ritual de la unidad, que deja la branch de la entrega y copia todo:
 
 ```bash
-cd ~/fdd/fdd_o26
+cd {tu_fork_de_la_clase}
 git switch main && git fetch upstream && git merge upstream/main
 git switch -c tarea-09-uv-docker
 mkdir -p estudiantes/$GHUSER/09_python
@@ -68,8 +68,17 @@ cp -r codigo/09_python/. estudiantes/$GHUSER/09_python/
 ls estudiantes/$GHUSER/09_python/ambientes
 ```
 
+**Qué hace cada pieza:**
+
+- `cd {tu_fork_de_la_clase}` — entras a la carpeta donde clonaste tu fork. Cada quien la tiene en otro lado: escribe la tuya, **sin las llaves**. Si no la recuerdas, `pwd` en la terminal de VS Code con tu fork abierto te la dice.
+- `git switch main && git fetch upstream && git merge upstream/main` — te pones en `main` y le traes lo nuevo del repo del curso (`upstream`), como en cada unidad.
+- `git switch -c tarea-09-uv-docker` — creas la branch de la entrega y te cambias a ella. Ahí trabajas labs y entrega.
+- `mkdir -p estudiantes/$GHUSER/09_python` — creas tu carpeta de la unidad. `$GHUSER` es tu usuario de GitHub, guardado en tu shell desde la unidad de Git.
+- `cp -r codigo/09_python/. estudiantes/$GHUSER/09_python/` — copias todo lo que publiqué (`-r`: con subcarpetas). La barra y el punto al final del origen copian el *contenido*, no la carpeta.
+- `ls …/ambientes` — compruebas que llegaron los archivos de los labs.
+
 **Deberías ver** `hola.py`, `quien_soy.py`, `requirements.txt` y `script_autonomo.py`.
 
 **Todo se trabaja en tu carpeta de estudiante**, como el resto del curso: los labs en `09_python/ambientes/` y la entrega en `09_python/uv_docker/`. Los dos se suben juntos, en el pull request de `tarea-09-uv-docker`. Los `.venv/` que creen los labs no se suben: el `.gitignore` del curso los deja fuera.
 
-Los comandos suponen una terminal de Linux o macOS. **En Windows, trabaja dentro de WSL**, como en la unidad 8: `rm`, `ls`, `which` y `source` no existen en PowerShell. Las líneas de PowerShell que aparecen son para reconocerlas, no el camino del curso.
+Los comandos son para la terminal de **Linux, WSL2 o macOS**.

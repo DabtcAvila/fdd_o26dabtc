@@ -28,23 +28,24 @@ En Ubuntu o WSL recién instalados, `python3 -m venv` falla con `ensurepip is no
 **Haz:**
 
 ```bash
-cd ~/fdd/fdd_o26/estudiantes/$GHUSER/09_python/ambientes
+cd {tu_fork_de_la_clase}/estudiantes/$GHUSER/09_python/ambientes
 python3 -m venv .venv
-source .venv/bin/activate          # Linux y macOS
+source .venv/bin/activate
 python quien_soy.py
 ```
 
-En Windows (PowerShell), el paso de activar es:
+**Qué hace cada pieza:**
 
-```powershell
-.venv\Scripts\activate
-```
+- `cd …/ambientes` — entras a tu carpeta de labs. `{tu_fork_de_la_clase}` es donde clonaste tu fork: pon la tuya, sin llaves.
+- `python3 -m venv .venv` — corre el módulo `venv` de Python (`-m`) y crea un ambiente vacío en la carpeta `.venv/`.
+- `source .venv/bin/activate` — lo activa: tu shell encuentra primero el `python` y el `pip` de `.venv/`.
+- `python quien_soy.py` — comprueba qué Python corre ahora.
 
 **Deberías ver:** el prompt empieza con `(.venv)`, y (recortado)
 
 ```text
-python que corre  : /home/ana/fdd/fdd_o26/estudiantes/ana/09_python/ambientes/.venv/bin/python
-sys.prefix        : /home/ana/fdd/fdd_o26/estudiantes/ana/09_python/ambientes/.venv
+python que corre  : …/estudiantes/ana/09_python/ambientes/.venv/bin/python
+sys.prefix        : …/estudiantes/ana/09_python/ambientes/.venv
 ¿en un ambiente?  : sí
 rich              : NO instalado en este Python
 ```
@@ -60,6 +61,12 @@ pip install -r requirements.txt
 python hola.py
 pip freeze
 ```
+
+**Qué hace cada pieza:**
+
+- `pip install -r requirements.txt` — instala cada paquete de la lista (`-r`: lee los nombres de ese archivo) en el ambiente activo.
+- `python hola.py` — corre el hola mundo, que necesita `rich`.
+- `pip freeze` — lista todo lo instalado en el ambiente activo, con su versión.
 
 **Deberías ver:**
 
@@ -86,13 +93,20 @@ python3 -m pip install rich
 python3 quien_soy.py
 ```
 
+**Qué hace cada pieza:**
+
+- `deactivate` — sales del ambiente: tu shell vuelve a encontrar el Python del sistema.
+- `python3 hola.py` — intentas correr el hola mundo fuera del ambiente.
+- `python3 -m pip install rich` — usa el `pip` de ese mismo `python3` para instalar `rich`.
+- `python3 quien_soy.py` — compruebas dónde quedó.
+
 **Deberías ver:** `python3 hola.py` truena con `ModuleNotFoundError: No module named 'rich'`, porque ya no estás en el ambiente. Y luego, una de dos cosas según tu sistema:
 
 | Tu sistema | Qué pasa |
 |---|---|
 | Ubuntu 24.04, Debian 12, macOS con Homebrew | `error: externally-managed-environment` ([[el-problema-de-los-ambientes]]): el sistema te frena |
 | Ubuntu o WSL sin `python3-pip` | `No module named pip`: no hay `pip` global en dónde instalar |
-| Windows, o un Python instalado a mano | **Instala en el Python global**, y `quien_soy.py` lo confirma: |
+| Un Python instalado a mano (sin esa protección) | **Instala en el Python global**, y `quien_soy.py` lo confirma: |
 
 ```text
 ¿en un ambiente?  : no
@@ -110,7 +124,10 @@ rm -rf .venv
 ls -a
 ```
 
-En Windows: `Remove-Item -Recurse .venv`.
+**Qué hace cada pieza:**
+
+- `rm -rf .venv` — borra la carpeta del ambiente con todo lo de adentro.
+- `ls -a` — lista lo que queda, también lo oculto.
 
 **Deberías ver:** ya no está `.venv`; tus archivos sí. Borrar el ambiente es borrar la carpeta.
 

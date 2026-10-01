@@ -88,3 +88,8 @@ def test_el_readme_manda_los_labs_a_la_carpeta_del_alumno():
     t = (RAIZ / "codigo/09_python/README.md").read_text(encoding="utf-8")
     assert "lab-ambientes" not in t and "fuera del repo" not in t.lower()
     assert "estudiantes/$GHUSER/09_python/" in t
+
+
+def test_el_readme_usa_el_marcador_del_fork():
+    t = (RAIZ / "codigo/09_python/README.md").read_text(encoding="utf-8")
+    assert "~/fdd/fdd_o26" not in t and "{tu_fork_de_la_clase}" in t

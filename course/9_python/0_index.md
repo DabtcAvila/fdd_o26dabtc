@@ -27,15 +27,16 @@ prerequisites: [contenedores]
 
 ## Antes de empezar
 
-Necesitas **uv instalado antes de clase**, en la **misma terminal donde trabajas el repo**. En Windows eso es **WSL**, igual que Docker en la unidad 8: dentro de WSL usa el comando de Linux. El de PowerShell sólo sirve si trabajas fuera de WSL.
+Necesitas **uv instalado antes de clase**, en la terminal donde trabajas el repo: Linux, WSL2 o macOS, la misma donde instalaste Docker en la unidad 8.
 
 ```bash
-curl -LsSf https://astral.sh/uv/install.sh | sh      # Linux y macOS
+curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
 
-```powershell
-powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"   # Windows
-```
+**Qué hace cada pieza:**
+
+- `curl -LsSf <url>` — descarga el instalador oficial de uv (`-L` sigue redirecciones, `-sS` sin barra de progreso pero con errores, `-f` falla si el servidor responde con error).
+- `| sh` — se lo pasa a la shell, que lo ejecuta: instala `uv` en tu carpeta personal.
 
 Cierra la terminal, abre otra y comprueba:
 

@@ -32,6 +32,11 @@ uv self update
 uv --version
 ```
 
+**Qué hace cada pieza:**
+
+- `uv self update` — actualiza uv a su última versión.
+- `uv --version` — imprime la versión que quedó.
+
 **Deberías ver:** `uv 0.12.21` o más nuevo. Las salidas de esta página se capturaron con **uv 0.12.21** y Python 3.13.15; tus números de versión pueden ser mayores. Si instalaste uv con otro gestor (Homebrew, pipx), `uv self update` te lo dice: actualiza con ese gestor.
 
 ### 1. El intérprete
@@ -41,6 +46,10 @@ uv --version
 ```bash
 uv python install 3.13
 ```
+
+**Qué hace cada pieza:**
+
+- `uv python install 3.13` — baja e instala Python 3.13 en una carpeta de uv. No toca el Python de tu sistema.
 
 **Deberías ver:**
 
@@ -56,10 +65,17 @@ Installed Python 3.13.15 in 1.99s
 **Haz:**
 
 ```bash
-cd ~/fdd/fdd_o26/estudiantes/$GHUSER/09_python/ambientes
+cd {tu_fork_de_la_clase}/estudiantes/$GHUSER/09_python/ambientes
 uv init --no-package demo && cd demo
 ls -a && cat pyproject.toml
 ```
+
+**Qué hace cada pieza:**
+
+- `cd …/ambientes` — entras a tu carpeta de labs. `{tu_fork_de_la_clase}` es donde clonaste tu fork: pon la tuya, sin llaves.
+- `uv init --no-package demo` — crea la carpeta `demo/` con un proyecto vacío: `pyproject.toml`, `main.py`, `README.md` y `.python-version`.
+- `&& cd demo` — si salió bien, entras a `demo/`.
+- `ls -a && cat pyproject.toml` — lista lo que se creó y muestra el `pyproject.toml`.
 
 **Deberías ver:**
 
@@ -85,6 +101,11 @@ uv add rich
 ls -a && grep -A2 dependencies pyproject.toml
 ```
 
+**Qué hace cada pieza:**
+
+- `uv add rich` — agrega `rich`: lo anota en `pyproject.toml`, fija versiones exactas en `uv.lock` y lo instala en `.venv/` (si no existe, lo crea).
+- `grep -A2 dependencies pyproject.toml` — muestra la línea `dependencies` y las dos siguientes (`-A2`).
+
 **Deberías ver:** (recortado)
 
 ```text
@@ -106,6 +127,11 @@ cp ../hola.py .
 uv run hola.py
 ```
 
+**Qué hace cada pieza:**
+
+- `cp ../hola.py .` — copia `hola.py` de la carpeta de arriba a ésta.
+- `uv run hola.py` — lo corre con el python de `.venv/`. Si el ambiente no coincide con el lock, primero lo pone al día.
+
 **Deberías ver:** `Hola desde un Python que sí tiene rich instalado.`, con colores.
 
 **En el mapa:** `uv run` usó `.venv/` sin activar nada.
@@ -118,6 +144,11 @@ uv run hola.py
 grep -c '^\[\[package\]\]' uv.lock
 uv tree
 ```
+
+**Qué hace cada pieza:**
+
+- `grep -c '^\[\[package\]\]' uv.lock` — cuenta (`-c`) cuántos paquetes fija el lock: cada uno empieza con `[[package]]`.
+- `uv tree` — dibuja quién necesita a quién.
 
 **Deberías ver:**
 
@@ -141,6 +172,11 @@ rm -rf .venv
 uv run hola.py
 ```
 
+**Qué hace cada pieza:**
+
+- `rm -rf .venv` — borra la carpeta del ambiente completa (`-r`: con todo lo de adentro; `-f`: sin preguntar).
+- `uv run hola.py` — al no encontrar `.venv/`, uv lo recrea desde `uv.lock` y luego corre el script.
+
 **Deberías ver:**
 
 ```text
@@ -159,6 +195,11 @@ Hola desde un Python que sí tiene rich instalado.
 uv add --dev pytest
 tail -4 pyproject.toml
 ```
+
+**Qué hace cada pieza:**
+
+- `uv add --dev pytest` — agrega `pytest` como dependencia **de desarrollo** (`--dev`): la usas tú, no tu programa.
+- `tail -4 pyproject.toml` — muestra las últimas 4 líneas del archivo.
 
 **Deberías ver:**
 
@@ -180,6 +221,11 @@ uv remove rich
 uv run hola.py
 ```
 
+**Qué hace cada pieza:**
+
+- `uv remove rich` — lo quita de `pyproject.toml`, de `uv.lock` y de `.venv/`.
+- `uv run hola.py` — lo intentas correr sin `rich`.
+
 **Deberías ver:**
 
 ```text
@@ -197,6 +243,11 @@ ModuleNotFoundError: No module named 'rich'
 uvx cowsay -t hola
 ```
 
+**Qué hace cada pieza:**
+
+- `uvx cowsay` — corre el programa `cowsay` sin instalarlo en tu proyecto: uv lo baja a un ambiente temporal.
+- `-t hola` — el texto que dice la vaca.
+
 **Deberías ver:** una vaca que dice `hola`.
 
 **En el mapa:** ninguna caja cambió. `uvx` corre un programa en un ambiente temporal, fuera de tu proyecto.
@@ -210,6 +261,12 @@ cd ..
 head -4 script_autonomo.py
 uv run script_autonomo.py
 ```
+
+**Qué hace cada pieza:**
+
+- `cd ..` — subes a `ambientes/`, donde está `script_autonomo.py`.
+- `head -4 script_autonomo.py` — muestra sus primeras 4 líneas: el bloque `# /// script`.
+- `uv run script_autonomo.py` — uv lee ese bloque, arma un ambiente temporal con `rich` y corre el script.
 
 **Deberías ver:** el bloque `# /// script` con `dependencies = ["rich"]`, y una tabla cuya fila «Ambiente» apunta a `~/.cache/uv/environments-v2/…`.
 

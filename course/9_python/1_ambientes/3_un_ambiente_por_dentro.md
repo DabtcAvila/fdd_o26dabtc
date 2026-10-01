@@ -16,7 +16,7 @@ prerequisites: [el-problema-de-los-ambientes]
 Meta: comprobar con tres comandos qué es un ambiente y qué hace «activar».
 
 ::: figure {#py-venv-arbol title="Un ambiente es una carpeta"}
-![El árbol de la carpeta .venv y, a la derecha de cada rama, qué es: bin/python es el intérprete, un enlace al Python base; bin/activate es lo que corre source; lib/python3.13/site-packages guarda los paquetes de este ambiente y de ningún otro; pyvenv.cfg dice de qué Python salió y su versión. En Windows bin se llama Scripts. Al pie: borrar el ambiente es borrar la carpeta.](../_assets/py-venv-arbol.svg)
+![El árbol de la carpeta .venv y, a la derecha de cada rama, qué es: bin/python es el intérprete, un enlace al Python base; bin/activate es lo que corre source; lib/python3.13/site-packages guarda los paquetes de este ambiente y de ningún otro; pyvenv.cfg dice de qué Python salió y su versión. Al pie: borrar el ambiente es borrar la carpeta.](../_assets/py-venv-arbol.svg)
 :::
 
 ## En corto
@@ -25,20 +25,33 @@ Meta: comprobar con tres comandos qué es un ambiente y qué hace «activar».
 - Trae **su propio `python` y su propio `site-packages/`**.
 - **Activar sólo cambia el `PATH`**. Con `uv run` no hace falta activar.
 
+## Antes: tu ruta
+
+En los comandos, `{tu_fork_de_la_clase}` es **la carpeta donde clonaste tu fork** del repo del curso: cada quien la tiene en otro lado. Escribe la tuya en lugar del marcador, **sin las llaves**. Si no la recuerdas, abre la terminal de VS Code con tu fork abierto y escribe `pwd`.
+
+`$GHUSER` es tu usuario de GitHub, que guardaste en tu shell en la unidad de Git: `echo $GHUSER` te lo muestra.
+
 ## Prepara un proyecto
 
 **Haz:**
 
 ```bash
-cd ~/fdd/fdd_o26/estudiantes/$GHUSER/09_python/ambientes
+cd {tu_fork_de_la_clase}/estudiantes/$GHUSER/09_python/ambientes
 uv init --no-package hola && cd hola
 uv add rich
 ```
 
+**Qué hace cada pieza:**
+
+- `cd …/ambientes` — entras a tu carpeta de labs, la que copiaste de `codigo/` antes de clase.
+- `uv init --no-package hola` — crea la carpeta `hola/` con un proyecto vacío: un `pyproject.toml` (la lista de lo que el proyecto necesita) y un `main.py`. `--no-package` dice que es un proyecto que sólo corre scripts, no una librería para publicar.
+- `&& cd hola` — si lo anterior salió bien, entras a `hola/`.
+- `uv add rich` — agrega el paquete `rich` al proyecto: lo anota en `pyproject.toml`, fija la versión exacta en `uv.lock` y lo instala en un ambiente nuevo, `.venv/`.
+
 **Deberías ver:** (las versiones pueden ser más nuevas)
 
 ```text
-Initialized project `hola` at `/home/ana/fdd/fdd_o26/estudiantes/ana/09_python/ambientes/hola`
+Initialized project `hola` at `…/estudiantes/ana/09_python/ambientes/hola`
 Using CPython 3.13.15 interpreter at: /usr/local/bin/python3.13
 Creating virtual environment at: .venv
 Resolved 5 packages in 455ms
@@ -60,6 +73,12 @@ cat .venv/pyvenv.cfg
 ls .venv/lib/python3.*/site-packages/ | head
 ```
 
+**Qué hace cada pieza:**
+
+- `ls -a .venv` — lista todo lo que hay en la carpeta del ambiente, también lo oculto (`-a`).
+- `cat .venv/pyvenv.cfg` — muestra el archivo de configuración del ambiente.
+- `ls …/site-packages/ | head` — lista los paquetes instalados en este ambiente; `| head` deja sólo las primeras líneas.
+
 **Deberías ver:**
 
 ```text
@@ -78,7 +97,6 @@ _virtualenv.pth  _virtualenv.py  markdown_it  mdurl  pygments  rich  …
 - `site-packages/` tiene **sólo** lo que instalaste aquí: `rich` y sus tres dependencias.
 - `include-system-site-packages = false`: este ambiente no ve los paquetes del sistema.
 - `lib64` sólo aparece en Linux; en macOS no está.
-- En Windows: `.venv\Scripts\` en vez de `bin/`, y `.venv\Lib\site-packages\`.
 
 ## Hecho 3: activar cambia el PATH
 
@@ -91,17 +109,19 @@ _virtualenv.pth  _virtualenv.py  markdown_it  mdurl  pygments  rich  …
 ```bash
 cp ../quien_soy.py .
 python3 quien_soy.py              # 1. sin activar
-source .venv/bin/activate         # Linux y macOS
+source .venv/bin/activate
 python quien_soy.py               # 2. activado
 deactivate
 uv run quien_soy.py               # 3. sin activar, con uv run
 ```
 
-En Windows (PowerShell), el paso de activar es:
+**Qué hace cada pieza:**
 
-```powershell
-.venv\Scripts\activate
-```
+- `cp ../quien_soy.py .` — copia el script de diagnóstico de la carpeta de arriba (`..`) a ésta (`.`).
+- `python3 quien_soy.py` — lo corre con el `python3` que tu shell encuentre primero.
+- `source .venv/bin/activate` — **activa** el ambiente: tu prompt empieza con `(hola)`.
+- `deactivate` — lo desactiva: tu shell vuelve a como estaba.
+- `uv run quien_soy.py` — lo corre con el python del `.venv/` del proyecto, sin activar nada.
 
 **Deberías ver:** cambian cuatro líneas.
 
@@ -125,12 +145,18 @@ echo $PATH | tr ':' '\n' | head -2
 deactivate
 ```
 
+**Qué hace cada pieza:**
+
+- `echo $PATH` — imprime la lista de carpetas donde la shell busca programas, separadas por `:`.
+- `| tr ':' '\n'` — cambia cada `:` por un salto de línea: una carpeta por renglón.
+- `| head -2` — deja sólo las dos primeras, las que se revisan antes.
+
 **Deberías ver:** la primera carpeta cambia.
 
 ```text
 /usr/local/bin
 /usr/local/sbin
-/home/ana/fdd/fdd_o26/estudiantes/ana/09_python/ambientes/hola/.venv/bin
+…/estudiantes/ana/09_python/ambientes/hola/.venv/bin
 /usr/local/bin
 ```
 
