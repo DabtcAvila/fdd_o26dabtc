@@ -35,13 +35,19 @@ Fecha:24 de septiembre de 2026
 
 Se llena en la **tercera** entrega, cuando el curso ya está completo.
 
-Fecha:
+Fecha:28 de septiembre de 2026
 
-URL del Statement of Accomplishment:
+URL del Statement of Accomplishment:https://www.datacamp.com/completed/statement-of-accomplishment/course/75a98a32e24257cc2fbfcf0a4e23b4f37f36288c?utm_medium=organic_social&utm_campaign=sharewidget&utm_content=soa
+
 
 ![Captura del curso Intermediate Docker terminado](./intermedio-3-4.png)
 
 ## Una cosa que aprendiste y no sabías
+Despues de los cursos aprendi sobre el Multi-Stage build y sobre los composes
+aun que la verdad voy a tenerlo que repasar un poco por que esta algo 
+complicado, lo que se afianzo de la clase fue mas que nada todo sobre lo de 
+volumenes.
+
 
 Se llena en la **tercera** entrega. Dos o tres líneas. Algo concreto de alguno
 de los dos cursos que no habías visto en clase, o que en clase entendiste a
