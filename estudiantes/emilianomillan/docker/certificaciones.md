@@ -35,14 +35,12 @@ Fecha: 24 de septiembre de 2026
 
 Se llena en la **tercera** entrega, cuando el curso ya está completo.
 
-Fecha:
+Fecha: 29 de septiembre de 2026
 
-URL del Statement of Accomplishment:
+URL del Statement of Accomplishment: https://www.datacamp.com/completed/statement-of-accomplishment/course/b59c9cddb05bcef3a9130d056d0b4741e926df76
 
 ![Captura del curso Intermediate Docker terminado](./intermedio-3-4.png)
 
 ## Una cosa que aprendiste y no sabías
 
-Se llena en la **tercera** entrega. Dos o tres líneas. Algo concreto de alguno
-de los dos cursos que no habías visto en clase, o que en clase entendiste a
-medias y ahí se te acomodó.
+Aprendí en general a usar Docker porque no tenía idea de nada, pero lo que más me sorprendió fue descubrir que se puede correr un backend completo desde un contenedor.
