@@ -35,5 +35,8 @@ Ejercicios nuevos con la misma forma que cada examen, para cuando ya hiciste el 
 |---|---|---|
 | GitHub | [[practica-github|Ejercicios]] · [PDF](_assets/practica-github.pdf) | [[practica-github-solucion|Clave]] |
 | Docker | [[practica-docker|Ejercicios]] · [PDF](_assets/practica-docker.pdf) | [[practica-docker-solucion|Clave]] |
+| Combinada: Git, bash y Docker | [[practica-combinada|Ejercicio]] · [PDF](_assets/practica-combinada.pdf) | [[practica-combinada-solucion|Clave]] |
+
+La combinada junta las tres unidades en un solo repo: ramas que se mezclan con y sin conflicto, un script de bash que cambia según qué se mezcló, y builds cuyo resultado depende de lo que había en tu disco. Hazla después de las otras dos.
 
 Los dos primeros exámenes del semestre (arquitectura, sistemas operativos y pipeline; terminal, bash y expresiones regulares) se resolvieron en papel y no hay una copia que publicar. Lo que cubrían está descrito en el calendario del curso.
