@@ -20,7 +20,7 @@ Fecha en que lo terminaste: 2025-12-08
 
 Se llena en la **segunda** entrega.
 
-Fecha en que lo terminaste:
+Fecha en que lo terminaste: 2025-12-09
 
 ![Captura del curso Intermediate Git terminado](./git-intermedio.png)
 
@@ -32,5 +32,7 @@ Dos o tres líneas. Algo concreto que salió en alguno de los dos cursos y que
 no habías visto en clase, o que en clase entendiste a medias y ahí se te
 acomodó. Si sientes que no aprendiste nada nuevo, dilo y explica qué parte de
 los cursos te pareció repetida.
+
+Casi todo repaso. Resolver merge conflicts a mano sí sumó.
 
 
