@@ -35,13 +35,14 @@ Fecha:
 
 Se llena en la **tercera** entrega, cuando el curso ya está completo.
 
-Fecha:
+Fecha: 29 septiembre 2026
 
-URL del Statement of Accomplishment:
+URL del Statement of Accomplishment: https://www.datacamp.com/completed/statement-of-accomplishment/course/b7d602d78f071f12e395bbb200a18b78d9628d4b?utm_medium=organic_social&utm_campaign=sharewidget&utm_content=soa
 
 ![Captura del curso Intermediate Docker terminado](./intermedio-3-4.png)
 
 ## Una cosa que aprendiste y no sabías
+Algo que no tenía tan claro antes de los cursos era cómo funciona Docker Compose para administrar varios contenedores como parte de una misma aplicación. Me ayudó a entender mejor cómo se conectan los servicios mediante redes y cómo se pueden compartir datos utilizando volúmenes.
 
 Se llena en la **tercera** entrega. Dos o tres líneas. Algo concreto de alguno
 de los dos cursos que no habías visto en clase, o que en clase entendiste a
