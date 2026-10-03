@@ -46,3 +46,7 @@ URL del Statement of Accomplishment: https://www.datacamp.com/statement-of-accom
 Se llena en la **tercera** entrega. Dos o tres líneas. Algo concreto de alguno
 de los dos cursos que no habías visto en clase, o que en clase entendiste a
 medias y ahí se te acomodó.
+
+En este curso reforcé conceptos que me habían quedado a medias, como el uso de volúmenes para persistir datos más allá del ciclo de vida de un contenedor.
+También entendí cómo funcionan las redes de Docker, que permiten que los contenedores se comuniquen entre sí por nombre de servicio, y cómo Docker Compose
+permite definir y levantar varios contenedores (por ejemplo, una base de datos y una aplicación) desde un solo archivo YAML.
