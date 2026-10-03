@@ -11,7 +11,7 @@ El repositorio es público: no escribas aquí tu nombre completo ni tu correo.
 
 ## Introduction to Python for Developers
 
-Fecha en que lo terminaste (AAAA-MM-DD): 2026-10-3
+Fecha en que lo terminaste (2026-10-03)
 
 URL del Statement of Accomplishment: https://www.datacamp.com/completed/statement-of-accomplishment/course/f63e79ef9f4163ecf58414de23dc47522be5cbeb?utm_medium=organic_social&utm_campaign=sharewidget&utm_content=soa
 
