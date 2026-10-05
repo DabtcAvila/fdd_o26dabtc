@@ -13,7 +13,7 @@ prerequisites: [ejercicios-github, ejercicios-docker]
 
 **[PDF sin respuestas, para imprimir](../_assets/practica-combinada.pdf)** · unos 45 minutos · sin apuntes
 
-En los parciales cada herramienta se preguntó sola. Aquí van juntas: el script vive en Git, el Dockerfile lo copia, y lo que imprime el contenedor depende de qué ramas mezclaste y de qué había en tu disco al construir. Cada pregunta tiene su respuesta debajo, **plegada**. Todo se comprobó corriendo el escenario completo con Git 2.34, bash 5.2 y Docker 29.6.
+En los parciales cada herramienta se preguntó sola. Aquí van juntas: el script vive en Git, el Dockerfile lo copia, y lo que imprime el contenedor depende de qué ramas mezclaste y de qué había en tu disco al construir. Debajo de cada pregunta hay una **pista** y la **respuesta**, plegadas. Abre la pista sólo si llevas un rato atorado. Todo se comprobó corriendo el escenario completo con Git 2.34, bash 5.2 y Docker 29.6.
 
 La idea que atraviesa el ejercicio: **Git, bash y Docker no se avisan entre sí**. Git guarda commits, `docker build` copia lo que hay en tu disco, y bash corre lo que le den.
 
@@ -86,12 +86,20 @@ Estás en `main`, con B tal cual.
 ¿Qué imprime `bash contar.sh datos/ventas.csv`?
 :::
 
+::: hint {of="xc-1a"}
+¿Cuántos renglones tiene el archivo, y qué cuenta `wc -l`?
+:::
+
 ::: answer {of="xc-1a"}
 **`filas: 4`.** El archivo tiene cuatro renglones, y `wc -l` los cuenta.
 :::
 
 ::: problem {#xc-1b title="b · Un archivo que no existe"}
 ¿Qué imprime `bash contar.sh datos/mayo.csv`, y qué imprime justo después `echo $?`? ¿Por qué ese número?
+:::
+
+::: hint {of="xc-1b"}
+Sigue el `if` de la línea 2. ¿Qué número le deja `exit` a `$?`?
 :::
 
 ::: answer {of="xc-1b"}
@@ -102,12 +110,20 @@ Imprime **`no existe: datos/mayo.csv`** y luego **`1`**. La prueba de la línea 
 Corres `docker build -t rep:0 .` y luego `docker run --rm rep:0`. ¿Qué imprime, y por qué, si `datos/ventas.csv` sí existe en tu carpeta?
 :::
 
+::: hint {of="xc-1c"}
+¿Qué copia el Dockerfile de B? ¿Ve un contenedor tu carpeta si nadie se la monta?
+:::
+
 ::: answer {of="xc-1c"}
 **`no existe: datos/ventas.csv`.** El archivo existe **en tu carpeta**, pero el Dockerfile de B sólo copia `contar.sh`. El contenedor sólo ve lo que trae la imagen o lo que le montes. El código de salida del contenedor también es 1: `docker run` lo devuelve tal cual.
 :::
 
 ::: problem {#xc-1d title="d · Hazlo funcionar sin reconstruir"}
 Escribe un `docker run` que haga funcionar `rep:0` sin reconstruir la imagen. ¿Qué imprime?
+:::
+
+::: hint {of="xc-1d"}
+¿Dónde busca el `CMD` el archivo, si el `WORKDIR` es `/r`? Monta tu carpeta justo ahí.
 :::
 
 ::: answer {of="xc-1d"}
@@ -130,6 +146,10 @@ git merge filtro
 ```
 :::
 
+::: hint {of="xc-2-1"}
+¿Dónde está `main` y de qué commit nació `filtro`? ¿Hay algo que juntar, o basta con mover la etiqueta?
+:::
+
 ::: answer {of="xc-2-1"}
 **Fast-forward.** `main` sigue en B, y `filtro` es B más un commit. No hay nada que juntar: Git sólo **adelanta** `main` hasta F, sin crear ningún commit.
 :::
@@ -138,6 +158,10 @@ git merge filtro
 ```bash
 git merge imagen
 ```
+:::
+
+::: hint {of="xc-2-2"}
+Después de la fila 1, ¿`imagen` sigue colgando de la punta de `main`?
 :::
 
 ::: answer {of="xc-2-2"}
@@ -149,6 +173,10 @@ git merge imagen
 docker build -t rep:1 .
 docker run --rm rep:1
 ```
+:::
+
+::: hint {of="xc-2-3"}
+¿Qué dos cambios tiene ya `main`? Cuenta los renglones con `MX`.
 :::
 
 ::: answer {of="xc-2-3"}
@@ -163,6 +191,10 @@ docker run --rm -v "$(pwd)/datos":/r/datos rep:1
 ```
 :::
 
+::: hint {of="xc-2-4"}
+¿Cuándo se copiaron los datos a la imagen? ¿Qué tapa un montaje?
+:::
+
 ::: answer {of="xc-2-4"}
 - **Primero: `filas: 2`.** La imagen guardó los datos del momento del build. Agregar un renglón a tu disco no la cambia.
 - **Segundo: `filas: 3`.** El montaje tapa el `/r/datos` de la imagen con tu carpeta, que ya tiene el tercer `MX`.
@@ -174,6 +206,10 @@ git merge titulo
 ```
 
 ¿Te deja intentarlo aunque `datos/ventas.csv` tiene un cambio sin commit?
+:::
+
+::: hint {of="xc-2-5"}
+¿Qué línea cambió `filtro`, y cuál `titulo`? ¿Toca `titulo` el archivo de datos?
 :::
 
 ::: answer {of="xc-2-5"}
@@ -198,6 +234,10 @@ cat contar.sh
 Escribe cómo se ven ahora las últimas líneas.
 :::
 
+::: hint {of="xc-2-6"}
+Los marcadores son `<<<<<<<`, `=======` y `>>>>>>>`. `HEAD` es la rama donde estás parado.
+:::
+
 ::: answer {of="xc-2-6"}
 ```text
 <<<<<<< HEAD
@@ -216,6 +256,10 @@ docker build -t rep:2 .
 docker run --rm -v "$(pwd)/datos":/r/datos rep:2
 echo $?
 ```
+:::
+
+::: hint {of="xc-2-7"}
+¿Le importa a `COPY` lo que dice el archivo? ¿Cómo lee bash una línea que empieza con `<<<`?
 :::
 
 ::: answer {of="xc-2-7"}
@@ -242,6 +286,10 @@ git commit
 Escribe la línea 6 resuelta. ¿Qué muestra después `git status --short`?
 :::
 
+::: hint {of="xc-2-8"}
+«Los dos cambios» es el texto de uno y el conteo del otro, en una sola línea. ¿Commiteaste el renglón de la fila 4?
+:::
+
 ::: answer {of="xc-2-8"}
 ```bash
 printf 'total: %s\n' "$(grep -c MX "$archivo")"
@@ -256,6 +304,10 @@ El texto `total:` de T, con el conteo `grep -c MX` de F. Se borran las tres lín
 ```bash
 docker build -t rep:3 .
 ```
+:::
+
+::: hint {of="xc-2-9"}
+¿Qué archivo cambió desde el último build? Lo que viene después de una capa rehecha se rehace también.
 :::
 
 ::: answer {of="xc-2-9"}
@@ -274,6 +326,10 @@ docker run --rm rep:3
 ¿Por qué, si el cambio de la fila 4 nunca se commiteó?
 :::
 
+::: hint {of="xc-2-10"}
+¿De dónde copia `docker build`: del último commit o de tu disco?
+:::
+
 ::: answer {of="xc-2-10"}
 **`total: 3`.** `docker build` copia **lo que hay en tu disco**, no lo que hay en el último commit. El renglón `MX,1` nunca se commiteó, pero estaba en `datos/ventas.csv` al construir.
 
@@ -286,6 +342,10 @@ git log --oneline --graph
 ```
 
 ¿Cuántos commits de merge tiene `main`? ¿Por qué no hay uno para `filtro`?
+:::
+
+::: hint {of="xc-2-11"}
+¿Cuál de los tres merges fue fast-forward?
 :::
 
 ::: answer {of="xc-2-11"}
@@ -313,6 +373,10 @@ git log --oneline --graph
 Alguien le quita las comillas a la variable en la línea 6 del script ya resuelto: `grep -c MX $archivo`. Luego corre `bash contar.sh "datos/ventas mayo.csv"` sobre un archivo que sí existe con ese nombre. ¿Qué imprime? ¿Qué da `echo $?`? ¿Por qué ese número es peligroso?
 :::
 
+::: hint {of="xc-3a"}
+Sin comillas, ¿qué hace bash con un espacio dentro del valor de una variable? ¿Cuál es el último comando que corre el script?
+:::
+
 ::: answer {of="xc-3a"}
 ```text
 grep: datos/ventas: No such file or directory
@@ -331,12 +395,20 @@ Sin comillas, bash parte el valor en el espacio, y `grep` recibe **dos** nombres
 Con el script correcto, alguien corre `bash contar.sh datos/ventas mayo.csv`, sin comillas al llamarlo. ¿Qué imprime y por qué?
 :::
 
+::: hint {of="xc-3b"}
+Sin comillas al llamarlo, ¿cuántos argumentos recibe el script? ¿Cuál mira?
+:::
+
 ::: answer {of="xc-3b"}
 **`no existe: datos/ventas`.** `$1` es `datos/ventas` y `$2` es `mayo.csv`, y el script sólo mira `$1`. Las comillas importan en los dos lados: al llamar y adentro del script.
 :::
 
 ::: problem {#xc-3c title="c · ¿Quién te avisó del conflicto?"}
 En la parte 2, ¿qué herramienta te habría avisado del conflicto antes de construir la imagen de la fila 7: Git, bash o Docker? ¿Con qué comando?
+:::
+
+::: hint {of="xc-3c"}
+¿Cuál de los tres avisó algo en la fila 5?
 :::
 
 ::: answer {of="xc-3c"}

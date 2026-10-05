@@ -1,16 +1,16 @@
 ---
 id: parcial-docker-b
-title: "Parcial de Docker · Examen B"
-nav_title: "Docker · Examen B"
+title: "Parcial 4 · Docker · Examen B"
+nav_title: "Examen B"
 summary: "El examen B de Docker, pregunta por pregunta, con la respuesta explicada debajo de cada una: llevar el repo ventas/ a una imagen, y seguir qué cambia entre tu carpeta, la imagen y cada contenedor."
 status: ready
 estimated_time: 25m
 tags: [examen, parcial, docker, dockerfile, volumenes, cache]
 ---
 
-# Parcial de Docker · Examen B
+# Parcial 4 · Docker · Examen B
 
-**[PDF del examen B, sin respuestas](../_assets/parcial-docker-b.pdf)** · 25 minutos · 10 puntos · sin apuntes
+**[PDF del examen B, sin respuestas](../../_assets/parcial-docker-b.pdf)** · 25 minutos · 10 puntos · sin apuntes
 
 Cada pregunta tiene su respuesta debajo, **plegada**. Contesta primero en una hoja y luego ábrela para calificarte. Todas las respuestas se comprobaron corriendo los comandos con Docker 29.6.
 

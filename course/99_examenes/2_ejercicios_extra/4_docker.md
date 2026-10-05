@@ -12,7 +12,7 @@ tags: [ejercicios, docker, dockerfile, dockerignore, volumenes, cache, errores]
 
 **[PDF sin respuestas, para imprimir](../_assets/practica-docker.pdf)** · unos 40 minutos · sin apuntes
 
-Miden lo mismo que el parcial, con escenarios nuevos. Cada pregunta tiene su respuesta debajo, **plegada**. Todas las respuestas se comprobaron corriendo los comandos con Docker 29.6: si quieres, córrelos tú también.
+Miden lo mismo que el parcial, con escenarios nuevos. Debajo de cada pregunta hay una **pista** y la **respuesta**, plegadas. Abre la pista sólo si llevas un rato atorado. Todas las respuestas se comprobaron corriendo los comandos con Docker 29.6: si quieres, córrelos tú también.
 
 ## Parte 1 · Lee el Dockerfile
 
@@ -58,12 +58,20 @@ La imagen ya se construyó una vez con `docker build -t encuestas:1 .`.
 El `COPY . .` de la línea 5 ya copia `requirements.txt`. ¿Para qué se copia antes, por separado, en la línea 3?
 :::
 
+::: hint {of="xd-1a"}
+Docker reusa una capa mientras no cambie lo que esa capa lee. ¿De qué depende el `pip install` si `requirements.txt` va solo?
+:::
+
 ::: answer {of="xd-1a"}
 **Por la caché.** Docker reusa una capa mientras no cambie nada de lo que esa capa lee. Con `requirements.txt` solo, el `pip install` depende únicamente de ese archivo: si cambias tu código, la instalación, que es lo lento, sale de la caché. Con un solo `COPY . .` antes del `pip install`, cualquier cambio reinstalaría todo.
 :::
 
 ::: problem {#xd-1b title="b · ¿Qué queda dentro de /app?"}
 ¿Qué archivos y carpetas quedan dentro de `/app` en la imagen?
+:::
+
+::: hint {of="xd-1b"}
+`COPY . .` copia todo el contexto menos lo que excluye el `.dockerignore`. ¿Alguien excluyó el propio Dockerfile?
 :::
 
 ::: answer {of="xd-1b"}
@@ -74,6 +82,10 @@ El `COPY . .` de la línea 5 ya copia `requirements.txt`. ¿Para qué se copia a
 
 ::: problem {#xd-1c title="c · Córrelo con las dos carpetas montadas"}
 Escribe el comando que corre `encuestas:1` en un contenedor que se borre al terminar, con tu carpeta `crudos/` montada en `/app/crudos` y tu carpeta `salida/` montada en `/app/salida`.
+:::
+
+::: hint {of="xd-1c"}
+Un `-v` por carpeta, los dos antes del nombre de la imagen.
 :::
 
 ::: answer {of="xd-1c"}
@@ -90,6 +102,10 @@ Va un `-v` por carpeta, los dos **antes** de la imagen. Al terminar, `salida/lim
 Alguien corre `docker run --rm encuestas:1`, sin montar nada. ¿Qué pasa y por qué?
 :::
 
+::: hint {of="xd-1d"}
+¿Está `crudos/` dentro de la imagen?
+:::
+
 ::: answer {of="xd-1d"}
 Truena con `FileNotFoundError: … 'crudos/respuestas.csv'`. El `.dockerignore` dejó `crudos/` fuera de la imagen a propósito: los datos se montan al correr, no se meten a la imagen.
 :::
@@ -101,6 +117,10 @@ Después del primer build cambias **un solo** archivo y vuelves a construir. En 
 2. Cambias `reglas.py`.
 3. Agregas un paquete a `requirements.txt`.
 4. Corriges un typo en `README.md`.
+:::
+
+::: hint {of="xd-1e"}
+Para cada archivo, pregúntate qué `COPY` lo lee, y si ese archivo existe para el build.
 :::
 
 ::: answer {of="xd-1e"}
@@ -120,6 +140,10 @@ El caso 1 es el que sorprende: `notas/` está en el `.dockerignore`, así que pa
 Alguien borra la línea `salida/` del `.dockerignore`. Corre el programa con la salida montada, como en c), y vuelve a construir. ¿Qué dos cosas cambian?
 :::
 
+::: hint {of="xd-1f"}
+¿Qué escribe el programa en `salida/`, y qué copia `COPY . .` si ya no la excluye?
+:::
+
 ::: answer {of="xd-1f"}
 1. **`limpio.csv` entra a la imagen.** `COPY . .` ya no excluye `salida/`, así que copia lo que el programa escribió en tu disco.
 2. **El `COPY . .` se rehace cada vez que corres el programa**, porque cada corrida cambia `salida/`.
@@ -129,6 +153,10 @@ Por eso las carpetas de datos y de resultados van en el `.dockerignore`.
 
 ::: problem {#xd-1g title="g · ¿Corre limpiar.py?"}
 `docker run --rm encuestas:1 python reglas.py`, ¿corre `limpiar.py`? ¿Por qué?
+:::
+
+::: hint {of="xd-1g"}
+¿Qué pasa con el `CMD` cuando escribes algo después del nombre de la imagen?
 :::
 
 ::: answer {of="xd-1g"}
@@ -163,6 +191,10 @@ docker exec pa cat saludo.txt
 ```
 :::
 
+::: hint {of="xd-2-1"}
+¿Qué borra `docker stop`? ¿Qué borra `docker rm`?
+:::
+
 ::: answer {of="xd-2-1"}
 **`adios`.** `docker stop` detiene el proceso, pero **no borra** el contenedor ni su capa de escritura, y `docker start` lo arranca con la misma capa. Sólo `docker rm` la borra.
 :::
@@ -171,6 +203,10 @@ docker exec pa cat saludo.txt
 ```bash
 docker run --rm saludo:1
 ```
+:::
+
+::: hint {of="xd-2-2"}
+Un contenedor nuevo, sin montaje, ¿de dónde lee?
 :::
 
 ::: answer {of="xd-2-2"}
@@ -185,6 +221,10 @@ docker run --rm -v caja:/s saludo:1
 ```
 :::
 
+::: hint {of="xd-2-3"}
+¿Con qué llena Docker un volumen nuevo y vacío? ¿Qué ve otro contenedor que monta el mismo volumen?
+:::
+
 ::: answer {of="xd-2-3"}
 **`luna`.** `caja` es un volumen nuevo, y Docker lo llenó con el `/s` de la imagen (`hola`). Luego pb escribió `luna` encima. El otro contenedor monta **el mismo** volumen, así que lee `luna`.
 :::
@@ -197,6 +237,10 @@ docker run --rm -v caja:/s saludo:1
 ```
 :::
 
+::: hint {of="xd-2-4"}
+¿Docker vuelve a llenar un volumen que ya tiene algo?
+:::
+
 ::: answer {of="xd-2-4"}
 **`luna`.** La imagen ya dice `sol`, pero `caja` no está vacío: tapa lo que la imagen tiene en `/s`, y Docker no vuelve a llenarlo.
 :::
@@ -207,6 +251,10 @@ docker run --rm saludo:1
 ```
 :::
 
+::: hint {of="xd-2-5"}
+Sin montaje: ¿qué dice la imagen después del último build?
+:::
+
 ::: answer {of="xd-2-5"}
 **`sol`.** Sin montaje, lee la imagen recién construida.
 :::
@@ -215,6 +263,10 @@ docker run --rm saludo:1
 ```bash
 docker exec pb cat saludo.txt
 ```
+:::
+
+::: hint {of="xd-2-6"}
+¿Qué monta pb?
 :::
 
 ::: answer {of="xd-2-6"}
@@ -229,6 +281,10 @@ docker run --rm -v caja:/s saludo:1
 ```
 :::
 
+::: hint {of="xd-2-7"}
+Si borras el volumen, el `caja` siguiente es nuevo. ¿Con qué se llena uno nuevo?
+:::
+
 ::: answer {of="xd-2-7"}
 **`sol`.** Borraste el volumen, así que este `caja` es **nuevo** y vacío. Docker lo llena con la imagen actual, que dice `sol`.
 :::
@@ -237,6 +293,10 @@ docker run --rm -v caja:/s saludo:1
 ```bash
 docker exec pa cat saludo.txt
 ```
+:::
+
+::: hint {of="xd-2-8"}
+¿Cambia un contenedor que ya existe cuando reconstruyes su imagen?
 :::
 
 ::: answer {of="xd-2-8"}
@@ -251,6 +311,10 @@ docker run --rm saludo:1
 ```
 :::
 
+::: hint {of="xd-2-9"}
+Con tu carpeta montada en `/s`, ¿qué lee? ¿Y sin montar nada?
+:::
+
 ::: answer {of="xd-2-9"}
 - **Primero: `nube`.** Montaste tu carpeta en `/s`: lee tu disco.
 - **Segundo: `sol`.** Sin montaje lee la imagen, y no ha habido build desde la fila 4.
@@ -260,6 +324,10 @@ docker run --rm saludo:1
 ```bash
 docker build -t saludo:1 .
 ```
+:::
+
+::: hint {of="xd-2-10"}
+¿Cambió tu carpeta desde el último build?
 :::
 
 ::: answer {of="xd-2-10"}
@@ -273,6 +341,10 @@ docker run --rm saludo:1
 ```
 :::
 
+::: hint {of="xd-2-11"}
+Cada `docker run` crea un contenedor con capa nueva. ¿Qué dice la imagen después de la fila 10?
+:::
+
 ::: answer {of="xd-2-11"}
 - **Primero: `x`.** Lo que va después de la imagen reemplaza al `CMD`. Ese contenedor escribe en su propia capa y lee lo que escribió.
 - **Segundo: `nube`.** Contenedor nuevo, capa nueva: el `x` se fue con el anterior. La imagen dice `nube` desde la fila 10.
@@ -284,6 +356,10 @@ docker rm -f pa
 ```
 
 Opciones: tu carpeta, la imagen, un volumen, en ningún lado.
+:::
+
+::: hint {of="xd-2-12"}
+¿Dónde vivía cada palabra, y qué comando borró ese lugar?
 :::
 
 ::: answer {of="xd-2-12"}
@@ -311,6 +387,10 @@ docker: Error response from daemon: Conflict. The container name "/pa" is alread
 ```
 :::
 
+::: hint {of="xd-e1"}
+Lee la palabra clave del mensaje: *Conflict*. ¿Qué ya existe?
+:::
+
 ::: answer {of="xd-e1"}
 **Qué pasó.** Ya existe un contenedor llamado `pa`, y los nombres no se repiten.
 
@@ -324,6 +404,10 @@ ERROR: docker: 'docker buildx build' requires 1 argument
 
 Usage:  docker buildx build [OPTIONS] PATH | URL | -
 ```
+:::
+
+::: hint {of="xd-e2"}
+Compara con `docker build -t saludo:1 .`. ¿Qué falta?
 :::
 
 ::: answer {of="xd-e2"}
@@ -341,6 +425,10 @@ Error response from daemon: container 94ec18da7a0a… is not running
 ```
 :::
 
+::: hint {of="xd-e3"}
+¿En qué estado quedó pa después de `stop`? ¿En cuál tiene que estar para un `exec`?
+:::
+
 ::: answer {of="xd-e3"}
 **Qué pasó.** `exec` entra a un contenedor **corriendo**, y pa está detenido.
 
@@ -352,6 +440,10 @@ Error response from daemon: container 94ec18da7a0a… is not running
 $ docker run --rm -it saludo:1 bash
 docker: Error response from daemon: failed to create task for container: … exec: "bash": executable file not found in $PATH
 ```
+:::
+
+::: hint {of="xd-e4"}
+¿Qué imagen base usa `saludo:1`, y qué shell trae esa imagen?
 :::
 
 ::: answer {of="xd-e4"}
@@ -367,6 +459,10 @@ Un Dockerfile en `proyecto/app/` tiene la línea `COPY ../datos /datos`, y se co
 $ docker build -t app:1 .
 ERROR: failed to build: failed to solve: failed to compute cache key: … "/datos": not found
 ```
+:::
+
+::: hint {of="xd-e5"}
+¿Desde qué carpeta lee el build? ¿Puede un `COPY` salir de ella?
 :::
 
 ::: answer {of="xd-e5"}

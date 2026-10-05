@@ -1,16 +1,16 @@
 ---
 id: parcial-github-b
-title: "Parcial de GitHub · Examen B"
-nav_title: "GitHub · Examen B"
+title: "Parcial 3 · GitHub · Examen B"
+nav_title: "Examen B"
 summary: "El examen B de GitHub, pregunta por pregunta, con la respuesta explicada debajo de cada una: la rama que nació vieja, y el ritual del curso en orden."
 status: ready
 estimated_time: 30m
 tags: [examen, parcial, git, github, ritual, branches]
 ---
 
-# Parcial de GitHub · Examen B
+# Parcial 3 · GitHub · Examen B
 
-**[PDF del examen B, sin respuestas](../_assets/parcial-github-b.pdf)** · 30 minutos · 10 puntos · sin apuntes
+**[PDF del examen B, sin respuestas](../../_assets/parcial-github-b.pdf)** · 30 minutos · 10 puntos · sin apuntes
 
 Cada pregunta tiene su respuesta debajo, **plegada**. Contesta primero en una hoja y luego ábrela para calificarte.
 

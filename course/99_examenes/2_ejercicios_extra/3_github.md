@@ -12,7 +12,7 @@ tags: [ejercicios, git, github, ritual, branches, errores]
 
 **[PDF sin respuestas, para imprimir](../_assets/practica-github.pdf)** · unos 40 minutos · sin apuntes
 
-Miden lo mismo que el parcial, con escenarios nuevos. Cada pregunta tiene su respuesta debajo, **plegada**. Donde dice «con tus palabras», no escribas comandos. En `<login>` imagina el tuyo.
+Miden lo mismo que el parcial, con escenarios nuevos. Debajo de cada pregunta hay una **pista** y la **respuesta**, plegadas. Abre la pista sólo si llevas un rato atorado. Donde dice «con tus palabras», no escribas comandos. En `<login>` imagina el tuyo.
 
 Casi todo sale de una idea: **un pull request muestra la diferencia entre tu rama y el punto donde se separó del `main` del curso**.
 
@@ -35,12 +35,20 @@ o-o-o              upstream/main
 ¿Qué archivos muestra su pull request? Si todos están dentro de `estudiantes/ana/`, ¿por qué la revisión automática lo marca en rojo?
 :::
 
+::: hint {of="xg-1a"}
+Además de los archivos, la revisión mira de qué rama sale el pull request.
+:::
+
 ::: answer {of="xg-1a"}
 Muestra M1 y M2: sólo su carpeta. Sale en rojo porque el pull request sale **desde `main`**, y la rama es parte de la entrega. Tu `main` tiene que ser una copia limpia del curso: es el punto de partida de todas tus tareas.
 :::
 
 ::: problem {#xg-1b title="Árbol 1b · ¿Cómo queda su main después de actualizar?"}
 La semana siguiente el curso publica un commit P, y Ana hace el bloque A completo del ritual. ¿Cómo queda su `main`? ¿Sigue siendo una copia del curso?
+:::
+
+::: hint {of="xg-1b"}
+Después de que el curso publica P, ¿están `main` y `upstream/main` en la misma línea, o ya se separaron?
 :::
 
 ::: answer {of="xg-1b"}
@@ -51,12 +59,20 @@ Su `main` y `upstream/main` ya se separaron, así que el merge no puede avanzar 
 Desde ese `main` crea la rama de la tarea siguiente. Si el primer pull request todavía no se ha mergeado, ¿qué arrastra el nuevo?
 :::
 
+::: hint {of="xg-1c"}
+Una rama hereda todo lo del commit donde nace. ¿Qué tiene ese `main`?
+:::
+
 ::: answer {of="xg-1c"}
 Arrastra M1 y M2. La rama nace de un `main` que los contiene, y el curso no los tiene. Es el mismo problema del examen A del parcial, sólo que aquí la herencia viene de `main`.
 :::
 
 ::: problem {#xg-1d title="Árbol 1d · ¿Cómo lo arreglas sin perder M1 y M2?"}
 Con tus palabras.
+:::
+
+::: hint {of="xg-1d"}
+Primero pon el trabajo a salvo en un lugar que no sea `main`, y después limpia `main`.
 :::
 
 ::: answer {of="xg-1d"}
@@ -85,12 +101,20 @@ o-o-o              main = upstream/main
 ¿Qué archivos muestra el pull request de `tarea-08-datacamp-intro`?
 :::
 
+::: hint {of="xg-2a"}
+¿Dónde se separó la 08 de `main`? Cuenta lo que hay entre ese punto y E.
+:::
+
 ::: answer {of="xg-2a"}
 Sólo D y E: la carpeta `docker/`. La 08 se separó de `main` en el último `o`, y entre ese punto y E sólo está lo suyo.
 :::
 
 ::: problem {#xg-2b title="Árbol 2b · ¿Perdió la tarea 07?"}
 Parado en `tarea-08-datacamp-intro`, Beto lista `estudiantes/beto/` y **no ve** `07_git/`. ¿Perdió su tarea 07? ¿Qué hizo `git switch` con esos archivos?
+:::
+
+::: hint {of="xg-2b"}
+`git switch` cambia los archivos de tu disco por los de la rama a la que llegas.
 :::
 
 ::: answer {of="xg-2b"}
@@ -101,12 +125,20 @@ No perdió nada. `git switch` pone en tu disco los archivos **de la rama a la qu
 Se mergea la tarea 07. ¿Cambia lo que muestra el pull request de la 08?
 :::
 
+::: hint {of="xg-2c"}
+¿Cargaba la 08 algún commit de la 07?
+:::
+
 ::: answer {of="xg-2c"}
 No. La base de la 08 sigue siendo el último `o`, y entre ese punto y E siguen estando sólo D y E.
 :::
 
 ::: problem {#xg-2d title="Árbol 2d · ¿Por qué en el examen A sí cambiaba?"}
 En el examen A del parcial, la 08 nació de la 07. ¿Por qué allá mergear la 07 sí cambiaba el pull request y aquí no?
+:::
+
+::: hint {of="xg-2d"}
+Compara dónde nació la 08 en cada caso.
 :::
 
 ::: answer {of="xg-2d"}
@@ -128,12 +160,20 @@ o---o---R          upstream/main
 ¿Qué dice la revisión automática de su pull request, y por qué?
 :::
 
+::: hint {of="xg-3a"}
+¿Qué regla de la revisión automática habla de la carpeta donde están los archivos?
+:::
+
 ::: answer {of="xg-3a"}
 **Rojo.** El pull request toca un archivo fuera de `estudiantes/carla/`. Si se mergeara, su cambio quedaría en la plantilla de todo el grupo.
 :::
 
 ::: problem {#xg-3b title="Árbol 3b · ¿Merge limpio o conflicto?"}
 Si alguien intentara mergearlo, ¿Git lo mezcla solo o hay conflicto? ¿Por qué?
+:::
+
+::: hint {of="xg-3b"}
+¿Cuántos lados cambiaron la misma línea desde el ancestro común?
 :::
 
 ::: answer {of="xg-3b"}
@@ -144,12 +184,20 @@ Si alguien intentara mergearlo, ¿Git lo mezcla solo o hay conflicto? ¿Por qué
 Si hubiera escrito en `estudiantes/carla/docker/certificaciones.md`, ¿habría conflicto con R?
 :::
 
+::: hint {of="xg-3c"}
+¿Es el mismo archivo, o son dos rutas distintas?
+:::
+
 ::: answer {of="xg-3c"}
 No. Son dos archivos en dos rutas distintas: R toca uno y X el otro. Git los mezcla solo.
 :::
 
 ::: problem {#xg-3d title="Árbol 3d · ¿Qué regla lo evita?"}
 ¿Qué regla del curso evita esto, y por qué funciona aunque treinta personas entreguen la misma tarea?
+:::
+
+::: hint {of="xg-3d"}
+Es la regla que dice dónde copias la plantilla y dónde trabajas.
 :::
 
 ::: answer {of="xg-3d"}
@@ -172,6 +220,10 @@ To push the current branch and set the remote as upstream, use
 ```
 :::
 
+::: hint {of="xg-e1"}
+«no upstream branch»: la rama nunca se ha subido. Git te sugiere el comando en el mismo mensaje.
+:::
+
 ::: answer {of="xg-e1"}
 **Qué pasó.** La rama existe en su máquina pero nunca se ha subido, y un `git push` a secas no sabe a dónde mandarla.
 
@@ -190,6 +242,10 @@ hint: not have locally.
 ```
 :::
 
+::: hint {of="xg-e2"}
+«the remote contains work that you do not have locally»: ¿qué commit tiene el fork que tu máquina no?
+:::
+
 ::: answer {of="xg-e2"}
 **Qué pasó.** Su fork tiene un commit, la edición en la web, que su máquina no tiene. Git no sube para no borrarlo.
 
@@ -204,6 +260,10 @@ $ git push -u origin tarea-08-imagen
 ERROR: Permission to raya-lucaria/fdd_o26.git denied to ana.
 fatal: Could not read from remote repository.
 ```
+:::
+
+::: hint {of="xg-e3"}
+¿A quién le intentaste subir? Lee el nombre del repositorio en el error.
 :::
 
 ::: answer {of="xg-e3"}
@@ -224,6 +284,10 @@ Aborting
 ```
 :::
 
+::: hint {of="xg-e4"}
+Git se niega para no perder tu trabajo. ¿Cuáles son las dos formas de guardarlo antes de cambiar de rama?
+:::
+
 ::: answer {of="xg-e4"}
 **Qué pasó.** Tiene un cambio sin guardar en un archivo que es distinto en `main`. Cambiar de rama lo pisaría, y Git se niega a perderlo.
 
@@ -232,6 +296,10 @@ Aborting
 
 ::: problem {#xg-e5 title="Error 5 · El .venv no aparece"}
 Corrió `uv sync`, que creó `estudiantes/ana/09_python/uv_docker/.venv/` con cientos de archivos. Luego `git status --short` no muestra nada. ¿Se perdió el ambiente? ¿Es un problema?
+:::
+
+::: hint {of="xg-e5"}
+¿Qué archivo del curso le dice a Git qué rutas no mirar?
 :::
 
 ::: answer {of="xg-e5"}
@@ -251,6 +319,10 @@ Changes to be committed:
 ```
 :::
 
+::: hint {of="xg-e6"}
+El propio `git status` dice el comando entre paréntesis.
+:::
+
 ::: answer {of="xg-e6"}
 **Qué pasó.** `.DS_Store` es basura de macOS y quedó apartada para el commit.
 
@@ -259,6 +331,10 @@ Changes to be committed:
 
 ::: problem {#xg-e7 title="Error 7 · Un commit que salió mal, sin push"}
 Hizo commit y se dio cuenta de que le faltó un archivo y de que el mensaje está mal. **Todavía no hace push.** Quiere deshacer el commit pero conservar los cambios.
+:::
+
+::: hint {of="xg-e7"}
+Necesitas deshacer el commit pero conservar los cambios apartados. En [[deshacer-en-git|Deshacer]] hay un `reset` que hace justo eso.
 :::
 
 ::: answer {of="xg-e7"}
@@ -291,6 +367,10 @@ Dani escribió este ritual para entregar `tarea-09-uv-docker`, cuya carpeta es `
 Hay **cinco** problemas: cuatro líneas mal y una que falta. Para cada uno, di la línea, qué se rompe y por qué.
 :::
 
+::: hint {of="xg-r1"}
+Revisa cada línea contra el ritual del curso: el orden, el `/.`, el `add` y el `push`. Uno de los cinco es una línea que falta.
+:::
+
 ::: answer {of="xg-r1"}
 - **Línea 1.** La rama nace de un `main` sin actualizar, y además la línea 2 la saca de ella: todo lo que sigue pasa en `main`. Crear la rama va **después** de las líneas 2 a 5.
 - **Línea 7.** Sin el `/.` final, `cp -r` copia **la carpeta**, y como el destino ya existe (lo creó la línea 6) la mete adentro: `09_python/09_python/`.
@@ -303,6 +383,10 @@ Hay **cinco** problemas: cuatro líneas mal y una que falta. Para cada uno, di l
 Después de correr todo, ¿en qué rama quedaron sus commits? ¿Qué rama subió a su fork?
 :::
 
+::: hint {of="xg-r2"}
+Sigue con el dedo en qué rama estás después de cada `git switch`.
+:::
+
 ::: answer {of="xg-r2"}
 En `main`. La línea 2 la cambió a `main` y nunca volvió: `tarea-09-uv-docker` existe, pero vacía y sin subir. A su fork subió `main`, con su trabajo adentro: es el árbol 1 de esta misma página.
 :::
@@ -311,12 +395,20 @@ En `main`. La línea 2 la cambió a `main` y nunca volvió: `tarea-09-uv-docker`
 Escribe la ruta donde quedó `hola.py`, que en el curso está en `codigo/09_python/ambientes/hola.py`.
 :::
 
+::: hint {of="xg-r3"}
+¿Qué hace `cp -r` sin `/.` cuando la carpeta destino ya existe?
+:::
+
 ::: answer {of="xg-r3"}
 `estudiantes/<login>/09_python/09_python/ambientes/hola.py`, con un `09_python` de más (comprobado). Así no es espejo del curso, y la revisión no encuentra los archivos donde los busca.
 :::
 
 ::: problem {#xg-r4 title="d · El ritual corregido"}
 Escribe el ritual corregido, completo y en orden.
+:::
+
+::: hint {of="xg-r4"}
+Es el ritual del curso con `tarea-09-uv-docker` y `09_python`. Empieza por `main`.
 :::
 
 ::: answer {of="xg-r4"}
