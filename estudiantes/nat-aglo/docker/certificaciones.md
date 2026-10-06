@@ -37,7 +37,7 @@ Se llena en la **tercera** entrega, cuando el curso ya está completo.
 
 Fecha: 05/10/2026
 
-URL del Statement of Accomplishment:
+URL del Statement of Accomplishment: https://www.datacamp.com/completed/statement-of-accomplishment/course/56c99367de742cb3c2e9f58ebcd553977ddd897b
 
 ![Captura del curso Intermediate Docker terminado](./intermedio-3-4.png)
 
