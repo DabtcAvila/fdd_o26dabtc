@@ -53,7 +53,7 @@ nivel = "aviso"
 
 [revision]
 foco = [
-  "que la captura sea la página del curso terminado, con el nombre del alumno y el 100 %",
+  "que la captura sea la página del curso terminado al 100 % o el Statement of Accomplishment, con el nombre del alumno",
   "que la URL abra un Statement of Accomplishment de este curso y no de otro",
   "que la fecha sea verosímil: no futura, ni anterior al 2026-10-01 sin explicación",
   "que «Una cosa que aprendiste» sea concreta y salga del temario del curso",
@@ -69,7 +69,7 @@ debe_ser_propio = [
   "la sección «Una cosa que aprendiste»",
 ]
 senales = [
-  "captura de un ejercicio suelto o del panel de inicio en vez de la página del curso",
+  "captura de un ejercicio suelto o del panel de inicio en vez de la página del curso o del Statement of Accomplishment",
   "captura sin nombre visible, o con otro nombre",
   "captura idéntica en bytes a la de otra entrega",
   "URL de Statement of Accomplishment de otro curso",

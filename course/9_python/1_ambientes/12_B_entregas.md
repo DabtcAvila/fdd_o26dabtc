@@ -42,7 +42,7 @@ Los comandos son para la terminal de **Linux, WSL2 o macOS**, la misma donde ins
 **Entregas dos archivos**
 
 - `certificaciones.md` con sus tres secciones llenas: tus usuarios de GitHub y de DataCamp (nada de nombre completo ni correo: el repo es público); la fecha en que lo terminaste, **en formato `AAAA-MM-DD`**, y la **URL del Statement of Accomplishment**; y una cosa concreta que aprendiste.
-- `introduccion-python-developers.png`: el curso terminado, con **tu nombre y el 100 % visibles**. Con ese nombre exacto, porque la plantilla ya lo enlaza. Si te sale en `jpg`, corrige el enlace dentro del archivo.
+- `introduccion-python-developers.png`: el curso terminado, con **tu nombre visible**: la página del curso al 100 % o tu Statement of Accomplishment. Con ese nombre exacto, porque la plantilla ya lo enlaza. Si te sale en `jpg`, corrige el enlace dentro del archivo.
 
 **El ritual**
 
@@ -73,7 +73,7 @@ git push -u origin tarea-09-datacamp-python
 - `git commit -m "…"` — guardas esos cambios en tu historial; `-m` da el mensaje en la misma línea.
 - `git push -u origin tarea-09-datacamp-python` — subes la branch a tu fork (`origin`). `-u` la deja enlazada: el siguiente push basta con `git push`.
 
-**No se entrega** un certificado suelto ni la captura de un ejercicio: la captura es la página del curso terminado.
+**No se entrega** la captura de un ejercicio suelto ni la del panel de inicio: la captura es la página del curso terminado o tu Statement of Accomplishment, con tu nombre.
 
 **Acabaste cuando** el pull request está abierto y su revisión en verde. Si no terminaste el curso, sube lo que sí hiciste y dilo en el archivo.
 
@@ -149,6 +149,12 @@ Son las mismas piezas del ritual de DataCamp, con otra branch y otra carpeta: `-
     - `docker rmi -f` — borras la imagen de tu disco; `-f` fuerza el borrado aunque un contenedor viejo la use.
     - `docker run …` — ya no la encuentra local (`Unable to find image`) y la baja de Docker Hub (`Pulling from`).
 
+**Con Podman también vale.** Los mismos pasos con `podman`, nombrando la imagen completa, `docker.io/<usuario-docker-hub>/reporte`:
+
+- `podman login docker.io` y `podman logout docker.io` — inicias y cierras sesión en Docker Hub.
+- `podman push --digestfile digest.txt docker.io/<usuario-docker-hub>/reporte` — `podman push` no imprime el digest; `--digestfile` lo guarda en `digest.txt`, y ése es el que pegas en la bitácora.
+- `podman rmi -f` y `podman run --rm --platform linux/amd64 docker.io/<usuario-docker-hub>/reporte` — la descarga se ve como `Trying to pull` y `Copying blob`, en lugar de `Unable to find image` y `Pulling from`.
+
 `<usuario-docker-hub>` es tu usuario de **Docker Hub**, no el de GitHub: con otro usuario, el push se rechaza.
 
 ```bash
@@ -200,6 +206,6 @@ Si la revisión sale roja, corrige y haz push a la **misma** branch: no vuelvas 
 | Que las secciones estén llenas; fecha `AAAA-MM-DD`; URL presente | Que la URL abra tu certificado |
 | Imagen base y los tres huecos llenos con instrucciones, no comentarios; el ambiente creado exigiendo que el lock coincida | Que la imagen exista, corra y salga de tus archivos |
 | `.venv` en `.dockerignore`; tu fila con un paquete importado; una dependencia además de `rich`; un `uv.lock` con la forma que genera uv | Que las salidas pegadas salgan de tu imagen y coincidan con tu lock |
-| URL pública con `https://`; digest completo; prueba con `Unable to find image` y `Pulling from`; sin `Login Succeeded` | Lo que debes poder explicar sin ayuda |
+| URL pública con `https://`; digest completo; prueba con `Unable to find image` y `Pulling from` (Docker) o `Trying to pull` y `Copying blob` (Podman); sin `Login Succeeded` | Lo que debes poder explicar sin ayuda |
 
 Los mensajes dicen **qué** está mal, **por qué** importa y **dónde investigar**; no dicen cómo arreglarlo.

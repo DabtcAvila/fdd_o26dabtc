@@ -174,9 +174,9 @@ nivel = "falla"
 [[patrones]]
 archivo = "uv_docker/bitacora.md"
 seccion = "Prueba de que se baja"
-debe = 'Unable to find image[\s\S]*Pulling from'
+debe = 'Unable to find image[\s\S]*Pulling from|Trying to pull[\s\S]*Copying blob'
 que = "la prueba no muestra que la imagen se bajó del registro"
-porque = "sin esas dos líneas, la imagen pudo haber corrido desde tu disco y no hay prueba de que esté publicada"
+porque = "sin las líneas de la descarga, la imagen pudo haber corrido desde tu disco y no hay prueba de que esté publicada"
 investiga = "Página «Las entregas de ambientes», entrega 2: ¿qué tiene que pasar con tu copia local antes de correrla?"
 nivel = "falla"
 

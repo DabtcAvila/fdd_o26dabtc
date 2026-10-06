@@ -27,10 +27,11 @@ content:
     introduccion guion python guion developers punto png, con ese nombre exacto
     porque la plantilla ya la enlaza. Si te sale en jpg no pasa nada, pero
     entonces corriges el enlace dentro del archivo. Un pdf no sirve.
-    No se entrega nada más. La captura que sirve es la de la página del curso
-    ya terminado, donde se vean tu nombre y el cien por ciento completado. No
-    sirve una foto del certificado suelto sin contexto, ni la de un ejercicio
-    suelto, ni una donde no se distinga de qué curso se trata.
+    No se entrega nada más. La captura que sirve es la página del curso ya
+    terminado, donde se vean tu nombre y el cien por ciento completado, o tu
+    Statement of Accomplishment, que trae tu nombre y el curso. No sirve la de
+    un ejercicio suelto, ni la del panel de inicio, ni una donde no se distinga
+    de qué curso se trata.
     La entrega es un pull request desde su propia branch, que se llama tarea
     guion cero nueve guion datacamp guion python, con ese nombre exacto, en
     minúsculas y sin acentos, porque la revisión automática lo comprueba. La

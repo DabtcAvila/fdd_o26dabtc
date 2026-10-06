@@ -26,7 +26,8 @@ content:
     en dos o tres líneas. El segundo es la captura, llamada intermedio guion
     python guion developers punto png, con ese nombre exacto porque la
     plantilla ya la enlaza: la página del curso terminado, donde se vean tu
-    nombre y el cien por ciento completado. Si te sale en jpg, corriges el
+    nombre y el cien por ciento completado, o tu Statement of Accomplishment,
+    que trae tu nombre y el curso. Si te sale en jpg, corriges el
     enlace dentro del archivo. Un pdf no sirve.
     El tercero es revision punto md. Corres revisa esto punto py con uv run y
     su salida muestra cinco síntomas. Por cada uno, en su sección, del error

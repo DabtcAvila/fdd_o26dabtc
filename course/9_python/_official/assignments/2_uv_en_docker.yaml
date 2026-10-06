@@ -41,11 +41,12 @@ content:
     te da el navegador con tu sesión abierta empieza con hub punto docker punto
     com diagonal repository, y a cualquiera más le da error cuatrocientos
     cuatro. Ábrela en una ventana privada antes de entregar. El digest es la
-    cadena sha256 completa que imprime docker push; para publicar necesitas
-    haber iniciado sesión con docker login. La prueba es la
-    salida completa de cerrar sesión con docker logout, borrar tu imagen local
-    con docker rmi y la bandera f, y correrla otra vez, con sus líneas Unable to
-    find image locally y Pulling from.
+    cadena sha256 completa que imprime docker push; con Podman, la que guarda
+    podman push con la bandera digestfile. Para publicar necesitas haber
+    iniciado sesión. La prueba es la salida completa de cerrar sesión, borrar
+    tu imagen local con rmi y la bandera f, y correrla otra vez: con Docker
+    trae las líneas Unable to find image locally y Pulling from; con Podman,
+    Trying to pull y Copying blob. Las dos herramientas valen.
     No se entrega tu carpeta punto venv, ni pycache, ni la imagen como archivo,
     ni la salida de docker login: cada semestre alguien sube su credencial ahí.
     La entrega es un pull request desde su propia branch, que se llama tarea

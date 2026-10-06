@@ -116,7 +116,7 @@ nivel = "falla"
 
 [revision]
 foco = [
-  "que la captura sea la página de Intermediate Python for Developers terminado, con el nombre del alumno y el 100 %",
+  "que la captura sea la página de Intermediate Python for Developers terminado al 100 % o su Statement of Accomplishment, con el nombre del alumno",
   "que la URL abra un Statement of Accomplishment de este curso y no de Introduction to Python for Developers",
   "que la fecha sea verosímil: no futura, ni anterior al 2026-10-06 sin explicación",
   "que revision.md encuentre los cinco errores plantados de revisa_esto.py: por cada uno, una línea que de verdad lo produce, la causa con la idea de la página que la explica y un pedido concreto a la IA",
@@ -143,7 +143,7 @@ debe_ser_propio = [
   "el prompt de «Mi prompt»",
 ]
 senales = [
-  "captura de un ejercicio suelto o del panel de inicio en vez de la página del curso",
+  "captura de un ejercicio suelto o del panel de inicio en vez de la página del curso o del Statement of Accomplishment",
   "captura sin nombre visible, o con otro nombre, o idéntica en bytes a la de otra entrega",
   "URL de Statement of Accomplishment de otro curso, en particular la de Introduction to Python for Developers",
   "revision.md que copia la tabla de síntomas de la página «Python por dentro» sin decir línea ni causa",

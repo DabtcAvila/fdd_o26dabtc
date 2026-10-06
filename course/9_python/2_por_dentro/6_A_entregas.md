@@ -44,7 +44,7 @@ La branch y la carpeta ya existen si hiciste el ritual de [[python-por-dentro]],
 **Entregas tres archivos y una captura**, todos dentro de `por_dentro/`:
 
 - `certificado.md` con sus tres secciones llenas: tus usuarios de GitHub y de DataCamp (nada de nombre completo ni correo: el repo es público); la fecha en que terminaste, **en formato `AAAA-MM-DD`**, y la **URL del Statement of Accomplishment**; y una cosa concreta que aprendiste.
-- `intermedio-python-developers.png`: el curso terminado, con **tu nombre y el 100 % visibles**. Con ese nombre exacto, porque `certificado.md` ya lo enlaza. Si te sale en `jpg`, corrige el enlace dentro del archivo.
+- `intermedio-python-developers.png`: el curso terminado, con **tu nombre visible**: la página del curso al 100 % o tu Statement of Accomplishment. Con ese nombre exacto, porque `certificado.md` ya lo enlaza. Si te sale en `jpg`, corrige el enlace dentro del archivo.
 - `revision.md`: los cinco errores de `revisa_esto.py`, uno por sección (`## Error 1` a `## Error 5`). Cada uno con sus cuatro rótulos llenos: `Síntoma:`, `Línea:`, `Por qué pasa:` y `Qué le pedirías a la IA:`.
 - `prompt.md`: en `## Mi prompt`, el prompt que le darías a una IA para la tarea de `## La tarea`. Como mínimo: versión de Python y cómo se corre, qué entra y qué sale, qué hacer con los casos borde y cómo vas a verificar.
 

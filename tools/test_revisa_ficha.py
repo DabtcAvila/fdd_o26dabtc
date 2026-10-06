@@ -1213,6 +1213,28 @@ def _uvd(**cambios):
 
 def test_uvd_bien_entregada_pasa(monkeypatch, capsys):
     assert _main(monkeypatch, "tarea-09-uv-docker", _uvd()) == 0, capsys.readouterr().out
+
+
+# Salida real de `podman run` sobre una imagen que no está en el disco
+# (podman 4.6.2): el curso enseñó Docker y Podman, y las dos valen.
+PULL_PODMAN = ("Trying to pull docker.io/ana/reporte:latest...\n"
+               "Getting image source signatures\n"
+               "Copying blob sha256:4f55086f7dd096d48b0e49be066971a8ed996521c2e190aa21b2435a847198b4\n"
+               "Copying config sha256:e2ac70e7319a02c5a477f5825259bd118b94e8b02c279c67afa63adab6d8685b\n"
+               "Writing manifest to image destination\n")
+
+
+def test_uvd_prueba_de_pull_con_podman_pasa(monkeypatch, capsys):
+    bit = _bitacora(pull=False).replace("Untagged: ana/reporte:latest\n",
+                                        "Untagged: docker.io/ana/reporte:latest\n" + PULL_PODMAN)
+    assert _main(monkeypatch, "tarea-09-uv-docker", _uvd(**{"bitacora.md": bit})) == 0, \
+        capsys.readouterr().out
+
+
+def test_uvd_podman_sin_descarga_falla(monkeypatch, capsys):
+    bit = _bitacora(pull=False).replace("Untagged: ana/reporte:latest\n",
+                                        "Untagged: docker.io/ana/reporte:latest\nTrying to pull docker.io/ana/reporte:latest...\n")
+    assert _main(monkeypatch, "tarea-09-uv-docker", _uvd(**{"bitacora.md": bit})) == 1
     assert "AVISO" not in capsys.readouterr().out
 
 
