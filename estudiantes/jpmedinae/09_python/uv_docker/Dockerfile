@@ -11,7 +11,7 @@ COPY pyproject.toml uv.lock ./
 
 # HUECO 2: crea el ambiente desde el lock, y que la construcción falle si el
 #          lock ya no coincide con pyproject.toml.
-RUN uv sync --frozen
+RUN uv sync --locked
 
 # HUECO 3: copia el programa.
 COPY reporte.py ./
