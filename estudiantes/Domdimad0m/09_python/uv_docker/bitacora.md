@@ -79,7 +79,7 @@ Cambió la versión del intérprete de Python, las rutas del ambiente y el tama�
 
 URL pública: https://hub.docker.com/r/dominiqueont/reporte
 
-Digest: 39e80d12654175516a413db65c2bbec61734a5dfdfbbe47da8ff713f80f8793
+Digest: sha256:939e80d12654175516a413db65c2bbec61734a5dfdfbbe47da8ff713f80f8793
 
 Comando para correrla: docker run --rm --platform linux/amd64 dominiqueont/reporte
 
