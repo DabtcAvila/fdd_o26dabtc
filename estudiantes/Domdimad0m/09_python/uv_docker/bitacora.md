@@ -122,7 +122,7 @@ ed7de4b37c73: Pull complete
 43562c428e08: Pull complete
 1ba68a759a2f: Pull complete
 f39667d58a76: Download complete
-Digest: sha256:939e80d12654175516a413db65c2bbec61734a5dfdfbbe47da8ff713f80f8793
+Digest:   digest: sha256:939e80d12654175516a413db65c2bbec61734a5dfdfbbe47da8ff713f80f8793 size: 856
 Status: Downloaded newer image for dominiqueont/reporte:latest
                   Mi ambiente
 ┏━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━┓
