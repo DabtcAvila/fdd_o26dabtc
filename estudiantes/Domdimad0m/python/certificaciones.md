@@ -13,10 +13,11 @@ El repositorio es público: no escribas aquí tu nombre completo ni tu correo.
 
 Fecha en que lo terminaste (AAAA-MM-DD): 2026-10-05
 
-URL del Statement of Accomplishment:
+URL del Statement of Accomplishment: https://www.datacamp.com/completed/statement-of-accomplishment/course/725cead0d0da9095e48dcef334216b39228475ea 
 
 ![Captura del curso Introduction to Python for Developers terminado](./introduccion-python-developers.png)
 
 ## Una cosa que aprendiste y no sabías
 
-Solo se reforzó los conceptos y la sintaxis de varios comandos. No aprendizajes nuevos pero sí una recapitulación de como funcionan las estructuras básicas en python.
+Solo se reforzó los conceptos y la sintaxis de varios comandos. No hubo como tal aprendizajes nuevos pero sí una recapitulación de como funcionan las estructuras básicas en python.
+
