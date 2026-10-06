@@ -35,9 +35,9 @@ Fecha: 24/09/2026
 
 Se llena en la **tercera** entrega, cuando el curso ya está completo.
 
-Fecha:
+Fecha: 05/10/2026
 
-URL del Statement of Accomplishment:
+URL del Statement of Accomplishment: https://www.datacamp.com/completed/statement-of-accomplishment/course/56c99367de742cb3c2e9f58ebcd553977ddd897b
 
 ![Captura del curso Intermediate Docker terminado](./intermedio-3-4.png)
 
@@ -46,3 +46,11 @@ URL del Statement of Accomplishment:
 Se llena en la **tercera** entrega. Dos o tres líneas. Algo concreto de alguno
 de los dos cursos que no habías visto en clase, o que en clase entendiste a
 medias y ahí se te acomodó.
+
+En el curso de docker intermedio , primera parte, cuando aprendi a usar
+docker network inspect <name> en un ejercicio que requeria checar la 
+info de varias, queria usar algo del estilo grep pero no podia. Busque
+con claude y aprendi a usar xargs: $ docker network ls --format "{{.Name}}"
+|nxargs docker network inspect que agarra justamente los nombres de las redes
+con el comando ls y si entendi bien las lista con un salto de linea de 
+diferencia y se las pasa con xargs a inspect.
