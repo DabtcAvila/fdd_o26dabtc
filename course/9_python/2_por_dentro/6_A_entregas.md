@@ -48,7 +48,7 @@ La branch y la carpeta ya existen si hiciste el ritual de [[python-por-dentro]],
 - `revision.md`: los cinco errores de `revisa_esto.py`, uno por sección (`## Error 1` a `## Error 5`). Cada uno con sus cuatro rótulos llenos: `Síntoma:`, `Línea:`, `Por qué pasa:` y `Qué le pedirías a la IA:`.
 - `prompt.md`: en `## Mi prompt`, el prompt que le darías a una IA para la tarea de `## La tarea`. Como mínimo: versión de Python y cómo se corre, qué entra y qué sale, qué hacer con los casos borde y cómo vas a verificar.
 
-Los síntomas salen de correr `uv run revisa_esto.py` dentro de `por_dentro/`; la tabla de síntomas está en [[python-por-dentro]]. **La línea y la causa no las da ninguna página**: ésa es la tarea.
+Los síntomas salen de correr `revisa_esto.py` (la celda 0.1 del notebook, o `uv run revisa_esto.py` en `por_dentro/`); la tabla de síntomas está en [[python-por-dentro]]. **La línea y la causa no las da ninguna página**: ésa es la tarea.
 
 **Viajan también**, porque viven en la misma carpeta: `por_dentro.ipynb`, los `.py` de los labs, `ventas.csv` y los archivos del proyecto. El notebook va **sin salidas**.
 

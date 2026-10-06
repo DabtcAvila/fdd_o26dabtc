@@ -12,6 +12,7 @@ RAIZ = Path(__file__).resolve().parent.parent
 DESTINO = RAIZ / "codigo/09_python/por_dentro/por_dentro.ipynb"
 
 CELDAS = [
+    ("0.1", "Arranque: corre revisa_esto.py"),
     ("1.0", "Una función en 30 segundos"),
     ("1.1", "precio_final"),
     ("1.2", "Con descuento"),
@@ -24,6 +25,10 @@ CELDAS = [
     ("2.2", "Copiar es explícito, y de un nivel"),
     ("2.3", "La función recibe el mismo objeto"),
     ("2.4", "El argumento por defecto mutable"),
+    ("3.1", "1 hilo calcula 10 s (mira htop)"),
+    ("3.2", "4 hilos calculan 10 s (mira htop)"),
+    ("3.3", "4 procesos calculan 10 s (mira htop)"),
+    ("3.4", "4 hilos esperan"),
     ("4.1", "Qué cuenta como falso"),
     ("4.2", "edad = 0"),
     ("4.3", "0.1 + 0.2"),
@@ -31,6 +36,7 @@ CELDAS = [
     ("4.5", "Comprehension (lectura)"),
     ("4.6", "zip (lectura)"),
     ("4.7", "Encoding (lectura)"),
+    ("5.1", "La respuesta al prompt bueno: resume_ventas.py"),
 ]
 
 

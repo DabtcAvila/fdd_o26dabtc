@@ -22,7 +22,7 @@ Meta: escribir un prompt que evite los cinco síntomas, y revisar lo que regresa
 - **Pide primero las firmas** —la línea `def nombre(entradas) -> salida` de cada función— y los casos borde; después el código.
 
 ::: figure {#py-sintomas title="La salida de revisa_esto.py y sus cinco síntomas"}
-![La salida de uv run revisa_esto.py con cinco recuadros numerados. 1: la región norte no lista a Carla Ríos y no hay ningún mensaje de error. 2: norte lista a Fátima López y Gael Muñoz, clientes de centro. 3: puntaje con hilos 2.51 s y puntaje sin hilos 1.76 s. 4: el total de norte, 325.12, donde la cuenta a mano da 336.73 sin Carla. 5: la última línea, La contabilidad NO cuadra. La figura no señala líneas de código ni causas.](../_assets/py-sintomas.svg)
+![La salida de revisa_esto.py con cinco recuadros numerados. 1: la región norte no lista a Carla Ríos y no hay ningún mensaje de error. 2: norte lista a Fátima López y Gael Muñoz, clientes de centro. 3: puntaje con hilos 2.51 s y puntaje sin hilos 1.76 s. 4: el total de norte, 325.12, donde la cuenta a mano da 336.73 sin Carla. 5: la última línea, La contabilidad NO cuadra. La figura no señala líneas de código ni causas.](../_assets/py-sintomas.svg)
 :::
 
 ## Paso 1 · El prompt vago
@@ -52,15 +52,16 @@ NO CUADRA: diferencia de $179.95 (calculado - contabilidad).
 
 ## Paso 2 · Leer
 
-**Haz (terminal, en por_dentro/):** ya lo corriste al arrancar la clase; si cerraste la terminal, otra vez.
+**Haz (celda 0.1):** ya la corriste al arrancar la clase; si no ves su salida, córrela otra vez.
 
-```bash
-uv run revisa_esto.py
+```python
+import sys
+!{sys.executable} revisa_esto.py
 ```
 
-**Qué hace cada pieza:**
+**Qué hace cada línea:**
 
-- `uv run revisa_esto.py` — corre el script de la clase: la respuesta al prompt vago con cinco errores plantados a mano (la nota de abajo dice cómo se hizo).
+- `!{sys.executable} revisa_esto.py` — corre el script de la clase con el Python del notebook: la respuesta al prompt vago con cinco errores plantados a mano (la nota de abajo dice cómo se hizo).
 
 **Deberías ver:** (los segundos cambian en tu máquina)
 
@@ -151,15 +152,16 @@ def calcular_puntajes(clientes: Iterable[str]) -> Puntajes
 - `-> Decimal` en `parsear_monto`: los montos no pasan por `float`. `-> Venta | FilaInvalida` (`|` se lee «o»): una fila puede salir mal, y la firma ya lo dice.
 - Ojo: la firma dice `Puntaje = float`, pero `puntaje()` devuelve `int`; Python no lo verifica. Leer la firma no basta: hay que correrla.
 
-**Haz (terminal, en por_dentro/):**
+**Haz (celda 5.1):**
 
-```bash
-uv run resume_ventas.py
+```python
+import sys
+!{sys.executable} resume_ventas.py
 ```
 
-**Qué hace cada pieza:**
+**Qué hace cada línea:**
 
-- `uv run resume_ventas.py` — corre la respuesta del modelo al prompt del paso 3, sin editar.
+- `!{sys.executable} resume_ventas.py` — corre la respuesta del modelo al prompt del paso 3, sin editar, con el Python del notebook. Va como script y no pegada en una celda porque lanza procesos, y un proceso nuevo no puede leer una celda (lo viste en [[el-gil]]).
 
 **Deberías ver:** (los segundos cambian en tu máquina)
 

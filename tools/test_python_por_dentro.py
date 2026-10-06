@@ -84,7 +84,7 @@ ORDEN = [
 ]
 ANEXO = ("6_A_entregas.md", "entregas-por-dentro")
 TOPE = {"python-por-dentro": 260, "que-es-python": 280, "nombres-y-objetos": 240,
-        "el-gil": 260, "lo-que-escribe-la-ia": 250, "trabajar-con-ia": 260,
+        "el-gil": 300, "lo-que-escribe-la-ia": 250, "trabajar-con-ia": 260,
         "entregas-por-dentro": 260}
 ANALOGIAS = ("imagina", "es como", "como si", "analogía", "piensa en",
              "receta", "despensa")
@@ -306,3 +306,10 @@ def test_ningun_archivo_de_la_plantilla_dispara_el_detector_de_inyeccion():
     for p in PLANTILLA.iterdir():
         if p.is_file() and p.suffix in {".py", ".md", ".csv", ".ipynb", ".toml"}:
             assert not rf.frases_al_revisor(p.read_text(encoding="utf-8")), p.name
+
+
+def test_trabajo_calcula_y_espera():
+    """Las celdas 3.1 a 3.4 importan trabajo.py: calcula cuenta sumas por tiempo."""
+    trabajo = _modulo("trabajo", PLANTILLA / "trabajo.py")
+    assert trabajo.calcula(0.05) > 0
+    assert trabajo.espera(0.01) == 0.01

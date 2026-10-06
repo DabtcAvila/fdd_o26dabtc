@@ -19,9 +19,9 @@ Meta: saber cuándo los hilos aceleran tu programa y cuándo no.
 
 | Término | Qué es | Lo ves con |
 |---|---|---|
-| **proceso** | Un programa corriendo, con su propia memoria | `ps` |
-| **hilo** | Una línea de ejecución dentro de un proceso; comparte la memoria del proceso | el `ThreadPoolExecutor` de `gil.py` |
-| **CPU lógica** | Cada unidad que el sistema puede poner a ejecutar algo al mismo tiempo; con *hyperthreading* hay dos por núcleo físico | `nproc` (en macOS, `sysctl -n hw.ncpu`) |
+| **proceso** | Un programa corriendo, con su propia memoria | una fila de `htop` |
+| **hilo** | Una línea de ejecución dentro de un proceso; comparte la memoria del proceso | la celda 3.2 |
+| **CPU lógica** | Cada unidad que el sistema puede poner a ejecutar algo al mismo tiempo; con *hyperthreading* hay dos por núcleo físico | una barra de `htop` por cada una |
 
 ## En corto
 
@@ -29,54 +29,126 @@ Meta: saber cuándo los hilos aceleran tu programa y cuándo no.
 - **Si tu programa calcula en Python, usa procesos; si espera, hilos.**
 - **Desde 3.14 (2025) hay un Python sin GIL**, soportado y opcional: `3.14t`.
 
-## Cuatro hilos que calculan tardan casi lo mismo que uno
+## Cuatro hilos que calculan hacen lo mismo que uno
 
-Primero, cuántas CPUs lógicas tienes. El lab lanza 4 trabajos a la vez. Si `nproc` da menos de 4, tus cifras de "4 procesos" saldrán más lentas; la lección no cambia.
+Esta página se sigue en el notebook, con `htop` abierto al lado: cada celda trabaja 10 segundos, tiempo de sobra para ver qué pasa.
 
-**Haz (terminal, en por_dentro/):**
+**Haz (terminal):** en una terminal aparte, junto a VS Code.
 
 ```bash
-nproc
+htop
 ```
 
 **Qué hace cada pieza:**
 
-- `nproc` — imprime cuántas CPUs lógicas puede usar tu programa. En macOS no existe: usa `sysctl -n hw.ncpu`.
+- `htop` — muestra, en vivo, cuánto trabaja cada CPU lógica (una barra por CPU, arriba) y cada proceso (una fila por proceso, abajo, con su `CPU%`). Sales con `q`.
 
-**Deberías ver:** un número; en la máquina del profesor,
+**Deberías ver:** arriba, una barra por CPU lógica, casi vacías; abajo, la lista de procesos. Déjala abierta.
+
+Las celdas usan dos funciones de `trabajo.py`, en tu carpeta `por_dentro/`: `calcula(10)` suma en Python puro durante 10 segundos y dice cuántas sumas hizo; `espera(2)` espera 2 segundos sin calcular nada.
+
+**Haz (celda 3.1):** un solo hilo, el de siempre.
+
+```python
+from trabajo import calcula
+
+sumas = calcula(10)
+print(f"1 hilo:      {sumas:>13,} sumas en 10 s")
+```
+
+**Qué hace cada línea:**
+
+- `from trabajo import calcula` — trae la función `calcula` del archivo `trabajo.py`.
+- `sumas = calcula(10)` — suma durante 10 segundos; `sumas` guarda cuántas hizo.
+- `print(f"…{sumas:>13,}…")` — imprime el número con comas de miles, alineado a la derecha.
+
+**Deberías ver:** tras 10 segundos (en la máquina del profesor; tu número cambia con tu máquina),
 
 ```text
-8
+1 hilo:        288,490,000 sumas en 10 s
 ```
 
-Ahora el lab. `gil.py` suma 10 millones de números cuatro veces, de tres formas, y luego hace cuatro esperas de 1 s con hilos. Tarda unos 8 s en la máquina del profesor: no lo interrumpas.
+- En `htop`, mientras corre: **un** proceso de Python (el kernel del notebook) al ~100 %, y una sola barra llena.
 
-**Haz (terminal, en por_dentro/):**
+**Haz (celda 3.2):** cuatro hilos, cada uno calcula 10 segundos.
 
-```bash
-uv run gil.py
+```python
+from concurrent.futures import ThreadPoolExecutor
+from trabajo import calcula
+
+with ThreadPoolExecutor(max_workers=4) as hilos:
+    resultados = list(hilos.map(calcula, [10, 10, 10, 10]))
+print(f"4 hilos:     {sum(resultados):>13,} sumas en 10 s")
 ```
 
-**Qué hace cada pieza:**
+**Qué hace cada línea:**
 
-- `uv run` — corre el archivo con el Python del `.venv/` de `por_dentro/`, el 3.14 que fija `.python-version` (lo viste en [[ambientes-python]]).
-- `gil.py` — el lab: mide «uno tras otro», «4 hilos» y «4 procesos» para un trabajo que calcula, y «4 hilos» para uno que espera.
+- `ThreadPoolExecutor(max_workers=4)` — un grupo de 4 hilos dentro del mismo proceso.
+- `hilos.map(calcula, [10, 10, 10, 10])` — reparte cuatro llamadas `calcula(10)`, una por hilo, y espera a las cuatro.
+- `sum(resultados)` — suma lo que hizo cada hilo.
 
-**Deberías ver:** la salida real en la máquina del profesor (8 CPUs lógicas; en `3.14.0`, el último número puede ser otro).
+**Deberías ver:**
 
 ```text
-Python 3.14.0 · GIL activo
-calcula, uno tras otro    3.02 s
-calcula, 4 hilos          2.63 s
-calcula, 4 procesos       1.44 s
-espera, 4 hilos           1.00 s
+4 hilos:       304,440,000 sumas en 10 s
 ```
 
-- **4 hilos calculando: 2.63 s contra 3.02 s.** Casi lo mismo que uno tras otro: los hilos se turnan el GIL.
-- 4 procesos: 1.44 s. Cada proceso tiene su propio GIL y corre en otra CPU.
-- **Cuatro esperas de 1 s tardan 1.00 s**, no 4: mientras un hilo espera, suelta el GIL.
+- **Cuatro hilos hicieron casi las mismas sumas que uno.** Se turnaron el GIL: sólo uno sumaba en cada instante.
+- En `htop`: el mismo proceso del kernel, otra vez al ~100 %. Nada pasa de una CPU.
 
-Tus cifras cambian con la carga de tu máquina y entre corridas: lo que no cambia es que 4 hilos no bajan a un cuarto y 4 procesos sí bajan (aquí, a menos de la mitad).
+**Haz (celda 3.3):** cuatro procesos, cada uno calcula 10 segundos.
+
+```python
+from concurrent.futures import ProcessPoolExecutor
+from trabajo import calcula
+
+with ProcessPoolExecutor(max_workers=4) as procesos:
+    resultados = list(procesos.map(calcula, [10, 10, 10, 10]))
+print(f"4 procesos:  {sum(resultados):>13,} sumas en 10 s")
+```
+
+**Qué hace cada línea:**
+
+- `ProcessPoolExecutor(max_workers=4)` — un grupo de 4 procesos nuevos, cada uno con su propio Python y su propio GIL.
+- `procesos.map(...)` — igual que con hilos, pero cada llamada corre en otro proceso.
+
+**Deberías ver:**
+
+```text
+4 procesos:    805,380,000 sumas en 10 s
+```
+
+- **Casi el triple de sumas**; con 4 CPUs libres, cerca de cuatro veces.
+- En `htop`: **cuatro** procesos de Python nuevos, cada uno al ~100 %, y cuatro barras llenas.
+
+**Haz (celda 3.4):** cuatro hilos que esperan 2 segundos cada uno.
+
+```python
+import time
+from concurrent.futures import ThreadPoolExecutor
+from trabajo import espera
+
+inicio = time.perf_counter()
+with ThreadPoolExecutor(max_workers=4) as hilos:
+    list(hilos.map(espera, [2, 2, 2, 2]))
+print(f"4 esperas de 2 s tardaron {time.perf_counter() - inicio:.1f} s")
+```
+
+**Qué hace cada línea:**
+
+- `time.perf_counter()` — un reloj para medir cuánto tarda algo.
+- `hilos.map(espera, [2, 2, 2, 2])` — cuatro esperas de 2 s, una por hilo.
+
+**Deberías ver:**
+
+```text
+4 esperas de 2 s tardaron 2.0 s
+```
+
+- **2 segundos, no 8**: mientras un hilo espera, suelta el GIL y los otros siguen.
+- En `htop`: casi nada de CPU. Esperar no calcula.
+
+Tus cifras cambian con tu máquina y su carga. Lo que no cambia: **4 hilos calculando ≈ 1 hilo; 4 procesos, varias veces más.**
 
 **Éste es el síntoma 3** de `revisa_esto.py`: "con hilos" tarda casi lo mismo que "sin hilos", aunque el comentario promete 4× más rápido.
 
@@ -90,21 +162,11 @@ El GIL protege ese contador y el resto del estado interno de CPython. Mientras u
 ![Tres carriles sobre un eje de tiempo. Arriba, con GIL: cuatro hilos de un mismo proceso se turnan, sólo uno ejecuta Python en cada instante, y el total dura casi lo mismo que hacer los cuatro trabajos uno tras otro. En medio, sin GIL (3.14t): los cuatro hilos ejecutan al mismo tiempo y el total se acorta. Abajo, cuatro procesos, cada uno con su propio GIL, también ejecutan al mismo tiempo.](../_assets/py-gil.svg)
 :::
 
-La columna sin GIL ya está medida, con el mismo `gil.py` en `3.14t` (cómo correrla está en la lectura, abajo):
+## La función vive en un archivo, no en una celda
 
-| | con GIL (3.14) | sin GIL (3.14t) |
-|---|---:|---:|
-| calcula, uno tras otro | 3.02 s | 2.76 s |
-| calcula, 4 hilos | **2.63 s** | **1.22 s** |
-| calcula, 4 procesos | 1.44 s | 1.29 s |
-| espera, 4 hilos | 1.00 s | 1.00 s |
+`calcula` está en `trabajo.py` por una razón: **un proceso nuevo vuelve a importar el código de su función, y una celda no vive en ningún archivo.** Si defines `calcula` en una celda y la mandas a procesos, en 3.14 truena con `BrokenProcessPool` y `AttributeError: module '__main__' has no attribute 'calcula'`.
 
-- Sin GIL, 4 hilos calculando sí bajan a menos de la mitad: el único cambio es el GIL.
-- Esperar da lo mismo con o sin GIL: esperar nunca necesitó el GIL.
-
-## Todo script que lanza procesos lleva su guarda
-
-Al final de `gil.py` está la línea `if __name__ == "__main__":`. **Todo script que lanza procesos la lleva**: el bloque debajo de ella sólo corre cuando tú ejecutas este archivo, no cuando otro proceso lo importa. Sin ella, en 3.14 el programa se repite y termina en un `RuntimeError`. Por qué, en la lectura.
+Por la misma razón, **un script que lanza procesos lleva al final `if __name__ == "__main__":`**: el bloque de abajo sólo corre cuando tú ejecutas el archivo, no cuando un proceso nuevo lo vuelve a importar. Lo ves en `gil.py`; el porqué completo, en la lectura.
 
 — Hasta aquí en clase; lo demás es lectura —
 
@@ -114,7 +176,7 @@ Al final de `gil.py` está la línea `if __name__ == "__main__":`. **Todo script
 
 **El método de arranque** es cómo crea Python un proceso nuevo. En Linux, 3.14 cambió el de por defecto de `fork` a `forkserver`; en macOS es `spawn` desde 3.8 (2019). Con esos dos, el proceso nuevo **vuelve a importar tu archivo**, con `__name__` igual a `"__mp_main__"`.
 
-Sin guarda, cada proceso nuevo vuelve a correr todo el script y quiere lanzar sus propios procesos; Python lo detiene. Ésta es la salida real de una copia de `gil.py` con la guarda cambiada por `if True:`, corrida en 3.14 (recortada con `…`; cuántas veces se repite el encabezado varía):
+Sin guarda, cada proceso nuevo vuelve a correr todo el script y quiere lanzar sus propios procesos; Python lo detiene. Ésta es la salida real de una copia de `gil.py` (el script de la lectura «En casa») con la guarda cambiada por `if True:`, corrida en 3.14 (recortada con `…`; cuántas veces se repite el encabezado varía):
 
 ```text
 Python 3.14.0 · GIL activo
@@ -167,6 +229,18 @@ uv run --no-project --python 3.14t gil.py
 **Sin `--no-project`, uv reemplaza tu `.venv/` por uno sin GIL** y el notebook queda con otro Python. Si te pasó, `uv sync` solo no lo arregla: en `por_dentro/` borra el ambiente con `rm -rf .venv` y luego corre `uv sync`, que lo recrea con el 3.14 de `.python-version`.
 
 **Deberías ver:** la primera línea dice `GIL apagado`, y «calcula, 4 hilos» baja a menos de la mitad de «uno tras otro».
+
+`gil.py` mide lo mismo que las celdas, en segundos y en un script (con su guarda). En la máquina del profesor, con y sin GIL:
+
+| | con GIL (3.14) | sin GIL (3.14t) |
+|---|---:|---:|
+| calcula, uno tras otro | 3.02 s | 2.76 s |
+| calcula, 4 hilos | **2.63 s** | **1.22 s** |
+| calcula, 4 procesos | 1.44 s | 1.29 s |
+| espera, 4 hilos | 1.00 s | 1.00 s |
+
+- Sin GIL, 4 hilos calculando sí bajan a menos de la mitad: el único cambio es el GIL.
+- Esperar da lo mismo con o sin GIL: esperar nunca necesitó el GIL.
 
 **Al revisar código de IA, busca:**
 

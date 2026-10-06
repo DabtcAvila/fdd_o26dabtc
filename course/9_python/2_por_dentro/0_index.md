@@ -114,7 +114,7 @@ Si no sale nada y el comando terminó, `$GHUSER` estaba vacío: vuelve al paso 0
 
 ```text
 [tarea-09-por-dentro 98a9d59] unidad 09: plantilla de por_dentro
- 12 files changed, 1317 insertions(+)
+ 13 files changed, 1423 insertions(+)
  create mode 100644 estudiantes/ana/09_python/por_dentro/.python-version
  create mode 100644 estudiantes/ana/09_python/por_dentro/certificado.md
  create mode 100644 estudiantes/ana/09_python/por_dentro/gil.py
@@ -170,6 +170,22 @@ Abrir `por_dentro/` como carpeta, y no el fork entero, hace que VS Code encuentr
 | `fatal: a branch named 'tarea-09-por-dentro' already exists` | Ya empezaste esta entrega | `git switch tarea-09-por-dentro` y sigue con el Haz 3 |
 | `'upstream' does not appear to be a git repository` | Falta el remoto del curso | Agrégalo como en [[el-ritual-del-curso]] |
 
+**Si hiciste el ritual antes de las 18:00 del 6 de octubre**, a tu copia le falta `trabajo.py` y tu notebook no trae las celdas 0.1, 3.1 a 3.4 ni 5.1. Tráelos del curso, sólo si tu notebook sigue vacío (este `cp` lo reemplaza):
+
+**Haz (terminal, en tu fork, en la branch `tarea-09-por-dentro`):**
+
+```bash
+git fetch upstream && git merge upstream/main
+cp codigo/09_python/por_dentro/trabajo.py codigo/09_python/por_dentro/por_dentro.ipynb estudiantes/$GHUSER/09_python/por_dentro/
+```
+
+**Qué hace cada pieza:**
+
+- `git fetch upstream && git merge upstream/main` — trae a tu branch lo nuevo del curso, con `trabajo.py` y el notebook actualizado.
+- `cp … trabajo.py … por_dentro.ipynb …/por_dentro/` — copia esos dos archivos a tu carpeta. Si ya pegaste código en tu notebook, copia sólo `trabajo.py` y agrega a mano las celdas que te falten.
+
+**Deberías ver:** ninguna salida del `cp`; `ls estudiantes/$GHUSER/09_python/por_dentro` ya lista `trabajo.py`.
+
 ## Las páginas
 
 | # | Página | Qué agrega | Min | Dónde |
@@ -182,7 +198,22 @@ Abrir `por_dentro/` como carpeta, y no el fork entero, hace que VS Code encuentr
 
 ## Los cinco síntomas
 
-La clase arranca con todos corriendo `uv run revisa_esto.py` en `por_dentro/`. Su salida tiene cinco cosas raras:
+La clase arranca con todos corriendo `revisa_esto.py` desde el notebook.
+
+**Haz (celda 0.1):**
+
+```python
+import sys
+!{sys.executable} revisa_esto.py
+```
+
+**Qué hace cada línea:**
+
+- `import sys` — trae el módulo que sabe qué Python corre el notebook.
+- `!` — al inicio de una línea de celda, manda esa línea a la terminal en lugar de a Python.
+- `{sys.executable}` — se cambia por la ruta del Python del kernel, el de tu `.venv/`: así el script corre con el mismo Python que el notebook.
+
+**Deberías ver:** totales por región, clientes, puntajes y, al final, `La contabilidad NO cuadra`. Su salida tiene cinco cosas raras:
 
 | # | Síntoma en la salida de `revisa_esto.py` | Dónde lo ves | Lo explica |
 |---:|---|---|---|
