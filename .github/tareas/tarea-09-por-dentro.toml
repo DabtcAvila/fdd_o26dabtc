@@ -27,7 +27,7 @@ debe_explicar = [
 pagina = "Página «Las entregas de Python por dentro» (https://rayalucaria.org/fdd_o26/python/por-dentro/a-entregas/)"
 
 [entregables]
-requeridos = ["certificado.md", "revision.md", "prompt.md"]
+requeridos = ["certificado.md", "revision.md", "prompt.md", "por_dentro.ipynb"]
 prohibidos = []
 
 [[capturas]]
@@ -107,6 +107,14 @@ investiga = "Página «Las entregas de Python por dentro»: ¿en qué estado deb
 nivel = "falla"
 
 [[patrones]]
+archivo = "por_dentro.ipynb"
+no_debe = '"source": \[\]'
+que = "el notebook por_dentro.ipynb trae celdas de código vacías"
+porque = "el notebook terminado es parte de la entrega: cada celda vacía es un ejemplo de la clase que no corriste"
+investiga = "Página «Las entregas de Python por dentro»: ¿qué celdas debe traer llenas el notebook?"
+nivel = "aviso"
+
+[[patrones]]
 archivo = "revision.md"
 no_debe = '^Línea:[ \t]*([^\d\s].*)?\r?$'
 que = "la línea de algún error de revision.md está vacía o no es un número"
@@ -116,6 +124,7 @@ nivel = "falla"
 
 [revision]
 foco = [
+  "que el notebook traiga el código de cada celda de la clase, sin salidas",
   "que la captura sea la página de Intermediate Python for Developers terminado al 100 % o su Statement of Accomplishment, con el nombre del alumno",
   "que la URL abra un Statement of Accomplishment de este curso y no de Introduction to Python for Developers",
   "que la fecha sea verosímil: no futura, ni anterior al 2026-10-06 sin explicación",

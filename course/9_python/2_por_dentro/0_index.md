@@ -82,7 +82,7 @@ Si dice `Not possible to fast-forward`, **detente y pide ayuda**: tu `main` tien
 **Qué hace cada pieza:**
 
 - `[ -n "$GHUSER" ]` — comprueba que `$GHUSER` no está vacío (`-n`: no vacío). **Si está vacío, todo se detiene aquí**; sin esta prueba, la carpeta acabaría en `estudiantes/09_python/`, fuera de la tuya.
-- `git switch -c tarea-09-por-dentro` — `-c` crea la branch de esta entrega y te cambia a ella.
+- `git switch -c tarea-09-por-dentro` — `-c` crea la branch de esta entrega y te cambia a ella. **Es la branch de toda la sección**: en ella haces la clase y la tarea, y ésa es la que subes el 13 de octubre con el curso, el ejercicio y el notebook terminado ([[entregas-por-dentro]]).
 
 **Deberías ver:**
 

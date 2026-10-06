@@ -1334,6 +1334,23 @@ BPD = "estudiantes/ana/09_python/por_dentro/"
 NB_LIMPIO = (PD / "por_dentro.ipynb").read_text(encoding="utf-8")
 
 
+def _nb_terminado(vacias=0):
+    """El notebook como lo entregaria un alumno: cada celda de codigo con lo
+    que pego de la pagina, sin salidas. `vacias` deja las primeras N sin llenar."""
+    import json
+    nb = json.loads(NB_LIMPIO)
+    n = 0
+    for c in nb["cells"]:
+        if c["cell_type"] == "code":
+            if n >= vacias:
+                c["source"] = ["x = 1\n", "print(x)"]
+            n += 1
+    return json.dumps(nb, ensure_ascii=False, indent=1) + "\n"
+
+
+NB_TERMINADO = _nb_terminado()
+
+
 def _cert_pd(fecha="2026-10-06", url=URL_SOA, aprendi="Que *args junta los posicionales en una tupla."):
     """La plantilla llena como la llenaria un alumno. La fecha por omision es
     la de apertura: main() mide la fecha futura contra el reloj real, y la
@@ -1373,13 +1390,24 @@ def _prompt_pd():
 def _pd(**cambia):
     base = {BPD + "certificado.md": _cert_pd(), BPD + "intermedio-python-developers.png": PNG,
             BPD + "revision.md": _rev_pd(), BPD + "prompt.md": _prompt_pd(),
-            BPD + "por_dentro.ipynb": NB_LIMPIO}
+            BPD + "por_dentro.ipynb": NB_TERMINADO}
     base.update(cambia)
     return base
 
 
 def test_pd_el_notebook_de_la_plantilla_no_dispara_el_patron():
     assert '"output_type"' not in NB_LIMPIO
+
+
+def test_pd_notebook_sin_tocar_falla(monkeypatch, capsys):
+    """El notebook terminado es parte de la entrega: la plantilla tal cual no cuenta."""
+    assert _main(monkeypatch, "tarea-09-por-dentro", _pd(**{BPD + "por_dentro.ipynb": NB_LIMPIO})) == 1
+
+
+def test_pd_notebook_con_celdas_vacias_solo_avisa(monkeypatch, capsys):
+    assert _main(monkeypatch, "tarea-09-por-dentro",
+                 _pd(**{BPD + "por_dentro.ipynb": _nb_terminado(vacias=3)})) == 0
+    assert "AVISO" in capsys.readouterr().out
 
 
 def test_pd_bien_entregada_pasa(monkeypatch, capsys):
@@ -1413,16 +1441,17 @@ def test_pd_sin_captura_falla(monkeypatch, capsys):
 
 
 def test_pd_notebook_con_salidas_falla(monkeypatch, capsys):
-    sucio = NB_LIMPIO.replace('"outputs": []', '"outputs": [{"output_type": "stream", "name": "stdout", "text": ["/home/ana\\n"]}]', 1)
-    assert sucio != NB_LIMPIO
+    sucio = NB_TERMINADO.replace('"outputs": []', '"outputs": [{"output_type": "stream", "name": "stdout", "text": ["/home/ana\\n"]}]', 1)
+    assert sucio != NB_TERMINADO
     assert _main(monkeypatch, "tarea-09-por-dentro", _pd(**{BPD + "por_dentro.ipynb": sucio})) == 1
     assert "notebook" in capsys.readouterr().out
 
 
-def test_pd_sin_notebook_en_el_pr_no_corre_el_patron(monkeypatch, capsys):
+def test_pd_sin_notebook_en_el_pr_falla(monkeypatch, capsys):
+    """El notebook terminado es parte de la entrega desde el 2026-10-06."""
     archivos = _pd()
     del archivos[BPD + "por_dentro.ipynb"]
-    assert _main(monkeypatch, "tarea-09-por-dentro", archivos) == 0, capsys.readouterr().out
+    assert _main(monkeypatch, "tarea-09-por-dentro", archivos) == 1
 
 
 def test_pd_url_que_no_es_de_datacamp_solo_avisa(monkeypatch, capsys):
