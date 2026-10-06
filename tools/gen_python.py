@@ -1,4 +1,4 @@
-"""Genera los diagramas SVG de la unidad 9 (Python), seccion de ambientes.
+"""Genera los diagramas SVG de la unidad 9 (Python): 9.1 ambientes y 9.2 Python por dentro.
 
 Las primitivas y la paleta salen de tools/svg_base.py: un solo lugar declara
 los colores de skins/fdd-eva.yaml.
@@ -389,6 +389,219 @@ def py_uv_docker():
     p.append(cierre())
     return "".join(p)
 
+def py_interprete():
+    """Que hace Python con tu script: compila a bytecode y lo corre en la VM."""
+    ancho, alto = 1080, 340
+    aria = (
+        "Una fila de cuatro cajas unidas por flechas. tu_script.py pasa por el "
+        "paso compila, que traduce a bytecode, y produce el bytecode; el "
+        "bytecode entra a la maquina virtual, que produce el resultado. Bajo "
+        "compila, una etiqueta ambar: errores de sintaxis, aqui, antes de que "
+        "corra nada. Bajo la maquina virtual, una etiqueta roja: errores de "
+        "tipo, aqui, al correr"
+    )
+    p = [marco(ancho, alto, aria)]
+    p.append(texto(ancho / 2, 44, "Qué hace Python con tu script", TEXTO, 21, peso="600"))
+    for x, w, nombre, color in ((30, 180, "tu_script.py", TEXTO), (440, 180, "bytecode", CIAN), (850, 190, "resultado", ACENTO)):
+        p.append(caja(x, 110, w, 70, PANEL, LINEA if color == TEXTO else color))
+        p.append(teclado(x + w / 2, 153, nombre, color, 18))
+    # Pasos (flechas con chip): compila y maquina virtual.
+    p.append(flecha(214, 145, 436, 145, AMBAR, 2.5))
+    p.append(chip(325, 118, "compila", AMBAR, tam=14))
+    p.append(texto(325, 172, "traduce a bytecode", SUAVE, 12.5))
+    p.append(flecha(624, 145, 846, 145, ROJO, 2.5))
+    p.append(chip(735, 118, "máquina virtual", ROJO, tam=14))
+    p.append(texto(735, 172, "ejecuta el bytecode", SUAVE, 12.5))
+    # Donde ocurre cada familia de errores.
+    p.append(flecha(325, 214, 325, 240, AMBAR, 1.8))
+    p.append(chip(325, 262, "errores de sintaxis: aquí", AMBAR, tam=14))
+    p.append(texto(325, 300, "antes de que corra una sola línea", SUAVE, 13))
+    p.append(flecha(735, 214, 735, 240, ROJO, 1.8))
+    p.append(chip(735, 262, "errores de tipo: aquí, al correr", ROJO, tam=14))
+    p.append(texto(735, 300, "sólo si esa línea llega a ejecutarse", SUAVE, 13))
+    p.append(cierre())
+    return "".join(p)
+
+
+def py_nombres():
+    """Nombres y objetos: dos nombres un objeto; la copia de un nivel."""
+    ancho, alto = 1080, 440
+    aria = (
+        "Dos paneles. Panel uno: los nombres a y b tienen cada uno una flecha a "
+        "la misma caja con la lista 1, 2, 3, 4; el nombre c, creado con c = "
+        "a.copy(), apunta a otra caja distinta con otra lista igual. Panel dos: "
+        "los nombres datos y copia apuntan a dos diccionarios distintos, pero "
+        "la llave ventas de los dos apunta a una sola caja con la lista 10, 20, "
+        "30. Al pie: .copy() copia un nivel, lo de adentro se comparte"
+    )
+    p = [marco(ancho, alto, aria)]
+    p.append(texto(ancho / 2, 44, "Nombres y objetos", TEXTO, 21, peso="600"))
+    p.append(f'<line x1="540" y1="66" x2="540" y2="370" stroke="{LINEA}" stroke-width="1.5" stroke-dasharray="6 6"/>')
+    p.append(texto(270, 84, "dos nombres, un objeto", SUAVE, 15, peso="600"))
+    p.append(texto(810, 84, "copia de un nivel", SUAVE, 15, peso="600"))
+
+    # Panel 1.
+    for y, nombre in ((120, "a"), (176, "b")):
+        p.append(caja(40, y, 70, 40, FONDO, AMBAR, radio=8))
+        p.append(teclado(75, y + 27, nombre, AMBAR, 17))
+        p.append(flecha(114, y + 20, 296, 168, AMBAR, 2.2))
+    p.append(caja(300, 138, 200, 56, PANEL, ACENTO))
+    p.append(teclado(400, 173, "[1, 2, 3, 4]", ACENTO, 17))
+    p.append(caja(40, 270, 70, 40, FONDO, CIAN, radio=8))
+    p.append(teclado(75, 297, "c", CIAN, 17))
+    p.append(flecha(114, 290, 296, 290, CIAN, 2.2))
+    p.append(chip(205, 262, "c = a.copy()", CIAN, tam=13))
+    p.append(caja(300, 262, 200, 56, PANEL, CIAN))
+    p.append(teclado(400, 297, "[1, 2, 3, 4]", CIAN, 17))
+
+    # Panel 2.
+    p.append(caja(580, 120, 90, 40, FONDO, AMBAR, radio=8))
+    p.append(teclado(625, 147, "datos", AMBAR, 16))
+    p.append(caja(580, 250, 90, 40, FONDO, CIAN, radio=8))
+    p.append(teclado(625, 277, "copia", CIAN, 16))
+    p.append(flecha(674, 140, 716, 140, AMBAR, 2.2))
+    p.append(flecha(674, 270, 716, 270, CIAN, 2.2))
+    p.append(caja(720, 110, 150, 60, PANEL, AMBAR))
+    p.append(teclado(795, 134, "dict", AMBAR, 13, peso="normal"))
+    p.append(teclado(795, 156, '"ventas": •', AMBAR, 14))
+    p.append(caja(720, 240, 150, 60, PANEL, CIAN))
+    p.append(teclado(795, 264, "dict", CIAN, 13, peso="normal"))
+    p.append(teclado(795, 286, '"ventas": •', CIAN, 14))
+    p.append(flecha(870, 152, 918, 190, AMBAR, 2.2))
+    p.append(flecha(870, 282, 918, 214, CIAN, 2.2))
+    p.append(caja(900, 180, 150, 46, PANEL, ACENTO))
+    p.append(teclado(975, 210, "[10, 20, 30]", ACENTO, 15))
+    p.append(texto(975, 246, "una sola lista", ACENTO, 12.5))
+
+    p.append(caja(40, 372, 1000, 50, TINTE, LINEA, radio=10))
+    p.append(teclado(70, 403, ".copy()", ACENTO, 15, anclaje="start"))
+    p.append(texto(150, 403, "copia un nivel: lo de adentro se comparte", TEXTO, 15, anclaje="start"))
+    p.append(cierre())
+    return "".join(p)
+
+
+def py_gil():
+    """Tres carriles en el tiempo: hilos con GIL, sin GIL, procesos."""
+    ancho, alto = 1080, 480
+    aria = (
+        "Tres carriles horizontales a lo largo del tiempo. Cuatro hilos con "
+        "GIL: los cuatro bloques de trabajo se turnan, uno despues de otro, "
+        "nunca dos a la vez. Cuatro hilos sin GIL, en Python 3.14t: los cuatro "
+        "bloques corren al mismo tiempo, uno encima del otro. Cuatro procesos: "
+        "cuatro bloques simultaneos, cada proceso con su propio GIL"
+    )
+    p = [marco(ancho, alto, aria)]
+    p.append(texto(ancho / 2, 44, "El mismo trabajo, tres maneras de repartirlo", TEXTO, 21, peso="600"))
+    x0, x1 = 290, 1030
+    colores = (CIAN, AMBAR, ACENTO, VIOLETA)
+    carriles = (
+        ("4 hilos con GIL", AMBAR, 96, "uno a la vez: se turnan"),
+        ("4 hilos sin GIL (3.14t)", CIAN, 214, "los cuatro a la vez"),
+        ("4 procesos", ACENTO, 332, "los cuatro a la vez, cada uno con su GIL"),
+    )
+    for k, (nombre, color, y, nota) in enumerate(carriles):
+        p.append(caja(40, y, 1000, 100, PANEL, LINEA))
+        p.append(texto(60, y + 44, nombre, color, 16, anclaje="start", peso="600"))
+        p.append(texto(60, y + 70, nota, SUAVE, 12.5, anclaje="start"))
+        if k == 0:
+            w = (x1 - x0 - 20) / 4
+            for i in range(4):
+                bx = x0 + i * (w + 6)
+                p.append(caja(bx, y + 30, w, 40, FONDO, colores[i], radio=6))
+                p.append(texto(bx + w / 2, y + 56, f"hilo {i + 1}", colores[i], 14))
+        else:
+            for i in range(4):
+                by = y + 8 + i * 22
+                p.append(caja(x0 + 10, by, x1 - x0 - 30, 18, FONDO, colores[i], radio=4, grosor=1.6))
+                p.append(texto(x0 + 20, by + 13, f"{'hilo' if k == 1 else 'proceso'} {i + 1}", colores[i], 11.5, anclaje="start"))
+    p.append(flecha(x0, 458, x1, 458, SUAVE, 1.8))
+    p.append(texto(x0 - 10, 463, "tiempo", SUAVE, 13, anclaje="end"))
+    p.append(cierre())
+    return "".join(p)
+
+
+# Salida real de revisa_esto.py, abreviada; columnas de lineas (texto, resalte).
+_SINTOMAS_COL1 = (
+    "== centro ==", "Total con IVA: $503.82", "Clientes:", "  - Fátima López",
+    "  - Gael Muñoz", "  - Beto Peña", "",
+    "== norte ==", "Total con IVA: $325.12", "Clientes:", "  - Fátima López",
+    "  - Gael Muñoz", "  - Beto Peña", "  - Ana Núñez",
+)
+_SINTOMAS_COL2 = (
+    "== sur ==", "Total con IVA: $559.31", "Clientes:", "  - Fátima López",
+    "  - Gael Muñoz", "  - Beto Peña", "  - Ana Núñez", "  - Dana Ibáñez",
+    "  - Emilio Sáenz",
+)
+_SINTOMAS_COL3 = (
+    "== Puntaje ==", "  Ana Núñez: 8999997", "  Beto Peña: 8999997",
+    "  Dana Ibáñez: 8999996", "  …", "puntaje con hilos: 2.51 s",
+    "puntaje sin hilos: 1.76 s", "", "== Conciliación ==",
+    "Total con IVA:     $1,388.26", "Contabilidad:      $2,722.27",
+    "La contabilidad NO cuadra",
+)
+
+
+def _marca(x, y, w, h, n, color=AMBAR, derecha=False):
+    """Recuadro numerado sobre una zona de la salida."""
+    return (
+        caja(x, y, w, h, "none", color, radio=5, grosor=2)
+        + f'<circle cx="{x + (w if derecha else 0)}" cy="{y}" r="11" fill="{FONDO}" stroke="{color}" stroke-width="2"/>'
+        + texto(x + (w if derecha else 0), y + 5, str(n), color, 14, peso="600")
+    )
+
+
+def py_sintomas():
+    """La salida de revisa_esto.py con cinco sintomas numerados."""
+    ancho, alto = 1080, 470
+    aria = (
+        "La salida de revisa_esto.py en tres columnas de texto monoespaciado: "
+        "los bloques centro, norte y sur con su total con IVA y su lista de "
+        "clientes; el puntaje por cliente con los tiempos con hilos y sin "
+        "hilos; y la conciliacion. Cinco recuadros numerados marcan lo que "
+        "llama la atencion: uno, el bloque norte con su total; dos, las listas "
+        "de clientes de norte y sur con clientes de otras regiones; tres, "
+        "puntaje con hilos 2.51 s contra puntaje sin hilos 1.76 s; cuatro, el "
+        "total de norte, 325.12; cinco, la linea La contabilidad NO cuadra"
+    )
+    p = [marco(ancho, alto, aria)]
+    p.append(texto(ancho / 2, 44, "Lo que imprime revisa_esto.py", TEXTO, 21, peso="600"))
+    p.append(caja(30, 70, 1020, 340, PANEL, LINEA))
+    yb, dy, cw = 106, 22, 7.8
+    cols = ((50, _SINTOMAS_COL1), (385, _SINTOMAS_COL2), (720, _SINTOMAS_COL3))
+    for x, lineas in cols:
+        for i, s in enumerate(lineas):
+            if s:
+                titulo = s.startswith("==")
+                p.append(teclado(x, yb + i * dy, s.replace(" ", "\u00a0"), TEXTO if titulo else SUAVE, 13,
+                                 anclaje="start", peso="600" if titulo else "normal"))
+    y = lambda i: yb + i * dy - 16
+    # 1: bloque norte (encabezado y total).
+    p.append(_marca(40, y(7) - 2, 226, 2 * dy + 4, 1))
+    # 4: el numero de norte.
+    p.append(_marca(50 + 15 * cw - 4, y(8), 7 * cw + 8, 22, 4, ROJO, derecha=True))
+    # 2: clientes de norte y sur.
+    p.append(_marca(40, y(10) - 2, 170, 4 * dy + 4, 2, CIAN))
+    p.append(_marca(375, y(3) - 2, 170, 6 * dy + 4, 2, CIAN))
+    # 3: tiempos.
+    p.append(_marca(710, y(5) - 2, 220, 2 * dy + 4, 3, VIOLETA))
+    # 5: no cuadra.
+    p.append(_marca(710, y(11) - 2, 220, dy + 2, 5, ROJO))
+    leyenda = (
+        (1, AMBAR, "el bloque norte"),
+        (2, CIAN, "las listas de clientes"),
+        (3, VIOLETA, "los dos tiempos"),
+        (4, ROJO, "un total"),
+        (5, ROJO, "la última línea"),
+    )
+    for i, (n, color, s) in enumerate(leyenda):
+        x = 50 + i * 200
+        p.append(f'<circle cx="{x}" cy="440" r="11" fill="{FONDO}" stroke="{color}" stroke-width="2"/>')
+        p.append(texto(x, 445, str(n), color, 14, peso="600"))
+        p.append(texto(x + 20, 445, s, SUAVE, 13.5, anclaje="start"))
+    p.append(cierre())
+    return "".join(p)
+
+
 DIAGRAMAS = {
     "py-mapa": py_mapa,
     "py-choque": py_choque,
@@ -398,6 +611,10 @@ DIAGRAMAS = {
     "py-cual-uso": py_cual_uso,
     "py-aislamiento": py_aislamiento,
     "py-uv-docker": py_uv_docker,
+    "py-interprete": py_interprete,
+    "py-nombres": py_nombres,
+    "py-gil": py_gil,
+    "py-sintomas": py_sintomas,
 }
 
 

@@ -230,6 +230,7 @@ senales = [
   "la tabla de paquetes del contenedor trae pip, setuptools o reporte: un ambiente de uv no instala pip y el proyecto virtual no se instala",
   "Python del contenedor distinto de 3.13.x, que es lo que trae la imagen base",
   "el pull request trae archivos de python/: la branch nació de la entrega de DataCamp y no de main",
+  "el pull request trae archivos de 09_python/por_dentro/: son de la entrega tarea-09-por-dentro; la revisión automática no lo distingue porque las dos entregas comparten 09_python/",
 ]
 donde_investigar = [
   "https://rayalucaria.org/fdd_o26/python/ambientes/b-entregas/",

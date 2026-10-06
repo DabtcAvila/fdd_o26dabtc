@@ -368,13 +368,13 @@ Hay **cinco** problemas: cuatro líneas mal y una que falta. Para cada uno, di l
 :::
 
 ::: hint {of="xg-r1"}
-Revisa cada línea contra el ritual del curso: el orden, el `/.`, el `add` y el `push`. Uno de los cinco es una línea que falta.
+Revisa cada línea contra el ritual del curso: el orden, el `cp`, el `add` y el `push`. Uno de los cinco es una línea que falta.
 :::
 
 ::: answer {of="xg-r1"}
 - **Línea 1.** La rama nace de un `main` sin actualizar, y además la línea 2 la saca de ella: todo lo que sigue pasa en `main`. Crear la rama va **después** de las líneas 2 a 5.
-- **Línea 7.** Sin el `/.` final, `cp -r` copia **la carpeta**, y como el destino ya existe (lo creó la línea 6) la mete adentro: `09_python/09_python/`.
-- **Línea 9.** `git add .` aparta todo lo que cambió en el repo, incluida la basura. El curso aparta por ruta: `git add estudiantes/$GHUSER/09_python`.
+- **Línea 7.** `cp -r` copia **la carpeta entera**, y como el destino ya existe (lo creó la línea 6) la mete adentro: `09_python/09_python/`. El curso copia las dos carpetas por nombre: `cp -r codigo/09_python/ambientes codigo/09_python/uv_docker estudiantes/$GHUSER/09_python/`.
+- **Línea 9.** `git add .` aparta todo lo que cambió en el repo, incluida la basura. El curso aparta por ruta, las dos carpetas por nombre: `git add estudiantes/$GHUSER/09_python/ambientes estudiantes/$GHUSER/09_python/uv_docker`.
 - **Falta un `git status` después de la 9.** Es la última oportunidad de ver qué se va a guardar antes de guardarlo.
 - **Línea 11.** Sube `main` y no la rama de la tarea. Desde `main` la revisión rechaza el pull request.
 :::
@@ -419,9 +419,9 @@ git merge upstream/main
 git push origin main
 git switch -c tarea-09-uv-docker
 mkdir -p estudiantes/$GHUSER/09_python
-cp -r codigo/09_python/. estudiantes/$GHUSER/09_python/
+cp -r codigo/09_python/ambientes codigo/09_python/uv_docker estudiantes/$GHUSER/09_python/
 git status
-git add estudiantes/$GHUSER/09_python
+git add estudiantes/$GHUSER/09_python/ambientes estudiantes/$GHUSER/09_python/uv_docker
 git status
 git commit -m "unidad 09: labs y mi ambiente uv en Docker"
 git push -u origin tarea-09-uv-docker

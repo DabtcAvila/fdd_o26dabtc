@@ -20,7 +20,7 @@ cd {tu_fork_de_la_clase}     # la carpeta donde clonaste tu fork, sin llaves
 git switch main && git fetch upstream && git merge upstream/main
 git switch -c tarea-09-uv-docker
 mkdir -p estudiantes/$GHUSER/09_python
-cp -r codigo/09_python/. estudiantes/$GHUSER/09_python/
+cp -r codigo/09_python/ambientes codigo/09_python/uv_docker estudiantes/$GHUSER/09_python/
 cd estudiantes/$GHUSER/09_python && ls
 ```
 
@@ -33,9 +33,13 @@ Qué hace cada pieza:
 - `git switch -c tarea-09-uv-docker` — `-c` crea la branch y te cambia a ella.
 - `mkdir -p …` — crea tu carpeta; `-p` crea las intermedias y no truena si ya
   existe. `$GHUSER` es tu login de GitHub (`echo $GHUSER`).
-- `cp -r codigo/09_python/. …` — `-r` copia con subcarpetas; el `/.` final
-  copia el *contenido*: sin él quedaría `09_python/09_python/`.
-- `cd … && ls` — entras y compruebas que llegaron `ambientes/` y `uv_docker/`.
+- `cp -r codigo/09_python/ambientes codigo/09_python/uv_docker …` — `-r` copia
+  con subcarpetas; copias las dos carpetas por nombre. `por_dentro/` es de
+  otra entrega.
+- `cd … && ls` — entras y compruebas que llegaron `ambientes/` y `uv_docker/`
+  (`por_dentro/` aparece sólo cuando haces la entrega de la sección 9.2).
+
+Si ya hiciste este ritual, no lo vuelvas a correr.
 
 Los labs crean `.venv/` dentro de tu carpeta. No pasa nada: el `.gitignore`
 del curso lo deja fuera de git, y lo que sí se sube (`pyproject.toml`,
@@ -55,13 +59,13 @@ Cuando termines los labs y la entrega, desde la raíz del repo:
 
 ```bash
 cd {tu_fork_de_la_clase}     # la carpeta donde clonaste tu fork, sin llaves
-git add estudiantes/$GHUSER/09_python
+git add estudiantes/$GHUSER/09_python/ambientes estudiantes/$GHUSER/09_python/uv_docker
 git status        # .venv/ NO debe aparecer
 git commit -m "unidad 09: labs de ambientes y mi ambiente uv en Docker"
 git push -u origin tarea-09-uv-docker
 ```
 
-- `git add estudiantes/$GHUSER/09_python` — elige para el commit labs y
+- `git add estudiantes/$GHUSER/09_python/ambientes estudiantes/$GHUSER/09_python/uv_docker` — elige para el commit labs y
   entrega, nada más del repo.
 - `git status` — lista lo que entrará; si ves `.venv/`, detente.
 - `git commit -m "…"` — guarda los cambios con ese mensaje.

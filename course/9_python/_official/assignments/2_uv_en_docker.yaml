@@ -9,10 +9,11 @@ content:
     ambiente en el que corre, qué intérprete usa, dónde está su ambiente y qué
     paquetes tiene, cada uno con su versión. El punto de la entrega es comparar
     las dos salidas y explicar qué fijó el lock y qué no.
-    Todo se trabaja en tu carpeta de estudiante. La carpeta cero nueve guion
-    bajo python que publiqué en codigo se copia completa a la misma ruta dentro
-    de tu carpeta, con la barra y el punto al final del origen; si ya la
-    copiaste en clase, no la vuelvas a copiar, porque pisarías tus cambios. La
+    Todo se trabaja en tu carpeta de estudiante. De la carpeta cero nueve guion
+    bajo python que publiqué en codigo se copian dos subcarpetas por nombre,
+    ambientes y uv guion bajo docker, a la misma ruta dentro de tu carpeta; la
+    subcarpeta por guion bajo dentro es de otra entrega y no se copia. Si ya las
+    copiaste en clase, no las vuelvas a copiar, porque pisarías tus cambios. La
     entrega va en la subcarpeta uv guion bajo docker. Los laboratorios de
     clase, en la subcarpeta ambientes, se suben en este mismo pull request: los
     dos viven en cero nueve guion bajo python. Los punto venv que crean no se

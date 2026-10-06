@@ -67,14 +67,14 @@ Meta: que sepas en qué Python y con qué paquetes corre tu código, y cómo hac
 ## Antes de clase
 
 1. **uv instalado**: `uv --version` responde (instrucciones en [[python]]).
-2. **Tu carpeta lista**: abre tu fork en VS Code y, en su terminal, el ritual de la unidad, que deja la branch de la entrega y copia todo:
+2. **Tu carpeta lista**: abre tu fork en VS Code y, en su terminal, el ritual de la unidad, que deja la branch de la entrega y copia tus dos carpetas:
 
 ```bash
 cd {tu_fork_de_la_clase}
 git switch main && git fetch upstream && git merge upstream/main
 git switch -c tarea-09-uv-docker
 mkdir -p estudiantes/$GHUSER/09_python
-cp -r codigo/09_python/. estudiantes/$GHUSER/09_python/
+cp -r codigo/09_python/ambientes codigo/09_python/uv_docker estudiantes/$GHUSER/09_python/
 ls estudiantes/$GHUSER/09_python/ambientes
 ```
 
@@ -87,7 +87,7 @@ ls estudiantes/$GHUSER/09_python/ambientes
 - `git merge upstream/main` — mete eso nuevo en tu `main`.
 - `git switch -c tarea-09-uv-docker` — `-c` crea la branch de la entrega y te cambia a ella. Ahí trabajas labs y entrega.
 - `mkdir -p estudiantes/$GHUSER/09_python` — creas tu carpeta de la unidad; `-p` crea también las carpetas intermedias y no falla si ya existe. `$GHUSER` es tu usuario de GitHub, guardado en tu shell desde la unidad de Git.
-- `cp -r codigo/09_python/. estudiantes/$GHUSER/09_python/` — copias todo lo que publiqué (`-r`: con subcarpetas). La barra y el punto al final del origen copian el *contenido*, no la carpeta.
+- `cp -r codigo/09_python/ambientes codigo/09_python/uv_docker estudiantes/$GHUSER/09_python/` — copias las dos carpetas por nombre (`-r`: con subcarpetas) dentro de tu `09_python/`. `por_dentro/` es de otra entrega y no se copia aquí.
 - `ls estudiantes/$GHUSER/09_python/ambientes` — lista la carpeta: compruebas que llegaron los archivos de los labs.
 
 **Deberías ver** `hola.py`, `quien_soy.py`, `requirements.txt` y `script_autonomo.py`.

@@ -2,21 +2,21 @@
 id: python
 title: "Python"
 nav_title: "Python"
-summary: "Python para trabajar con datos de forma profesional. Empieza por lo que todo proyecto necesita antes de su primera línea: un ambiente."
+summary: "Python para trabajar con datos de forma profesional, en dos secciones: los ambientes con uv, y lo que hace Python por dentro cuando corre tu código."
 status: ready
-estimated_time: 120m
+estimated_time: 210m
 tags: [python, uv, ambientes, venv, pip]
 prerequisites: [contenedores]
 ---
 
 # Python
 
-**Una sección por ahora** · 12 páginas · unos 120 min
+**Dos secciones** · 18 páginas · unos 210 min
 
 ## En corto
 
 - La unidad es Python para trabajar con datos de forma profesional: código que corre igual en tu máquina, en la de otra persona y en un contenedor.
-- **Empieza por los ambientes**: dónde viven tus paquetes, qué versión de cada uno usa tu proyecto, y cómo se manejan con **uv**.
+- **Empieza por los ambientes**; sigue con lo que hace Python cuando corre tu código. Los ambientes contestan dónde viven tus paquetes y qué versión de cada uno usa tu proyecto, con **uv**.
 - Las demás secciones se agregan aquí cuando llega su clase.
 
 ## Las secciones
@@ -24,6 +24,7 @@ prerequisites: [contenedores]
 | # | Sección | Qué contesta | Sesión | Páginas | Min |
 |---:|---|---|---|---:|---:|
 | 1 | [[ambientes-python]] | Dónde viven tus paquetes, y cómo hacer que tu proyecto corra igual en otra máquina | jueves 1 de octubre, 19:00–20:00 | 12 | 120 |
+| 2 | [[python-por-dentro]] | Qué hace Python cuando corre tu código, para pedirle bien a la IA y revisar lo que te entrega | martes 6 de octubre, 19:00–20:30 | 6 | 90 |
 
 ## Antes de empezar
 

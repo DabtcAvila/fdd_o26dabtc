@@ -1301,3 +1301,147 @@ def test_uvd_dockerignore_valido_pasa(monkeypatch, capsys, linea):
 ], ids=["hueco3-vacio-con-punto", "locked-en-comentario"])
 def test_uvd_huecos_falsos_fallan(monkeypatch, capsys, df):
     assert _main(monkeypatch, "tarea-09-uv-docker", _uvd(Dockerfile=df)) == 1
+
+
+# --------------------------------------------------------------------------
+# tarea-09-por-dentro
+# --------------------------------------------------------------------------
+
+PD = RAIZ / "codigo/09_python/por_dentro"
+BPD = "estudiantes/ana/09_python/por_dentro/"
+NB_LIMPIO = (PD / "por_dentro.ipynb").read_text(encoding="utf-8")
+
+
+def _cert_pd(fecha="2026-10-06", url=URL_SOA, aprendi="Que *args junta los posicionales en una tupla."):
+    """La plantilla llena como la llenaria un alumno. La fecha por omision es
+    la de apertura: main() mide la fecha futura contra el reloj real, y la
+    apertura nunca es futura, corra el test el dia que corra."""
+    t = (PD / "certificado.md").read_text(encoding="utf-8")
+    t = t.replace("- Usuario de GitHub:", "- Usuario de GitHub: ana")
+    t = t.replace("- Usuario de DataCamp:", "- Usuario de DataCamp: ana-dc")
+    t = t.replace("Fecha en que lo terminaste (AAAA-MM-DD):", f"Fecha en que lo terminaste (AAAA-MM-DD): {fecha}")
+    t = t.replace("URL del Statement of Accomplishment:", f"URL del Statement of Accomplishment: {url}")
+    marca = "## Una cosa que aprendiste y no sabías\n"
+    assert marca in t
+    return t.replace(marca, marca + "\n" + aprendi + "\n") if aprendi else t
+
+
+def _rev_pd(sin=None):
+    t = (PD / "revision.md").read_text(encoding="utf-8")
+    partes = t.split("## Error ")
+    assert len(partes) == 6
+    llenas = [partes[0]]
+    for p in partes[1:]:
+        n = p[0]
+        if n == sin:
+            llenas.append(p)
+            continue
+        llenas.append(p.replace("Síntoma:", f"Síntoma: el síntoma {n} de la salida")
+                       .replace("Línea:", f"Línea: {10 + int(n)}")
+                       .replace("Por qué pasa:", "Por qué pasa: lo vimos en la página")
+                       .replace("Qué le pedirías a la IA:", "Qué le pedirías a la IA: que no lo haga"))
+    return "## Error ".join(llenas)
+
+
+def _prompt_pd():
+    t = (PD / "prompt.md").read_text(encoding="utf-8")
+    return t + "\nUsa Python 3.14 con uv run; entra gasolina.csv UTF-8; filas vacías se reportan; dame un caso por rama.\n"
+
+
+def _pd(**cambia):
+    base = {BPD + "certificado.md": _cert_pd(), BPD + "intermedio-python-developers.png": PNG,
+            BPD + "revision.md": _rev_pd(), BPD + "prompt.md": _prompt_pd(),
+            BPD + "por_dentro.ipynb": NB_LIMPIO}
+    base.update(cambia)
+    return base
+
+
+def test_pd_el_notebook_de_la_plantilla_no_dispara_el_patron():
+    assert '"output_type"' not in NB_LIMPIO
+
+
+def test_pd_bien_entregada_pasa(monkeypatch, capsys):
+    assert _main(monkeypatch, "tarea-09-por-dentro", _pd()) == 0, capsys.readouterr().out
+
+
+def test_pd_plantilla_sin_tocar_falla(monkeypatch, capsys):
+    assert _main(monkeypatch, "tarea-09-por-dentro", _pd(**{
+        BPD + "revision.md": (PD / "revision.md").read_text(encoding="utf-8")})) == 1
+
+
+def test_pd_revision_sin_un_error_falla(monkeypatch, capsys):
+    assert _main(monkeypatch, "tarea-09-por-dentro", _pd(**{BPD + "revision.md": _rev_pd(sin="3")})) == 1
+    assert "Error 3" in capsys.readouterr().out
+
+
+def test_pd_prompt_sin_llenar_falla(monkeypatch, capsys):
+    assert _main(monkeypatch, "tarea-09-por-dentro", _pd(**{
+        BPD + "prompt.md": (PD / "prompt.md").read_text(encoding="utf-8")})) == 1
+
+
+def test_pd_certificado_sin_aprendiste_falla(monkeypatch, capsys):
+    assert _main(monkeypatch, "tarea-09-por-dentro", _pd(**{
+        BPD + "certificado.md": _cert_pd(aprendi="")})) == 1
+
+
+def test_pd_sin_captura_falla(monkeypatch, capsys):
+    archivos = _pd()
+    del archivos[BPD + "intermedio-python-developers.png"]
+    assert _main(monkeypatch, "tarea-09-por-dentro", archivos) == 1
+
+
+def test_pd_notebook_con_salidas_falla(monkeypatch, capsys):
+    sucio = NB_LIMPIO.replace('"outputs": []', '"outputs": [{"output_type": "stream", "name": "stdout", "text": ["/home/ana\\n"]}]', 1)
+    assert sucio != NB_LIMPIO
+    assert _main(monkeypatch, "tarea-09-por-dentro", _pd(**{BPD + "por_dentro.ipynb": sucio})) == 1
+    assert "notebook" in capsys.readouterr().out
+
+
+def test_pd_sin_notebook_en_el_pr_no_corre_el_patron(monkeypatch, capsys):
+    archivos = _pd()
+    del archivos[BPD + "por_dentro.ipynb"]
+    assert _main(monkeypatch, "tarea-09-por-dentro", archivos) == 0, capsys.readouterr().out
+
+
+def test_pd_url_que_no_es_de_datacamp_solo_avisa(monkeypatch, capsys):
+    assert _main(monkeypatch, "tarea-09-por-dentro", _pd(**{
+        BPD + "certificado.md": _cert_pd(url="https://example.com/mi-certificado")})) == 0
+    assert "AVISO" in capsys.readouterr().out
+
+
+def _rev_con_linea(n, valor):
+    """revision.md llena, con el rotulo Linea del error n reemplazado."""
+    rev = _rev_pd()
+    partes = rev.split("## Error ")
+    partes[n] = re.sub(r"(?m)^Línea:.*$", f"Línea:{valor}", partes[n])
+    return "## Error ".join(partes)
+
+
+def test_pd_las_cinco_lineas_numericas_pasan(monkeypatch, capsys):
+    assert _main(monkeypatch, "tarea-09-por-dentro", _pd(**{
+        BPD + "revision.md": _rev_pd()})) == 0, capsys.readouterr().out
+
+
+@pytest.mark.parametrize("valor", [" x", "", " ", " abc 12"])
+def test_pd_una_linea_vacia_o_no_numerica_entre_buenas_falla(monkeypatch, capsys, valor):
+    rev = _rev_con_linea(3, valor)
+    assert rev.count("Línea:") == 5
+    assert _main(monkeypatch, "tarea-09-por-dentro", _pd(**{BPD + "revision.md": rev})) == 1
+    assert "vacía o no es un número" in capsys.readouterr().out
+
+
+def test_pd_url_de_app_datacamp_pasa_sin_aviso(monkeypatch, capsys):
+    url = "https://app.datacamp.com/completed/statement-of-accomplishment/course/abc123"
+    assert _main(monkeypatch, "tarea-09-por-dentro", _pd(**{
+        BPD + "certificado.md": _cert_pd(url=url)})) == 0
+    assert "AVISO" not in capsys.readouterr().out
+
+
+def test_pd_fecha_que_no_es_iso_falla(monkeypatch, capsys):
+    assert _main(monkeypatch, "tarea-09-por-dentro", _pd(**{
+        BPD + "certificado.md": _cert_pd(fecha="8 de octubre")})) == 1
+
+
+def test_pd_en_python_y_no_en_por_dentro_falla(monkeypatch, capsys):
+    assert _main(monkeypatch, "tarea-09-por-dentro", {
+        "estudiantes/ana/python/certificado.md": _cert_pd()}) == 1

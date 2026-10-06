@@ -121,11 +121,11 @@ cd {tu_fork_de_la_clase}
 git switch main && git fetch upstream && git merge upstream/main
 git switch -c tarea-09-uv-docker
 mkdir -p estudiantes/$GHUSER/09_python
-cp -r codigo/09_python/. estudiantes/$GHUSER/09_python/
+cp -r codigo/09_python/ambientes codigo/09_python/uv_docker estudiantes/$GHUSER/09_python/
 cd estudiantes/$GHUSER/09_python/uv_docker
 ```
 
-Son las mismas piezas del ritual de DataCamp, con otra branch y otra carpeta: `-c` crea `tarea-09-uv-docker`, y `cp -r …/.` trae `ambientes/` y `uv_docker/` juntas. El `cd` final te deja en la carpeta de la entrega.
+Son las mismas piezas del ritual de DataCamp, con otra branch y otra carpeta: `-c` crea `tarea-09-uv-docker`, y `cp -r` trae `ambientes/` y `uv_docker/` por nombre. Si ves `por_dentro/` en tu carpeta, es de la sección 9.2 y va en otra branch. El `cd` final te deja en la carpeta de la entrega.
 
 **Los pasos**, cada uno con lo que ya viste en [[lab-uv]] y en la unidad 8:
 
@@ -153,14 +153,14 @@ Son las mismas piezas del ritual de DataCamp, con otra branch y otra carpeta: `-
 
 ```bash
 cd {tu_fork_de_la_clase}
-git add estudiantes/$GHUSER/09_python
+git add estudiantes/$GHUSER/09_python/ambientes estudiantes/$GHUSER/09_python/uv_docker
 git status        # .venv/ NO debe aparecer
 git commit -m "unidad 09: labs de ambientes y mi ambiente uv en Docker"
 git push -u origin tarea-09-uv-docker
 ```
 
 - `cd {tu_fork_de_la_clase}` — vuelves a la raíz del repo, donde la ruta de `git add` existe.
-- `git add estudiantes/$GHUSER/09_python` — eliges labs y entrega juntos: toda tu carpeta de la unidad.
+- `git add estudiantes/$GHUSER/09_python/ambientes estudiantes/$GHUSER/09_python/uv_docker` — eliges labs y entrega juntos, por nombre. `por_dentro/`, si existe, se queda fuera.
 - `git status` — lista lo que va a entrar al commit. Si ves `.venv/`, detente antes de hacer commit.
 - `git commit -m` y `git push -u origin` — igual que en DataCamp, con esta branch.
 

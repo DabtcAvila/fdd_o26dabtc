@@ -2,7 +2,7 @@
 
 ## Project Structure & Module Organization
 
-This repository is the authored source for the Spanish-language ITAM course *Fuentes de Datos — Otoño 2026*. Course pages live in the ordered `course/` tree; every rendered directory has a `0_index.md`. Colocate learning objects in `_official/`, media in `_assets/`, and reviewed execution output in `_reviewed/`. `skins/` contains visual tokens. `tools/` contains generators and pytest guardrails. `artifact/` is generated output: never edit or commit it.
+This repository is the authored source for the Spanish-language ITAM course *Fuentes de Datos — Otoño 2026*. Course pages live in the ordered `course/` tree; every rendered directory has a `0_index.md`. Colocate learning objects in `_official/`, media in `_assets/`, and reviewed execution output in `_reviewed/`. `skins/` contains visual tokens. `tools/` contains generators and pytest guardrails. `artifact/` is generated output: never edit or commit it. `course/99_examenes/` is the exam review annex. Its printable sources live in the gitignored top-level `examenes/` and must never be committed, because the repo is public.
 
 ## Build, Test, and Development Commands
 
@@ -25,7 +25,7 @@ Use `validate` for fast feedback; `build` also validates; `preview` serves the g
 
 ## Coding Style & Naming Conventions
 
-Students work only inside `estudiantes/<login>/`, copied from `codigo/` with the mirror rule; never point a lab or task at a folder outside the repo. Labs travel in the PR of the task that shares their top-level folder; `.venv/` stays out through `.gitignore`. Write student-facing prose, titles, and instructions in Spanish. Keep technical IDs, object types, filenames, tags, and skin tokens in English. Numeric prefixes define order only; durable links use stable IDs such as `[[memoria-y-datos]]`. Use four spaces in Python and two spaces for nested YAML. Quote YAML values containing colons. Raw HTML is disabled, so use CommonMark and Raya directives.
+Students work only inside `estudiantes/<login>/`, copied from `codigo/` with the mirror rule; never point a lab or task at a folder outside the repo. Labs travel in the PR of the task that shares their subfolder (`09_python/por_dentro/` goes with `tarea-09-por-dentro`); `.venv/` stays out through `.gitignore`. Write student-facing prose, titles, and instructions in Spanish. Keep technical IDs, object types, filenames, tags, and skin tokens in English. Numeric prefixes define order only; durable links use stable IDs such as `[[memoria-y-datos]]`. Use four spaces in Python and two spaces for nested YAML. Quote YAML values containing colons. Raw HTML is disabled, so use CommonMark and Raya directives.
 
 ## Testing Guidelines
 
