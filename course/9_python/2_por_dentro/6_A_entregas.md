@@ -47,7 +47,7 @@ Los comandos son para la terminal de **Linux, WSL2 o macOS**. `{tu_fork_de_la_cl
 
 - `certificado.md` con sus tres secciones llenas: tus usuarios de GitHub y de DataCamp (nada de nombre completo ni correo: el repo es público); la fecha en que terminaste, **en formato `AAAA-MM-DD`**, y la **URL del Statement of Accomplishment**; y una cosa concreta que aprendiste.
 - `intermedio-python-developers.png`: el curso terminado, con **tu nombre visible**: la página del curso al 100 % o tu Statement of Accomplishment. Con ese nombre exacto, porque `certificado.md` ya lo enlaza. Si te sale en `jpg`, corrige el enlace dentro del archivo.
-- `por_dentro.ipynb`, **terminado**: cada celda de la clase (0.1, 1.0 a 1.4, 2.1 a 2.4, 3.1 a 3.4, 4.1 a 4.4 y 5.1) con su código, pegado de la página y corrido. Las de lectura, si las hiciste. Sin salidas (abajo).
+- `por_dentro.ipynb`, **corrido de principio a fin**: ya trae la explicación y el código de cada celda; lo corres en orden, celda por celda, y puedes agregar tus notas o tus pruebas. Sin salidas (abajo).
 - `revision.md`: los cinco errores de `revisa_esto.py`, uno por sección (`## Error 1` a `## Error 5`). Cada uno con sus cuatro rótulos llenos: `Síntoma:`, `Línea:`, `Por qué pasa:` y `Qué le pedirías a la IA:`.
 - `prompt.md`: en `## Mi prompt`, el prompt que le darías a una IA para la tarea de `## La tarea`. Como mínimo: versión de Python y cómo se corre, qué entra y qué sale, qué hacer con los casos borde y cómo vas a verificar.
 
@@ -118,7 +118,7 @@ Quien revisa puede pedirte que expliques cualquiera de estos puntos, en el pull 
 | Que todo viva dentro de `09_python/` y la branch se llame como debe | Que la captura sea tuya y de este curso |
 | Que esté la captura, con su nombre | Que la URL abra tu certificado |
 | Que las nueve secciones de los tres archivos estén llenas; fecha `AAAA-MM-DD`; URL presente | Que la línea y la causa de cada error sean las correctas |
-| Que el notebook venga y no sea la plantilla sin tocar; que no traiga salidas (salvo si pesa más de 1 MB); avisa si trae celdas de código vacías; que cada `Línea:` sea un número | Que tu prompt sirva como especificación |
+| Que el notebook venga y no traiga salidas (salvo si pesa más de 1 MB); que cada `Línea:` sea un número | Que tu prompt sirva como especificación |
 
 **Lo que no distingue**: dentro de `09_python/` no sabe si un archivo es de esta entrega o de la de uv y Docker, porque las dos comparten esa carpeta. Un pull request que mezcle `por_dentro/` con `uv_docker/` puede salir en verde; lo revisa una persona.
 

@@ -29,6 +29,9 @@ pagina = "Página «Las entregas de Python por dentro» (https://rayalucaria.org
 [entregables]
 requeridos = ["certificado.md", "revision.md", "prompt.md", "por_dentro.ipynb"]
 prohibidos = []
+# El notebook ya trae el código: corrido y limpio de salidas queda igual a
+# la plantilla. Eso sólo avisa; los .md los atrapan sus [[secciones]].
+identica = "aviso"
 
 [[capturas]]
 nombre = "intermedio-python-developers"
@@ -106,13 +109,6 @@ porque = "las salidas guardan rutas de tu máquina, que pueden incluir tu nombre
 investiga = "Página «Las entregas de Python por dentro»: ¿en qué estado debe llegar el notebook?"
 nivel = "falla"
 
-[[patrones]]
-archivo = "por_dentro.ipynb"
-no_debe = '"source": \[\]'
-que = "el notebook por_dentro.ipynb trae celdas de código vacías"
-porque = "el notebook terminado es parte de la entrega: cada celda vacía es un ejemplo de la clase que no corriste"
-investiga = "Página «Las entregas de Python por dentro»: ¿qué celdas debe traer llenas el notebook?"
-nivel = "aviso"
 
 [[patrones]]
 archivo = "revision.md"
@@ -124,7 +120,7 @@ nivel = "falla"
 
 [revision]
 foco = [
-  "que el notebook traiga el código de cada celda de la clase, sin salidas",
+  "que el notebook venga sin salidas; si llega igual a la plantilla, es el aviso de identica: pregunta en clase si lo corrió",
   "que la captura sea la página de Intermediate Python for Developers terminado al 100 % o su Statement of Accomplishment, con el nombre del alumno",
   "que la URL abra un Statement of Accomplishment de este curso y no de Introduction to Python for Developers",
   "que la fecha sea verosímil: no futura, ni anterior al 2026-10-06 sin explicación",

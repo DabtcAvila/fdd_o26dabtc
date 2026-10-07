@@ -215,6 +215,33 @@ dis.dis(suma)
 - `BINARY_OP 0 (+)` es la suma. **No dice de qué tipo**: `+` no sabe si sumará números o textos hasta que corre.
 - `__pycache__/` guarda el bytecode de los módulos que importas (no del script que corres directo). No va a git.
 
+### Qué es el bytecode, y por qué existe
+
+El **bytecode** es una lista de instrucciones simples que CPython genera a partir de tu código **antes** de correrlo. No es código de máquina: no lo ejecuta el procesador, lo ejecuta la **máquina virtual** de CPython, un ciclo que lee una instrucción, la hace y pasa a la siguiente.
+
+**Por qué no correr el texto directo:** analizar el texto de un programa (dónde empieza cada palabra, qué significa cada paréntesis) es caro. Traducirlo **una vez** a instrucciones simples, y ejecutar ésas, es más rápido. Y el mismo bytecode corre en cualquier sistema donde exista CPython. Python lo hace así desde sus primeras versiones (1991); los `.pyc` de `__pycache__/` guardan esa traducción para no repetirla.
+
+**No es invento de Python.** La idea viene del *p-code* de UCSD Pascal (finales de los 70) y la usan, entre otros:
+
+| Lenguaje | Su bytecode | Desde |
+|---|---|---|
+| Java | archivos `.class`, que corre la JVM | 1995 |
+| C# y .NET | CIL | 2002 |
+| Ruby | YARV | 1.9, 2007 |
+| Navegadores | WebAssembly | 2017 |
+
+**Cómo funciona: una pila.** La máquina virtual de CPython trabaja con una **pila**, una lista donde las instrucciones ponen valores arriba y los sacan de arriba. Así corre `suma(2, 3)` (la salida completa de `dis` agrega `RESUME`, que sólo marca el inicio, y `RETURN_VALUE`):
+
+| Instrucción | Qué hace | La pila queda |
+|---|---|---|
+| `LOAD_FAST_BORROW_LOAD_FAST_BORROW (a, b)` | pone `a` y `b` en la pila: dos cargas de variables locales juntas en una instrucción (3.14) | `2, 3` |
+| `BINARY_OP (+)` | saca los dos de arriba, los suma y pone el resultado | `5` |
+| `RETURN_VALUE` | saca el de arriba y lo regresa | vacía; `suma` regresa `5` |
+
+- **El bytecode no lleva tipos**: `BINARY_OP (+)` es la misma instrucción para números y para textos. Por eso Python no te avisa de un error de tipo antes de correr la línea.
+- Desde 3.11 (2022, PEP 659) la máquina virtual **se especializa**: si un `BINARY_OP` siempre ve enteros, lo cambia por una versión sólo para enteros, más rápida. Fue lo que hizo a 3.11 notablemente más rápido.
+- Desde 3.13 (2024, PEP 744) hay un **JIT** experimental: traduce el bytecode que más se repite a código de máquina.
+
 **Haz (celda 1.7):**
 
 ```python

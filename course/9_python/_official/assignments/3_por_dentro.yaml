@@ -47,9 +47,9 @@ content:
     primera. Debe decir, como mínimo, la versión de Python y cómo se corre,
     qué entra y qué sale, qué hacer con los casos borde, y cómo vas a
     verificar que funciona. El archivo de gasolina no existe y no se entrega.
-    El quinto es el notebook, por dentro punto ipynb, terminado: cada celda de
-    la clase con su código, pegado de la página y corrido. Las celdas de
-    lectura, si las hiciste. En el mismo pull request viajan también los
+    El quinto es el notebook, por dentro punto ipynb, corrido de principio a
+    fin: ya trae la explicación y el código de cada celda, lo corres en orden y
+    puedes agregar tus notas o tus pruebas. En el mismo pull request viajan también los
     programas de los labs, porque viven en la misma carpeta. El notebook va
     sin salidas: antes
     de agregarlo al commit, en VS Code, limpias todas las salidas y guardas. Las

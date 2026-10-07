@@ -1399,15 +1399,12 @@ def test_pd_el_notebook_de_la_plantilla_no_dispara_el_patron():
     assert '"output_type"' not in NB_LIMPIO
 
 
-def test_pd_notebook_sin_tocar_falla(monkeypatch, capsys):
-    """El notebook terminado es parte de la entrega: la plantilla tal cual no cuenta."""
-    assert _main(monkeypatch, "tarea-09-por-dentro", _pd(**{BPD + "por_dentro.ipynb": NB_LIMPIO})) == 1
-
-
-def test_pd_notebook_con_celdas_vacias_solo_avisa(monkeypatch, capsys):
-    assert _main(monkeypatch, "tarea-09-por-dentro",
-                 _pd(**{BPD + "por_dentro.ipynb": _nb_terminado(vacias=3)})) == 0
+def test_pd_notebook_igual_a_la_plantilla_solo_avisa(monkeypatch, capsys):
+    """El notebook ya trae el código: corrido y limpio queda igual a la plantilla."""
+    assert _main(monkeypatch, "tarea-09-por-dentro", _pd(**{BPD + "por_dentro.ipynb": NB_LIMPIO})) == 0
     assert "AVISO" in capsys.readouterr().out
+
+
 
 
 def test_pd_bien_entregada_pasa(monkeypatch, capsys):
