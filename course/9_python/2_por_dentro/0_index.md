@@ -114,7 +114,7 @@ Si no sale nada y el comando terminó, `$GHUSER` estaba vacío: vuelve al paso 0
 
 ```text
 [tarea-09-por-dentro 98a9d59] unidad 09: plantilla de por_dentro
- 13 files changed, 1423 insertions(+)
+ 13 files changed, 1437 insertions(+)
  create mode 100644 estudiantes/ana/09_python/por_dentro/.python-version
  create mode 100644 estudiantes/ana/09_python/por_dentro/certificado.md
  create mode 100644 estudiantes/ana/09_python/por_dentro/gil.py
@@ -158,6 +158,62 @@ Abrir `por_dentro/` como carpeta, y no el fork entero, hace que VS Code encuentr
 
 > [!WARNING]
 > `09_python/` ya tiene tu entrega de uv y Docker. Son **dos branches y dos pull requests**: en esta branch sólo se sube `09_python/por_dentro/`. Si cambias a otra branch y ves `por_dentro/` con sólo `.venv/` y `__pycache__/` adentro, es normal: lo ignorado por git no se va al cambiar de branch.
+
+## Dónde corre tu notebook, y cómo encuentra `trabajo.py`
+
+El kernel del notebook corre en una carpeta: la **carpeta de trabajo**. Es el `pwd` de Python, y VS Code la pone en la carpeta donde está el notebook: `por_dentro/`. Todo lo que una celda nombra **sin ruta** —`trabajo.py`, `revisa_esto.py`, `ventas.csv`— se busca ahí.
+
+**Haz (celda 0.0):** antes de cualquier otra celda.
+
+```python
+import os
+print(os.getcwd())
+print(sorted(os.listdir()))
+```
+
+**Qué hace cada línea:**
+
+- `import os` — trae el módulo que habla con el sistema operativo.
+- `os.getcwd()` — la carpeta de trabajo (*get current working directory*): lo mismo que `pwd` en la terminal.
+- `sorted(os.listdir())` — los archivos de esa carpeta, en orden alfabético.
+
+**Deberías ver:** una ruta que termina en `09_python/por_dentro`, y en la lista `trabajo.py`, `revisa_esto.py` y `ventas.csv`.
+
+```text
+…/estudiantes/ana/09_python/por_dentro
+['.python-version', '.venv', 'certificado.md', 'gil.py', 'por_dentro.ipynb', 'prompt.md', 'puntaje.py', 'pyproject.toml', 'resume_ventas.py', 'revisa_esto.py', 'revision.md', 'trabajo.py', 'uv.lock', 'ventas.csv']
+```
+
+**Cómo funciona `from trabajo import calcula`.** Python recorre una lista de carpetas, `sys.path`, en orden, y usa el primer `trabajo.py` que encuentra. En el kernel esa lista trae la librería estándar, luego la carpeta de trabajo (en `sys.path` aparece como `''`, «aquí») y luego los paquetes del `.venv/`. `trabajo.py` sólo está en la carpeta de trabajo: si ésa no es `por_dentro/`, Python no lo encuentra.
+
+::: figure {#py-import title="Dónde busca Python lo que importas"}
+![Arriba, la celda from trabajo import calcula. Debajo, dos columnas con las carpetas de sys.path en el orden en que Python las recorre. Izquierda, el kernel corre en por_dentro: la librería estándar no tiene trabajo.py, la carpeta de trabajo sí y gana. Derecha, el kernel corre en la raíz del fork: ninguna de las tres carpetas lo tiene y sale ModuleNotFoundError. Al pie: os.getcwd dice cuál es la carpeta de trabajo, y un nombre sin ruta se busca ahí.](../_assets/py-import.svg)
+:::
+
+**Si algo falla en el notebook**, corre primero la celda 0.0: casi siempre la carpeta de trabajo es otra.
+
+| Ves… | Por qué | Haces… |
+|---|---|---|
+| `ModuleNotFoundError: No module named 'trabajo'` | La carpeta de trabajo no es `por_dentro/`, o `trabajo.py` no está ahí | Celda 0.0: ¿la ruta termina en `por_dentro`? ¿La lista trae `trabajo.py`? |
+| `can't open file '…/revisa_esto.py'` | Lo mismo: el nombre sin ruta se busca en la carpeta de trabajo | Celda 0.0 |
+| La lista de la celda 0.0 no trae `trabajo.py`, pero la ruta sí es `por_dentro` | Copiaste la plantilla antes de la actualización | La sección «Si hiciste el ritual antes…», abajo |
+| Cambiaste `trabajo.py` y el notebook sigue usando la versión vieja | Python importa un módulo una sola vez por kernel | *Restart* del kernel (barra de arriba del notebook) y vuelve a correr las celdas |
+
+Si la ruta de la celda 0.0 no es `por_dentro`, cámbiala desde el notebook.
+
+**Haz (celda 0.0, debajo de lo anterior):** con la ruta que te da `pwd` en la terminal, dentro de tu carpeta `por_dentro/`.
+
+```python
+os.chdir("{ruta_de_tu_por_dentro}")
+print(os.getcwd())
+```
+
+**Qué hace cada línea:**
+
+- `os.chdir("…")` — cambia la carpeta de trabajo del kernel (*change directory*): lo mismo que `cd` en la terminal. Escribe tu ruta, sin las llaves.
+- `print(os.getcwd())` — confirma el cambio.
+
+**Deberías ver:** la ruta que termina en `09_python/por_dentro`. Desde ahí `from trabajo import calcula` funciona, sin reiniciar el kernel. Para no volver a hacerlo, abre VS Code dentro de `por_dentro/` (`code .`, como en «Abre el notebook»).
 
 ## Si algo sale mal
 

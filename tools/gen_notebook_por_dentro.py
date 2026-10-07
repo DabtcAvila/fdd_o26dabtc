@@ -12,6 +12,7 @@ RAIZ = Path(__file__).resolve().parent.parent
 DESTINO = RAIZ / "codigo/09_python/por_dentro/por_dentro.ipynb"
 
 CELDAS = [
+    ("0.0", "¿Dónde estoy? (la carpeta de trabajo)"),
     ("0.1", "Arranque: corre revisa_esto.py"),
     ("1.0", "Una función en 30 segundos"),
     ("1.1", "precio_final"),

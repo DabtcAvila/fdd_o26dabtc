@@ -602,7 +602,49 @@ def py_sintomas():
     return "".join(p)
 
 
+
+def py_import():
+    """Donde busca Python lo que importa el notebook: sys.path, en orden."""
+    ancho, alto = 1080, 520
+    aria = (
+        "Arriba, la celda from trabajo import calcula. Debajo, dos columnas con "
+        "las carpetas de sys.path en el orden en que Python las recorre buscando "
+        "trabajo.py. Izquierda, el kernel corre en por_dentro: la libreria "
+        "estandar no lo tiene, la carpeta de trabajo, que es por_dentro, si lo "
+        "tiene y gana. Derecha, el kernel corre en la raiz del fork: ni la "
+        "libreria estandar, ni la carpeta de trabajo, ni los paquetes del .venv "
+        "lo tienen, y sale ModuleNotFoundError. Al pie: os.getcwd dice cual es "
+        "la carpeta de trabajo, y un nombre sin ruta se busca ahi"
+    )
+    p = [marco(ancho, alto, aria)]
+    p.append(texto(ancho / 2, 44, "Dónde busca Python lo que importas", TEXTO, 21, peso="600"))
+    p.append(caja(340, 64, 400, 44, PANEL, ACENTO, radio=8))
+    p.append(teclado(540, 92, "from trabajo import calcula", ACENTO, 16))
+    p.append(texto(270, 140, "kernel en por_dentro/", ACENTO, 16, peso="600"))
+    p.append(texto(810, 140, "kernel en la raíz del fork", ROJO, 16, peso="600"))
+
+    izquierda = (("librería estándar", "no está trabajo.py", SUAVE, LINEA),
+                 ("carpeta de trabajo: por_dentro/", "aquí está trabajo.py → gana", ACENTO, ACENTO),
+                 (".venv/…/site-packages", "ya no se busca", SUAVE, LINEA))
+    derecha = (("librería estándar", "no está trabajo.py", SUAVE, LINEA),
+               ("carpeta de trabajo: raíz del fork", "no está trabajo.py", SUAVE, LINEA),
+               (".venv/…/site-packages", "tampoco → ModuleNotFoundError", ROJO, ROJO))
+    for x0, filas in ((50, izquierda), (590, derecha)):
+        for i, (carpeta, nota, color, borde) in enumerate(filas):
+            y = 160 + i * 82
+            p.append(caja(x0, y, 440, 64, PANEL, borde))
+            p.append(texto(x0 + 26, y + 39, str(i + 1), SUAVE, 16, peso="600"))
+            p.append(teclado(x0 + 50, y + 30, carpeta, color, 14, anclaje="start"))
+            p.append(texto(x0 + 50, y + 52, nota, color if borde != LINEA else SUAVE, 12.5, anclaje="start"))
+            if i < 2:
+                p.append(flecha(x0 + 26, y + 66, x0 + 26, y + 80, LINEA, 1.5))
+    p.append(texto(ancho / 2, 440, "os.getcwd() dice cuál es la carpeta de trabajo", TEXTO, 15))
+    p.append(texto(ancho / 2, 470, "trabajo.py, revisa_esto.py y ventas.csv se buscan ahí: un nombre sin ruta es relativo a ella", SUAVE, 13.5))
+    p.append(cierre())
+    return "".join(p)
+
 DIAGRAMAS = {
+    "py-import": py_import,
     "py-mapa": py_mapa,
     "py-choque": py_choque,
     "py-path": py_path,
