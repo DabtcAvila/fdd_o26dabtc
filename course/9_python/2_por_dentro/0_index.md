@@ -114,7 +114,7 @@ Si no sale nada y el comando terminó, `$GHUSER` estaba vacío: vuelve al paso 0
 
 ```text
 [tarea-09-por-dentro 98a9d59] unidad 09: plantilla de por_dentro
- 13 files changed, 1437 insertions(+)
+ 13 files changed, 2865 insertions(+)
  create mode 100644 estudiantes/ana/09_python/por_dentro/.python-version
  create mode 100644 estudiantes/ana/09_python/por_dentro/certificado.md
  create mode 100644 estudiantes/ana/09_python/por_dentro/gil.py
