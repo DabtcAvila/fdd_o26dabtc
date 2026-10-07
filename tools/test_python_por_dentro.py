@@ -83,7 +83,7 @@ ORDEN = [
     ("5_trabajar_con_ia.md", "trabajar-con-ia"),
 ]
 ANEXO = ("6_A_entregas.md", "entregas-por-dentro")
-TOPE = {"python-por-dentro": 340, "que-es-python": 280, "nombres-y-objetos": 240,
+TOPE = {"python-por-dentro": 380, "que-es-python": 280, "nombres-y-objetos": 240,
         "el-gil": 300, "lo-que-escribe-la-ia": 250, "trabajar-con-ia": 260,
         "entregas-por-dentro": 260}
 ANALOGIAS = ("imagina", "es como", "como si", "analogía", "piensa en",

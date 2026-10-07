@@ -215,6 +215,54 @@ print(os.getcwd())
 
 **Deberías ver:** la ruta que termina en `09_python/por_dentro`. Desde ahí `from trabajo import calcula` funciona, sin reiniciar el kernel. Para no volver a hacerlo, abre VS Code dentro de `por_dentro/` (`code .`, como en «Abre el notebook»).
 
+**Tres cosas más, para cuando algo no cuadra:**
+
+**Haz (celda 0.0, debajo de lo anterior):** verifica **qué** `trabajo.py` usó Python.
+
+```python
+import trabajo
+print(trabajo.__file__)
+```
+
+**Qué hace cada línea:**
+
+- `import trabajo` — importa el módulo completo, no sólo una función.
+- `trabajo.__file__` — la ruta del archivo de donde salió. Si no es el de tu `por_dentro/`, estás usando otro.
+
+**Deberías ver:**
+
+```text
+…/estudiantes/ana/09_python/por_dentro/trabajo.py
+```
+
+**Haz (celda 0.0, debajo de lo anterior):** dile a Python dónde buscar, sin cambiar la carpeta de trabajo.
+
+```python
+import sys
+sys.path.insert(0, "{ruta_de_tu_por_dentro}")
+```
+
+**Qué hace cada línea:**
+
+- `sys.path.insert(0, "…")` — pone tu carpeta al **principio** de la lista donde Python busca módulos. Escribe tu ruta, sin las llaves.
+
+**Deberías ver:** nada; desde ahí `from trabajo import calcula` funciona. **Sólo arregla los `import`**: `revisa_esto.py` y `ventas.csv` se siguen buscando en la carpeta de trabajo. Por eso el arreglo completo es `os.chdir`.
+
+**Haz (celda 0.0, debajo de lo anterior):** fuerza a Python a volver a leer `trabajo.py` después de cambiarlo, sin reiniciar el kernel.
+
+```python
+import importlib
+importlib.reload(trabajo)
+from trabajo import calcula
+```
+
+**Qué hace cada línea:**
+
+- `importlib.reload(trabajo)` — vuelve a leer el archivo; sin esto, el kernel sigue con la versión que importó la primera vez.
+- `from trabajo import calcula` — vuelve a tomar `calcula` del módulo recién leído: el nombre viejo apuntaba a la función vieja.
+
+**Deberías ver:** nada; desde ahí `calcula` es la versión nueva. Si dudas, *Restart* del kernel hace lo mismo y más.
+
 ## Si algo sale mal
 
 | Ves… | Por qué | Haces… |
