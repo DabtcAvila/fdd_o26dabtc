@@ -150,6 +150,19 @@ Installed 48 packages in 212ms
 
 - Cifras de una corrida real: 54 paquetes resueltos, 48 instalados. Las versiones deben ser éstas: `polars==2.0.0`, no una 1.x. Los milisegundos cambian.
 
+**Haz 3b · registra el kernel con un nombre que no se confunde:**
+
+```bash
+uv run python -m ipykernel install --user --name fdd-stack --display-name "fdd · stack (3.14)"
+```
+
+**Qué hace cada pieza:**
+
+- `uv run python -m ipykernel install` — registra el Python de **este** `.venv` como kernel de Jupyter. Si tienes otro `.venv` (el de la raíz del repo, con 3.12), VS Code los muestra a los dos con el mismo nombre `.venv`; éste ya no.
+- `--user --name fdd-stack --display-name "…"` — lo guarda en tu usuario con el nombre que verás en la lista. Correrlo otra vez lo reemplaza.
+
+**Deberías ver:** `Installed kernelspec fdd-stack in …/jupyter/kernels/fdd-stack`
+
 **Haz 4 · abre la carpeta en VS Code:**
 
 ```bash
@@ -164,13 +177,13 @@ Luego, en orden:
 
 1. **Cierra cualquier otra ventana de VS Code del curso.** Dos ventanas abiertas son dos terminales en carpetas distintas.
 2. En la ventana nueva: *Terminal → New Terminal*, y escribe `pwd`.
-3. Abre `a_contratos.ipynb` → *Select Kernel* → *Python Environments* → `.venv`.
+3. Abre `a_contratos.ipynb` → *Select Kernel* → *Jupyter Kernel…* → **fdd · stack (3.14)**. Si no aparece, recarga la lista (el ícono ↻) o repite el Haz 3b.
 4. Corre la celda **A.0** (Shift+Enter).
 
 **Deberías ver:**
 
 - `pwd` termina en `09_python/stack`.
-- Arriba a la derecha del notebook dice `.venv`.
+- Arriba a la derecha del notebook dice `fdd · stack (3.14)`.
 - A.0 imprime las versiones (`polars 2.0.0`, `duckdb 1.5.6`, `pandas 3.0.6`, `pydantic 2.14.0`…), una ruta dentro de `09_python/stack/.venv/` que termina en `.venv/bin/python` o `python3`, tu RAM y el `N` que te recomienda («Tienes … GB de RAM → te recomendamos N = …»).
 
 A.0 **no cambia** `N`: lo cambias tú, dejando una sola línea sin `#`.
@@ -179,7 +192,8 @@ A.0 **no cambia** `N`: lo cambias tú, dejando una sola línea sin `#`.
 
 | Síntoma | Causa | Qué haces |
 |---|---|---|
-| `ModuleNotFoundError: No module named 'polars'` | El kernel no es el del `.venv` | A.0 imprime qué Python corre; elige el `.venv` |
+| `ModuleNotFoundError: No module named 'polars'` | El kernel es otro `.venv` (p. ej. el de la raíz, 3.12) | Elige **fdd · stack (3.14)**; *Restart*; A.0 imprime qué Python corre |
+| `warning: VIRTUAL_ENV=… does not match the project environment` | Tienes activado otro ambiente | `deactivate`; el aviso no rompe nada |
 | `uv sync` lento | La red | Trabaja en pareja; termina en casa |
 | `uv sync` compila algo por minutos | No hay rueda (paquete ya compilado) para tu plataforma | Pide ayuda |
 | Polars avisa de una CPU sin AVX2 al importar | CPU vieja | Pide ayuda |
@@ -197,7 +211,7 @@ Cada página y cada notebook dicen, en su propia línea, a dónde ir.
 | Marca | Dónde | Qué haces | Cómo sé que estoy bien |
 |---|---|---|---|
 | `**📄 PÁGINA · <título>**` | El sitio | Lees el concepto y la tabla | Estás en la página que dice la marca |
-| `**📓 NOTEBOOK · <archivo> · celdas X.n–X.m**` | VS Code, el notebook | Corres en orden y comparas con «Deberías ver» | Arriba a la derecha dice `.venv` |
+| `**📓 NOTEBOOK · <archivo> · celdas X.n–X.m**` | VS Code, el notebook | Corres en orden y comparas con «Deberías ver» | Arriba a la derecha dice `fdd · stack (3.14)` |
 | `**💻 TERMINAL · en stack/ (comprueba con pwd)**` | La terminal de la ventana de `stack/` | Un comando sobre un `.py` | `pwd` termina en `09_python/stack` |
 
 **¿Te perdiste?** Corre la celda X.0 del notebook (A.0, B.0 o C.0) y salta a la celda que vamos: X.0 deja todo listo.
