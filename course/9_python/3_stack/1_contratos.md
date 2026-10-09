@@ -33,7 +33,7 @@ Un **contrato** es lo que tu código promete sobre un dato: qué campos trae, de
 
 | Celda | Qué compara | Qué sale |
 |---|---|---|
-| A.0 | — | Versiones, el Python del `.venv`, tu RAM y el `N` recomendado |
+| A.0 | — | Versiones, el Python de `.venv-stack`, tu RAM y el `N` recomendado |
 | A.1 | `class`, herencia y `@dataclass`: lo justo para leer lo que sigue | `Punto(x=1, y=2)` |
 | A.2 | `total(precios: list[float])` con números y con textos | `TypeError` **dentro** de `total`, en la línea de `sum` |
 
