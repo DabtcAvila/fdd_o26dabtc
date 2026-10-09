@@ -13,7 +13,7 @@ el stack escrito».
 
 ## Salida de pytest
 
-Pega la salida completa de `uv run pytest -v --no-header test_practica.py`,
+Pega la salida completa de `pytest -v --no-header test_practica.py`,
 corrido en `stack/`. `--no-header` quita las líneas con la ruta de tu máquina.
 
 ```text
@@ -21,14 +21,14 @@ corrido en `stack/`. `--no-header` quita las líneas con la ruta de tu máquina.
 
 ## Salida de ruff
 
-Pega la salida de `uv run ruff check practica.py test_practica.py`.
+Pega la salida de `ruff check practica.py test_practica.py`.
 
 ```text
 ```
 
 ## Salida de mypy
 
-Pega la salida de `uv run mypy practica.py`.
+Pega la salida de `mypy practica.py`.
 
 ```text
 ```

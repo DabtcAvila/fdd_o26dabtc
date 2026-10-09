@@ -62,9 +62,9 @@ Los tres comandos de `decisiones.md`, en la terminal de `stack/`:
 
 | Comando | Deberías ver al final |
 |---|---|
-| `uv run pytest -v --no-header test_practica.py` | Una línea por caso y `3 passed` o más, sin `failed`, `error` ni `skipped` |
-| `uv run ruff check practica.py test_practica.py` | `All checks passed!` |
-| `uv run mypy practica.py` | `Success: no issues found in 1 source file` |
+| `pytest -v --no-header test_practica.py` | Una línea por caso y `3 passed` o más, sin `failed`, `error` ni `skipped` |
+| `ruff check practica.py test_practica.py` | `All checks passed!` |
+| `mypy practica.py` | `Success: no issues found in 1 source file` |
 
 `--no-header` quita las dos líneas de arriba de pytest que traen la ruta de tu máquina (`platform` y `rootdir`). Un error largo puede traer otras: si lo que pegas tiene `/home/`, `/Users/` o `C:\Users`, la revisión automática lo rechaza, porque el repo es público. Las pruebas de este proyecto convierten en error la sintaxis vieja de Pydantic: si `practica.py` la usa, pytest dice `error`. Mientras `practica.py` no defina `Venta`, pytest salta `test_practica.py` y dice `1 skipped`: **eso no es verde**.
 

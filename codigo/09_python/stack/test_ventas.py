@@ -1,4 +1,4 @@
-"""Tres pruebas del contrato Venta. Corre: uv run pytest test_ventas.py"""
+"""Tres pruebas del contrato Venta. Corre: pytest test_ventas.py"""
 
 import pytest
 from pydantic import ValidationError

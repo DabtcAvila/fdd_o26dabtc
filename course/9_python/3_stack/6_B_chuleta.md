@@ -96,7 +96,7 @@ Algunos nombres son las dos cosas. Al leer código, distingue cuál de las dos e
 
 ## Quién lee qué
 
-Probado en el `.venv` de `stack/` con las versiones de `uv.lock`. ✅ = lo lee con lo que ya instalaste. «con X» = necesita instalar X (`uv add X`). Una «extensión» de DuckDB se descarga sola la primera vez que la usas (pide red). ❌ = no lo lee directo.
+Probado en `.venv-stack` con las versiones de `uv.lock`. ✅ = lo lee con lo que ya instalaste. «con X» = necesita instalar X (`uv add X`). Una «extensión» de DuckDB se descarga sola la primera vez que la usas (pide red). ❌ = no lo lee directo.
 
 | Formato | Polars | DuckDB | pandas | PyArrow |
 |---|---|---|---|---|

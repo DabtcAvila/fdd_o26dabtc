@@ -4,7 +4,7 @@ Así lo escribió una IA a la que no se le dijo qué stack usar: eligió lo que
 más vio. Corre con las versiones de este proyecto, con avisos de deprecación.
 No lo arregles aquí: tu versión va en practica.py.
 
-Corre: uv run ventas_ia.py
+Corre: python ventas_ia.py
 """
 
 import csv

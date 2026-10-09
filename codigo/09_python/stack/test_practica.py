@@ -1,4 +1,4 @@
-"""Las pruebas de practica.py. Corre: uv run pytest -v --no-header test_practica.py
+"""Las pruebas de practica.py. Corre: pytest -v --no-header test_practica.py
 
 Trae una prueba de ejemplo; copia su forma para escribir las tuyas.
 Mientras practica.py no defina Venta, pytest salta este archivo y lo dice.

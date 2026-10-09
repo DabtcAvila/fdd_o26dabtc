@@ -45,7 +45,7 @@ echo "$GHUSER"
 
 Si `echo "$GHUSER"` imprime una línea vacía, guárdalo como en [[el-ritual-del-curso]] y abre una terminal nueva.
 
-Si al volver a `main` ves `por_dentro/` sólo con `.venv/` adentro, es normal: `.venv` no va a git y no se va al cambiar de branch.
+Si al volver a `main` ves `por_dentro/` sólo con `.venv/` adentro, es normal: un ambiente no va a git y no se va al cambiar de branch.
 
 ## El ritual
 
@@ -114,33 +114,32 @@ Switched to a new branch 'tarea-09-stack'
 - En lugar de `ana`, tu usuario; el `5929a93` es otro en tu máquina, y la cifra de `insertions` puede variar si la plantilla cambió.
 
 > [!WARNING]
-> **El Haz 3 descarga unos 195 MB** y deja un `.venv` de unos 650 MB en disco. Si no tienes Python 3.14, uv lo descarga también (~30 MB más). Mientras descarga, sigue la explicación. Si tu red no da, trabaja en pareja y termina en casa.
+> **El Haz 3 descarga unos 195 MB** y deja un ambiente de unos 650 MB en disco. Si no tienes Python 3.14, uv lo descarga también (~30 MB más). Mientras descarga, sigue la explicación. Si tu red no da, trabaja en pareja y termina en casa.
 
-**Haz 3 · instala:**
+**Haz 3 · crea el ambiente, actívalo e instala** (desde la raíz de tu fork, donde te dejó el Haz 2b):
 
 ```bash
-cd estudiantes/$GHUSER/09_python/stack && uv sync
+uv venv .venv-stack --python 3.14
+source .venv-stack/bin/activate
+cd estudiantes/$GHUSER/09_python/stack && uv sync --active
 ```
 
 **Qué hace cada pieza:**
 
-- `cd estudiantes/$GHUSER/09_python/stack` — entras a tu copia. Desde aquí corres todo lo de esta sección.
-- `uv sync` — crea `.venv/` e instala exactamente lo que fija `uv.lock` ([[ambientes-python]]).
+- `uv venv .venv-stack --python 3.14` — crea un ambiente vacío **en la raíz de tu fork**, con el nombre `.venv-stack`. En la raíz porque ahí lo busca VS Code; en `stack/` no lo ve.
+- `source .venv-stack/bin/activate` — lo activa en esta terminal: tu prompt empieza con `(.venv-stack)`. En Windows sin WSL: `.venv-stack\Scripts\activate`.
+- `uv sync --active` — lee `pyproject.toml` y `uv.lock` de `stack/` e instala exactamente esas versiones **en el ambiente activo** ([[ambientes-python]]). Sin `--active`, uv crearía otro `.venv` dentro de `stack/`.
 
 **Deberías ver:** (recortado)
 
 ```text
 Using CPython 3.14.0
-Creating virtual environment at: .venv
+Creating virtual environment at: .venv-stack
+Activate with: source .venv-stack/bin/activate
 Resolved 54 packages in 1ms
 Downloading polars-runtime-32 (52.0MiB)
-Downloading pyarrow (47.8MiB)
 …
 Installed 48 packages in 212ms
- …
- + duckdb==1.5.6
- …
- + pandas==3.0.6
  …
  + polars==2.0.0
  …
@@ -149,42 +148,19 @@ Installed 48 packages in 212ms
 ```
 
 - Cifras de una corrida real: 54 paquetes resueltos, 48 instalados. Las versiones deben ser éstas: `polars==2.0.0`, no una 1.x. Los milisegundos cambian.
-
-**Haz 3b · el ambiente del notebook, con nombre propio:**
-
-```bash
-UV_PROJECT_ENVIRONMENT=$(git rev-parse --show-toplevel)/.venv-stack uv sync
-```
-
-**Qué hace cada pieza:**
-
-- `$(git rev-parse --show-toplevel)` — la raíz de tu fork. VS Code sólo busca ambientes ahí, no en subcarpetas como `stack/`.
-- `UV_PROJECT_ENVIRONMENT=…/.venv-stack` — uv crea el ambiente en esa ruta y con ese nombre, en lugar de `stack/.venv`. Así no se confunde con otro `.venv` que tengas en la raíz (el de la 9.1 es 3.12 y no tiene Polars).
-- `uv sync` — el mismo `uv.lock`: mismas versiones que el Haz 3. Los paquetes salen del caché de uv; no se descargan otra vez.
-
-**Deberías ver:** (recortado)
-
-```text
-Using CPython 3.14.0
-Creating virtual environment at: /…/.venv-stack
-Resolved 54 packages in 1ms
-…
-Installed 48 packages in …
-```
-
-- `stack/.venv` (Haz 3) es para la terminal: `uv run pytest`, `mypy`, `ruff`. `.venv-stack` es para el notebook. Son idénticos.
 - uv deja un `.gitignore` dentro de `.venv-stack`: `git status` no lo muestra y nunca se sube.
+- **Toda terminal nueva empieza sin ambiente.** Antes de un comando de la sección: `source .venv-stack/bin/activate` desde la raíz de tu fork. Los comandos de la sección van **sin** `uv run` (`pytest`, `mypy`, `ruff`): ya son los del ambiente activo.
 
-**Haz 4 · abre el notebook en la ventana de tu fork:**
+**Haz 4 · elige el ambiente en el notebook:**
 
-1. Usa la ventana de VS Code que tiene abierto **tu fork entero**, no sólo `stack/`. Abierto en `stack/`, VS Code no ve `.venv-stack`.
+1. Usa la ventana de VS Code que tiene abierto **tu fork entero**, no sólo `stack/`.
 2. En su terminal, `pwd`: después del Haz 3 ya estás en `stack/`.
 3. Abre `estudiantes/<tu-login>/09_python/stack/a_contratos.ipynb` → *Select Kernel* → *Python Environments* → **`.venv-stack (3.14.0)`**. Si no aparece: `Ctrl+Shift+P` → *Developer: Reload Window*, y repite.
 4. Corre la celda **A.0** (Shift+Enter).
 
 **Deberías ver:**
 
-- `pwd` termina en `09_python/stack`.
+- `pwd` termina en `09_python/stack`, y el prompt empieza con `(.venv-stack)`.
 - Arriba a la derecha del notebook dice `.venv-stack`.
 - A.0 imprime las versiones (`polars 2.0.0`, `duckdb 1.5.6`, `pandas 3.0.6`, `pydantic 2.14.0`…), una ruta que termina en `.venv-stack/bin/python3`, tu RAM y el `N` que te recomienda («Tienes … GB de RAM → te recomendamos N = …»).
 
@@ -196,7 +172,9 @@ A.0 **no cambia** `N`: lo cambias tú, dejando una sola línea sin `#`.
 |---|---|---|
 | `ModuleNotFoundError: No module named 'polars'` | El kernel es otro ambiente (p. ej. `.venv (3.12)` de la raíz) | Elige **`.venv-stack (3.14.0)`**; *Restart*; A.0 imprime qué Python corre |
 | No aparece `.venv-stack` en la lista | VS Code no ha vuelto a buscar, o está abierto sólo en `stack/` | *Developer: Reload Window*; abre tu fork entero (Haz 4) |
-| `warning: VIRTUAL_ENV=… does not match the project environment` | Tienes activado otro ambiente | `deactivate`; el aviso no rompe nada |
+| `command not found: pytest` (o `mypy`, `ruff`) | Terminal nueva, sin el ambiente activo | `source .venv-stack/bin/activate` desde la raíz de tu fork |
+| Apareció un `.venv/` dentro de `stack/` | Corriste `uv sync` o `uv run` sin el ambiente activo o sin `--active` | Bórralo (`rm -rf .venv`); activa `.venv-stack` y usa los comandos sin `uv run` |
+| `warning: VIRTUAL_ENV=… does not match the project environment` | Corriste `uv sync` o `uv run` sin `--active` | Usa `uv sync --active`, y los comandos sin `uv run` |
 | `uv sync` lento | La red | Trabaja en pareja; termina en casa |
 | `uv sync` compila algo por minutos | No hay rueda (paquete ya compilado) para tu plataforma | Pide ayuda |
 | Polars avisa de una CPU sin AVX2 al importar | CPU vieja | Pide ayuda |
@@ -214,7 +192,7 @@ Cada página y cada notebook dicen, en su propia línea, a dónde ir.
 |---|---|---|---|
 | `**📄 PÁGINA · <título>**` | El sitio | Lees el concepto y la tabla | Estás en la página que dice la marca |
 | `**📓 NOTEBOOK · <archivo> · celdas X.n–X.m**` | VS Code, el notebook | Corres en orden y comparas con «Deberías ver» | Arriba a la derecha dice `.venv-stack` |
-| `**💻 TERMINAL · en stack/ (comprueba con pwd)**` | La terminal de VS Code, parada en `stack/` | Un comando sobre un `.py` | `pwd` termina en `09_python/stack` |
+| `**💻 TERMINAL · en stack/ (comprueba con pwd)**` | La terminal de VS Code, parada en `stack/` | Un comando sobre un `.py` | `pwd` termina en `09_python/stack` y el prompt empieza con `(.venv-stack)` |
 
 **¿Te perdiste?** Corre la celda X.0 del notebook (A.0, B.0 o C.0) y salta a la celda que vamos: X.0 deja todo listo.
 

@@ -47,10 +47,10 @@ content:
     para que copies su forma.
     El quinto es decisiones punto md: una tabla de al menos tres filas con qué
     cambiaste, por qué y qué patrón de la clase aplica, y la salida pegada de
-    tres comandos corridos en la carpeta stack: uv run pytest guion v guion guion no guion
+    tres comandos corridos en la carpeta stack, con el ambiente activo: pytest guion v guion guion no guion
     header test guion bajo practica punto py, que no imprime la ruta de tu
-    máquina, uv run ruff check practica punto py test
-    guion bajo practica punto py, y uv run mypy practica punto py. La salida
+    máquina, ruff check practica punto py test
+    guion bajo practica punto py, y mypy practica punto py. La salida
     de pytest debe terminar con tres o más pasadas y ninguna fallida, con
     error o saltada; la de ruff, con All checks passed; y la de mypy, con
     Success, no issues found in 1 source file. Ninguna salida pegada debe
